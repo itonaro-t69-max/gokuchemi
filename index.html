@@ -39,12 +39,10 @@
     .modal-content h2 { color: var(--accent-cyan); margin-top: 0; font-size: 1.5rem; }
     .modal-content p { font-size: 1rem; line-height: 1.5; margin-bottom: 20px; }
     
-    /* チュートリアル用 */
     .tutorial-steps { text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-    .tutorial-steps li { margin-bottom: 10px; font-size: 0.95rem; line-height: 1.4; list-style-type: none; }
+    .tutorial-steps li { margin-bottom: 10px; font-size: 0.95rem; line-height: 1.5; list-style-type: none; }
     .tutorial-steps li::before { content: '🧪'; margin-right: 8px; }
 
-    /* 引き継ぎ用 */
     .transfer-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
     .transfer-code { font-size: 2rem; font-weight: 900; color: var(--accent-gold); letter-spacing: 3px; user-select: all; }
     .transfer-input { width: 80%; padding: 10px; font-size: 1.2rem; font-weight: bold; text-align: center; border-radius: 8px; border: 2px solid #4a4e69; background: #0f111a; color: #fff; text-transform: uppercase; margin-bottom: 10px; }
@@ -74,10 +72,17 @@
     
     .menu-list { list-style: none; padding: 0; margin: 0; }
     .menu-item { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.04); cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: #d0d4e5; }
-    .menu-item:hover, .menu-item:focus-visible { background-color: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); outline: none; }
+    
+    /* PC向けのホバー処理（スマホのホバー残りを防止） */
+    @media (hover: hover) {
+        .menu-item:hover { background-color: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); }
+        .menu-item.practice-btn:hover { background-color: rgba(255, 196, 0, 0.15); }
+        .coeff-btn:hover { background: var(--accent-cyan); color: #000; transform: scale(1.05); }
+    }
+    
+    .menu-item:active { background-color: rgba(0, 229, 255, 0.2); }
     .menu-item.active { background-color: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border-left: 4px solid var(--accent-cyan); font-weight: bold; }
     .menu-item.practice-btn { color: var(--accent-gold); }
-    .menu-item.practice-btn:hover { background-color: rgba(255, 196, 0, 0.15); }
     .menu-item.transfer-btn { color: var(--text-main); font-weight: bold; background: rgba(255,255,255,0.05); }
 
     /* モバイル用オーバーレイ・ヘッダー */
@@ -87,16 +92,22 @@
     #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
     /* メインエリア */
-    #main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow: hidden; position: relative; }
-    #reaction-header { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+    #main-content { 
+        flex: 1; display: flex; flex-direction: column; padding: 20px; 
+        overflow-y: auto; overflow-x: hidden; position: relative; 
+        padding-bottom: 180px; 
+    }
+    
+    #reaction-header { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
     #reaction-title { font-size: 1.8rem; margin: 0 0 5px 0; font-weight: 800; }
     .instruction { color: var(--accent-cyan); font-size: 1.1rem; margin: 0; font-weight: bold; background: rgba(0, 229, 255, 0.1); display: inline-block; padding: 5px 15px; border-radius: 20px; }
     #practice-status { color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 8px rgba(255, 196, 0, 0.3); }
 
     /* 学習エリア */
     #workspace-wrapper {
-        flex: 1; width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px;
+        width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px;
         display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        flex-shrink: 0; min-height: 250px;
     }
     #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; transform-origin: center center; transition: transform 0.2s ease-out; }
 
@@ -107,22 +118,31 @@
     .stage2-ui { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .coeff-controls { display: flex; gap: 15px; }
     .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; }
-    .coeff-btn:hover, .coeff-btn:active { background: var(--accent-cyan); color: #000; transform: scale(1.05); }
+    
+    /* ボタン押し込み時の処理（全端末共通） */
+    .coeff-btn:active { background: var(--accent-cyan); color: #000; transform: scale(0.95); }
+    
     .formula-display { display: flex; align-items: baseline; }
     .big-coeff { font-size: 3rem; font-weight: 900; color: var(--accent-gold); margin-right: 2px; line-height: 1; }
     .hidden-coeff { color: rgba(255,255,255,0.1); }
     .chem-formula { font-size: 2.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; }
 
-    select.formula-select { font-size: 1.6rem; padding: 10px 15px; background: #0f111a; font-weight: bold; color: #fff; border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; }
+    /* プルダウンの矢印カスタム化 */
+    select.formula-select { 
+        font-size: 1.6rem; padding: 10px 35px 10px 15px; background-color: #0f111a; font-weight: bold; color: #fff; 
+        border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; 
+        -webkit-appearance: none; -moz-appearance: none; appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300e5ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 10px center; background-size: 18px;
+    }
+    select.formula-select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
 
-    /* ★ 粒子モデル（はみ出し防止の折り返し処理） ★ */
+    /* 粒子モデル */
     .models-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 140px; min-height: 50px; }
     .molecule-auto { display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
-    
     .molecule-auto.covalent { flex-wrap: wrap; max-width: 80px; gap: 0; }
-    .molecule-auto.covalent .atom { margin: -2px; } /* 重なりを2pxに軽減し、折り返す */
+    .molecule-auto.covalent .atom { margin: -2px; } 
     .molecule-auto.ionic { flex-wrap: wrap; gap: 2px; width: max-content; max-width: 65px; }
-    
     .atom { width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; flex-shrink: 0; box-shadow: inset -4px -4px 6px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.6); position: relative; z-index: 1; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 3px rgba(0,0,0,0.8); }
     .molecule-auto.covalent .atom { z-index: 2; }
     .molecule-auto.covalent .atom:nth-child(2) { z-index: 1; }
@@ -134,19 +154,20 @@
     .arrow { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
 
     /* アクションエリア */
-    #action-area { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 130px; }
+    #action-area { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; }
     .primary-btn { padding: 16px 60px; font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: 2px; background-color: var(--accent-cyan); border: none; border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #009eb3, 0 10px 20px rgba(0,0,0,0.4); transition: 0.1s; width: fit-content; }
     .primary-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #009eb3, 0 2px 5px rgba(0,0,0,0.4); }
     .primary-btn.next-btn { background-color: var(--accent-gold); box-shadow: 0 6px 0 #cc9d00; }
     .primary-btn.next-btn:active { box-shadow: 0 0 0 #cc9d00; }
     
-    #feedback { font-size: 1.1rem; text-align: center; line-height: 1.4; font-weight: bold; width: 100%; }
+    #feedback { font-size: 1.1rem; text-align: center; line-height: 1.4; font-weight: bold; width: 100%; min-height: 30px; }
     .feedback-error { color: var(--accent-red); background: rgba(255, 61, 0, 0.1); padding: 5px 20px; border-radius: 8px; display: inline-block;}
     
     /* 解説ボックス */
     #explanation-box { 
         display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); 
-        padding: 15px; padding-right: 140px; border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.6; 
+        padding: 15px; padding-right: 140px; 
+        border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.7; 
         max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; box-sizing: border-box;
     }
     .exp-title { color: var(--accent-green); font-weight: 900; font-size: 1.1rem; margin-bottom: 5px; }
@@ -159,28 +180,39 @@
     @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg) translateX(var(--tx)); opacity: 0; } }
 
     /* 人体模型ケン */
-    #ken-character { position: fixed; bottom: 0px; right: 30px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; }
+    #ken-character { 
+        position: fixed; bottom: 0px; right: 30px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; 
+    }
     .ken-bounce { animation: kenJump 0.4s ease; }
     @keyframes kenJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
     #ken-speech { background: #fff; color: #000; padding: 10px 15px; border-radius: 12px; font-weight: bold; font-size: 0.95rem; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 220px; text-align: center; }
     #ken-speech::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
     #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; }
 
-    /* レスポンシブ */
+    /* レスポンシブ対応 */
     @media (max-width: 1024px) {
         #sidebar { position: fixed; left: -280px; height: 100%; }
         #sidebar.open { transform: translateX(280px); }
         #sidebar-overlay { display: block; pointer-events: none; }
         #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
         #mobile-header { display: flex; }
-        #main-content { padding: 10px; }
+        
+        #main-content { padding: 10px; padding-bottom: 20px; }
+        
+        #ken-character { 
+            position: relative; right: auto; bottom: auto;
+            margin: 30px auto 10px; 
+            transform: scale(0.9); transform-origin: center top; 
+        }
+        #explanation-box { padding: 12px; padding-right: 12px; } /* スマホ余白の最適化 */
+
         #reaction-title { font-size: 1.4rem; }
         .instruction { font-size: 0.95rem; padding: 3px 10px; }
         #practice-status { font-size: 1rem; }
         #workspace { gap: 6px; }
         .substance-group { padding: 10px 8px; gap: 10px; min-width: 80px; }
         .substance-name { font-size: 0.75rem; padding: 4px 6px; }
-        select.formula-select { font-size: 1.2rem; padding: 5px 8px; }
+        select.formula-select { font-size: 1.2rem; padding: 5px 25px 5px 8px; background-size: 14px;}
         .coeff-btn { width: 36px; height: 36px; font-size: 1.4rem; }
         .big-coeff { font-size: 2rem; }
         .chem-formula { font-size: 1.6rem; }
@@ -189,9 +221,8 @@
         .operator-st1 { margin-top: 45px; }
         .operator-st2 { margin-top: 85px; }
         .primary-btn { padding: 12px 30px; font-size: 1.2rem; }
-        #ken-character { right: 0; bottom: -15px; transform: scale(0.65); transform-origin: bottom right; }
-        #explanation-box { padding-right: 90px; }
     }
+    
     @media (max-height: 500px) and (orientation: landscape) {
         #mobile-header { padding: 5px 15px; }
         .mobile-title { font-size: 1rem; }
@@ -199,14 +230,14 @@
         #reaction-title { font-size: 1.2rem; margin: 0; margin-right: 10px; }
         .instruction { font-size: 0.8rem; padding: 2px 8px; }
         #practice-status { font-size: 0.9rem; }
-        #workspace-wrapper { padding: 5px 0; border-width: 1px; }
+        #workspace-wrapper { padding: 5px 0; border-width: 1px; min-height: auto;}
         .substance-group { padding: 8px 5px; gap: 5px; }
-        #action-area { margin-top: 5px; min-height: 50px; gap: 5px; }
+        #action-area { margin-top: 5px; min-height: auto; gap: 5px; }
         .primary-btn { padding: 8px 25px; font-size: 1.1rem; box-shadow: 0 4px 0 #009eb3; }
         .primary-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #009eb3; }
         #feedback { font-size: 0.95rem; min-height: 25px; }
-        #explanation-box { padding: 8px; padding-right: 60px; font-size: 0.85rem; margin-top: 5px; }
-        #ken-character { transform: scale(0.4); right: -20px; bottom: -30px; }
+        #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
+        #ken-character { transform: scale(0.6); margin: 10px auto 0; }
     }
 </style>
 </head>
@@ -293,12 +324,12 @@
         <button id="check-btn" class="primary-btn" onclick="checkAnswer()">これで確認！</button>
         <div id="explanation-box"></div>
     </div>
-</main>
 
-<div id="ken-character">
-    <div id="ken-speech">さあ、実験を始めようか！</div>
-    <div id="ken-image-container"></div>
-</div>
+    <div id="ken-character">
+        <div id="ken-speech">さあ、実験を始めようか！</div>
+        <div id="ken-image-container"></div>
+    </div>
+</main>
 
 <script>
 // --- ポイントシステム ---
@@ -368,26 +399,52 @@ function closeTutorial() {
 function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
 function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
 
-// --- 人体模型ケン SVG ---
+// --- 人体模型ケン SVG (iOS文字消え対策済) ---
 const kenBaseOpen = `
-<svg viewBox="0 0 100 120" style="width:100%; height:100%; filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.5));" xmlns="http://www.w3.org/2000/svg">
-    <path d="M 50 60 C 15 60 10 120 50 120 Z" fill="#b71c1c" />
-    <path d="M 50 60 C 85 60 90 120 50 120 Z" fill="#ffccbc" />
-    <path d="M 50 10 C 15 10 15 50 50 60 Z" fill="#f5f5f5" />
-    <path d="M 50 10 C 85 10 85 50 50 60 Z" fill="#ffccbc" />
-    <ellipse cx="36" cy="74" rx="10" ry="14" fill="#ef5350" />
-    <ellipse cx="64" cy="74" rx="10" ry="14" fill="#ef5350" />
-    <circle cx="50" cy="80" r="6" fill="#ffee58" stroke="#c62828" stroke-width="1" />
-    <path d="M 33 90 C 45 84 55 84 67 90 C 67 98 45 98 33 98 Z" fill="#5d4037" />
-    <rect x="33" y="99" width="34" height="5" rx="2.5" fill="#66bb6a" />
-    <rect x="36" y="105" width="28" height="9" rx="4" fill="#f48fb1" />
+<svg viewBox="0 0 100 120" style="width:100%; height:100%; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.3));" xmlns="http://www.w3.org/2000/svg">
+    <path d="M 50 65 C 25 65 25 115 50 115 Z" fill="#ff7373" />
+    <path d="M 50 65 C 75 65 75 115 50 115 Z" fill="#ffdfc4" />
+    <path d="M 50 15 C 10 15 15 65 50 65 Z" fill="#ffffff" />
+    <path d="M 50 15 C 90 15 85 65 50 65 Z" fill="#ffdfc4" />
+    <path d="M 44 75 A 4 4 0 0 0 36 75 A 4 4 0 0 0 44 83 Z" fill="#ff1744" /> 
+    <rect x="36" y="90" width="28" height="6" rx="3" fill="#81c784" /> 
+    <rect x="38" y="98" width="24" height="7" rx="3.5" fill="#64b5f6" /> 
+    <line x1="50" y1="15" x2="50" y2="65" stroke="#e0e0e0" stroke-width="1.5" stroke-dasharray="3,3" />
+    <line x1="50" y1="65" x2="50" y2="115" stroke="#ffcdd2" stroke-width="1.5" stroke-dasharray="3,3" />
 `;
 const kenBaseClose = `</svg>`;
-const faceNormal = `<circle cx="34" cy="35" r="5" fill="#424242" /><circle cx="34" cy="35" r="2" fill="#fff" /><circle cx="34" cy="35" r="1" fill="#000" /><circle cx="66" cy="35" r="3" fill="#3e2723" /><circle cx="67" cy="34" r="1" fill="#fff" /><path d="M 43 50 Q 50 54 57 50" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-const faceThink = `<circle cx="34" cy="35" r="5" fill="#424242" /><circle cx="34" cy="35" r="2" fill="#fff" /><circle cx="34" cy="35" r="1" fill="#000" /><line x1="62" y1="35" x2="70" y2="35" stroke="#3e2723" stroke-width="2" stroke-linecap="round"/><path d="M 43 52 Q 46 48 50 52 T 57 52" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><text x="75" y="25" font-size="20" fill="#fff" font-weight="bold">?</text>`;
-const faceError = `<line x1="30" y1="31" x2="38" y2="39" stroke="#424242" stroke-width="2" stroke-linecap="round"/><line x1="38" y1="31" x2="30" y2="39" stroke="#424242" stroke-width="2" stroke-linecap="round"/><line x1="62" y1="31" x2="70" y2="39" stroke="#3e2723" stroke-width="2" stroke-linecap="round"/><line x1="70" y1="31" x2="62" y2="39" stroke="#3e2723" stroke-width="2" stroke-linecap="round"/><path d="M 43 54 Q 50 48 57 54" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><text x="75" y="25" font-size="20" fill="#ff3d00" font-weight="bold">!</text>`;
-const faceHint = `<circle cx="34" cy="35" r="6" fill="#424242" /><circle cx="34" cy="35" r="2.5" fill="#fff" /><circle cx="34" cy="35" r="1.5" fill="#000" /><circle cx="66" cy="35" r="4" fill="#3e2723" /><circle cx="67" cy="34" r="1.5" fill="#fff" /><path d="M 45 50 Q 50 53 55 50" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><text x="75" y="25" font-size="18" fill="#ffc400">💡</text>`;
-const faceSuccess = `<path d="M 30 37 Q 34 31 38 37" stroke="#424242" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M 62 37 Q 66 31 70 37" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M 42 48 Q 50 62 58 48 Z" fill="#e57373" stroke="#3e2723" stroke-width="1" /><text x="10" y="25" font-size="15" fill="#ffc400">✨</text><text x="75" y="45" font-size="15" fill="#ffc400">✨</text>`;
+const faceNormal = `
+    <circle cx="34" cy="40" r="7" fill="#424242" />
+    <circle cx="35" cy="38" r="2.5" fill="#fff" /> 
+    <circle cx="66" cy="40" r="6" fill="#6d4c41" />
+    <circle cx="67" cy="38" r="2" fill="#fff" /> 
+    <path d="M 46 52 Q 50 56 54 52" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+const faceThink = `
+    <circle cx="34" cy="40" r="7" fill="#424242" />
+    <path d="M 31 40 Q 34 36 37 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="66" cy="40" r="6" fill="#6d4c41" />
+    <path d="M 63 40 Q 66 36 69 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 46 54 Q 48 51 50 54 T 54 54" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="75" y="25" font-size="22" fill="#fff" font-weight="bold" stroke="#000" stroke-width="1.5" paint-order="stroke">?</text>`;
+const faceError = `
+    <path d="M 29 37 L 35 41 L 29 45" stroke="#424242" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 71 37 L 65 41 L 71 45" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="50" cy="54" rx="4" ry="5" fill="#6d4c41" />
+    <text x="75" y="25" font-size="22" fill="#ff3d00" font-weight="bold" stroke="#fff" stroke-width="1.5" paint-order="stroke">!</text>`;
+const faceHint = `
+    <circle cx="34" cy="40" r="7" fill="#424242" />
+    <circle cx="34" cy="40" r="3.5" fill="#ffeb3b" />
+    <circle cx="66" cy="40" r="6" fill="#6d4c41" />
+    <circle cx="66" cy="40" r="3" fill="#ffeb3b" />
+    <path d="M 46 52 Q 50 55 54 52" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="75" y="25" font-size="18">💡</text>`;
+const faceSuccess = `
+    <path d="M 28 42 Q 34 34 40 42" stroke="#424242" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 60 42 Q 66 34 72 42" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 44 50 Q 50 62 56 50 Z" fill="#ff8a80" stroke="#6d4c41" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="66" cy="48" r="4" fill="#ff8a80" opacity="0.6" />
+    <text x="8" y="25" font-size="16">✨</text>
+    <text x="78" y="45" font-size="16">✨</text>`;
 
 const kenEmotions = {
     normal:  { emoji: kenBaseOpen + faceNormal + kenBaseClose,   text: 'さあ、実験を始めようか！' },
@@ -470,7 +527,6 @@ let stage = 1;
 let currentReactionData = null;
 let isCleared = false; 
 
-// --- ユーティリティ ---
 function getGCD(a, b) { return b === 0 ? a : getGCD(b, a % b); }
 function toSubscript(str) {
     if (str === '?') return '?';
@@ -522,7 +578,7 @@ function triggerCelebration() {
     }
 }
 
-// デバウンス処理を追加したスマートな画面フィット
+// デバウンス処理
 let resizeTimer;
 function fitWorkspace() {
     const wrapper = document.getElementById('workspace-wrapper');
@@ -542,16 +598,9 @@ function fitWorkspace() {
         workspace.style.transform = `scale(${scale})`;
     });
 }
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(fitWorkspace, 100);
-});
-window.addEventListener('orientationchange', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(fitWorkspace, 300);
-});
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitWorkspace, 100); });
+window.addEventListener('orientationchange', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitWorkspace, 300); });
 
-// --- 初期化・描画 ---
 window.onload = () => {
     initPoints();
     checkTutorial();
@@ -604,7 +653,6 @@ function loadPracticeQuestion() {
     setupReaction(q.reaction, q.pool);
 }
 
-// 意地悪なダミー生成ロジック
 function generateDistractors(correct, pool) {
     let options = new Set([correct]);
     const commonErrors = {
@@ -627,9 +675,11 @@ function generateDistractors(correct, pool) {
     if (commonErrors[correct]) commonErrors[correct].forEach(d => options.add(d));
 
     if (options.size < 5) {
+        let fakeBase = correct.replace(/[\(\)]/g, ''); 
         let re = /([A-Z][a-z]*)(\d*)/g;
         let match; let parts = [];
-        while ((match = re.exec(correct)) !== null) parts.push({ elem: match[1], num: match[2] ? parseInt(match[2]) : 1 });
+        while ((match = re.exec(fakeBase)) !== null) parts.push({ elem: match[1], num: match[2] ? parseInt(match[2]) : 1 });
+        
         if (parts.length > 0) {
             for (let i = 0; i < 15 && options.size < 5; i++) {
                 let fake = "";
@@ -643,7 +693,6 @@ function generateDistractors(correct, pool) {
         }
     }
     
-    // ★ 修正：それでも足りない分は全体のプールから補充 ★
     if (options.size < 5) {
         let shuffledPool = [...pool].sort(() => 0.5 - Math.random());
         for (let f of shuffledPool) {
@@ -718,7 +767,6 @@ function changeCoeff(id, delta) {
     }
 }
 
-// --- 描画ロジック ---
 function renderWorkspace() {
     const workspace = document.getElementById('workspace');
     workspace.innerHTML = '';
@@ -776,7 +824,6 @@ function generateSubstanceHTML(sub) {
     return html;
 }
 
-// --- 判定ロジック ---
 function checkAnswer() {
     if (stage === 1) checkStage1();
     else checkStage2();
