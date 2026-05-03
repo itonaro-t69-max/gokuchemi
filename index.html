@@ -67,7 +67,7 @@
         letter-spacing: 4px; margin-top: 5px; font-weight: bold;
     }
     
-    /* ★ ステータス（ポイント・称号）表示エリア ★ */
+    /* ステータス（ポイント・称号）表示エリア */
     #status-area {
         background: rgba(0, 0, 0, 0.4); padding: 15px; text-align: center;
         border-bottom: 1px solid #2a2e45;
@@ -136,7 +136,7 @@
 
     select.formula-select { font-size: 1.6rem; padding: 10px 15px; background: #0f111a; font-weight: bold; color: #fff; border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; }
 
-    /* 粒子モデル（重なり軽減版） */
+    /* 粒子モデル */
     .models-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 140px; min-height: 50px; }
     .molecule-auto { display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
     .molecule-auto.covalent .atom { margin-left: -2px; }
@@ -245,19 +245,16 @@
     <div class="modal-content">
         <h2>⚙️ データ引き継ぎ</h2>
         <p>今のポイントを別の端末に引き継げるぞ！</p>
-        
         <div class="transfer-box">
             <div style="font-size: 0.9rem; margin-bottom: 5px;">あなたの引き継ぎパスワード</div>
             <div class="transfer-code" id="my-transfer-code">------</div>
             <div style="font-size: 0.8rem; color: #ccc; margin-top: 5px;">※このコードをメモしてね！</div>
         </div>
-
         <div style="margin-top: 20px;">
             <div style="font-size: 0.9rem; margin-bottom: 5px;">別の端末から引き継ぐ場合</div>
             <input type="text" id="transfer-input" class="transfer-input" placeholder="パスワードを入力" maxlength="6">
             <button class="primary-btn" style="width:100%; font-size: 1.1rem; padding: 10px;" onclick="executeTransfer()">復元する</button>
         </div>
-        
         <button style="margin-top:20px; background:transparent; border:none; color:var(--text-sub); text-decoration:underline; cursor:pointer;" onclick="closeTransferModal()">閉じる</button>
     </div>
 </div>
@@ -328,14 +325,18 @@
 // --- ★ ポイントシステム（ハイブリッド方式） ★ ---
 let userPoints = 0;
 
-// 称号の定義
+// ★ 新しい称号データ（10段階） ★
 const ranks = [
-    { pt: 0, title: "🔰 見習い錬金術師" },
-    { pt: 100, title: "🧪 駆け出しケミスト" },
-    { pt: 500, title: "🔬 一人前の研究者" },
-    { pt: 1000, title: "🎓 ベテラン科学者" },
-    { pt: 3000, title: "👑 GOKU-CHEMI マスター" },
-    { pt: 5000, title: "🌟 伝説の錬金術師" }
+    { pt: 0,    title: "🔰 見習い錬金術師" },
+    { pt: 100,  title: "🧪 駆け出しケミスト" },
+    { pt: 300,  title: "👨‍🔬 実験室のホープ" },
+    { pt: 600,  title: "🔬 一人前の研究者" },
+    { pt: 1000, title: "🎓 優秀な科学者" },
+    { pt: 1500, title: "🧬 真理の探求者" },
+    { pt: 2500, title: "⚡ 錬金術の達人" },
+    { pt: 4000, title: "👑 GOKU-CHEMI マスター" },
+    { pt: 6000, title: "🌟 伝説の錬金術師" },
+    { pt: 9999, title: "🌌 究極の創造神" }
 ];
 
 function initPoints() {
@@ -347,15 +348,13 @@ function initPoints() {
 }
 
 function addPoints(pts) {
-    userPoints += pt;
+    userPoints += pts; 
     localStorage.setItem('gokuChemiPoints', userPoints);
     updatePointUI();
 }
 
 function updatePointUI() {
     document.getElementById('point-display').innerHTML = `${userPoints} <span class="pt-unit">Pt</span>`;
-    
-    // 称号の計算
     let currentRank = ranks[0].title;
     for (let i = 0; i < ranks.length; i++) {
         if (userPoints >= ranks[i].pt) {
@@ -365,8 +364,6 @@ function updatePointUI() {
     document.getElementById('rank-title').innerText = currentRank;
 }
 
-// パスワードの生成・復元（簡易的な暗号化）
-// ルール: "GK" + ((ポイント * 7) + 1234) を36進数に変換して大文字にする
 function generateTransferCode() {
     let num = (userPoints * 7) + 1234;
     return "GK" + num.toString(36).toUpperCase();
@@ -378,22 +375,17 @@ function executeTransfer() {
         alert("パスワードが正しくありません！");
         return;
     }
-    
     let baseStr = input.substring(2);
     let num = parseInt(baseStr, 36);
-    
     if (isNaN(num)) {
         alert("パスワードが正しくありません！");
         return;
     }
-    
     let rawPt = (num - 1234) / 7;
     if (!Number.isInteger(rawPt) || rawPt < 0) {
         alert("パスワードが正しくありません！");
         return;
     }
-    
-    // 復元成功
     userPoints = rawPt;
     localStorage.setItem('gokuChemiPoints', userPoints);
     updatePointUI();
@@ -410,7 +402,6 @@ function openTransferModal() {
 function closeTransferModal() {
     document.getElementById('transfer-modal').style.display = 'none';
 }
-
 
 // --- チュートリアル表示（初回のみ） ---
 function checkTutorial() {
@@ -532,6 +523,7 @@ let currentQIndex = 0;
 let substances = []; 
 let stage = 1;
 let currentReactionData = null;
+let isCleared = false; 
 
 // --- ユーティリティ ---
 function getGCD(a, b) { return b === 0 ? a : getGCD(b, a % b); }
@@ -672,6 +664,7 @@ function generateDistractors(correct, pool) {
 function setupReaction(reaction, pool) {
     stage = 1; substances = []; let idCounter = 0;
     currentReactionData = reaction;
+    isCleared = false; 
 
     const addSub = (item, side) => {
         substances.push({
@@ -860,8 +853,10 @@ function checkStage2() {
     const expBox = document.getElementById('explanation-box');
     
     if (isCorrect) {
-        // ★ ポイント加算（1問クリアで10Pt）
-        addPoints(10);
+        if (!isCleared) {
+            addPoints(10);
+            isCleared = true; 
+        }
 
         triggerCelebration();
         updateKen('success');
@@ -869,7 +864,7 @@ function checkStage2() {
         void wrapper.offsetWidth; 
         wrapper.classList.add('glow-effect');
         
-        feedback.innerHTML = `<div class="goku-clear-text">🔥 GOKU-CLEAR! 完璧だ！ (+10 Pt) 🔥</div>`;
+        feedback.innerHTML = `<div class="goku-clear-text">🔥 GOKU-CLEAR! 完璧だ！ 🔥</div>`;
         
         if(currentReactionData && currentReactionData.exp) {
             expBox.innerHTML = `<div class="exp-title">📖 反応の解説</div><div>${currentReactionData.exp}</div>`;
@@ -899,7 +894,6 @@ function nextPracticeQuestion() {
     if (currentQIndex < practiceQuestions.length) {
         loadPracticeQuestion();
     } else {
-        // ★ 練習モード全問正解ボーナス ★
         let bonus = appMode === 'practice_std' ? 50 : 270;
         addPoints(bonus);
 
