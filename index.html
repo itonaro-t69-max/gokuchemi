@@ -2,142 +2,97 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- ★ セーフエリア対応（viewport-fit=cover）を追加 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>極・化学反応式 (GOKU-CHEMI)</title>
 <style>
     /* 共通・ベース設定 */
     :root {
-        --bg-dark: #0f111a;
-        --bg-panel: #1a1d2d;
-        --accent-cyan: #00e5ff;
-        --accent-green: #00e676;
-        --accent-red: #ff3d00;
-        --accent-gold: #ffc400;
-        --text-main: #f0f0f5;
-        --text-sub: #a0a4b8;
+        --bg-dark: #0f111a; --bg-panel: #1a1d2d;
+        --accent-cyan: #00e5ff; --accent-green: #00e676;
+        --accent-red: #ff3d00; --accent-gold: #ffc400;
+        --text-main: #f0f0f5; --text-sub: #a0a4b8;
     }
     body {
         margin: 0; padding: 0;
-        background-color: var(--bg-dark);
-        color: var(--text-main);
-        font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
+        /* ★ iPhoneなどのノッチ（切り欠き）を避けるセーフエリア余白 */
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        background-color: var(--bg-dark); color: var(--text-main);
+        font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
         display: flex; height: 100vh; height: 100dvh; overflow: hidden;
-        touch-action: manipulation; /* ★ iOSダブルタップズーム防止 */
+        touch-action: manipulation;
+        
+        /* ★ 画像やテキストの不要なドラッグ・選択を防止（アプリ感アップ） */
+        -webkit-user-select: none; user-select: none;
+        -webkit-user-drag: none;
     }
+    body.modal-open { overflow: hidden; }
     
-    /* モーダル表示時の背景スクロールロック用クラス */
-    body.modal-open {
-        overflow: hidden;
-    }
-    
-    /* モーダル共通 (チュートリアル＆引き継ぎ) */
-    .modal-overlay {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); z-index: 2000;
-        justify-content: center; align-items: center;
-    }
-    .modal-content {
-        background: var(--bg-panel); border: 2px solid var(--accent-cyan);
-        border-radius: 15px; padding: 25px 20px; max-width: 90%; width: 420px;
-        box-shadow: 0 0 40px rgba(0,229,255,0.4); text-align: center;
-        animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+    /* モーダル */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
+    .modal-content { background: var(--bg-panel); border: 2px solid var(--accent-cyan); border-radius: 15px; padding: 25px 20px; max-width: 90%; width: 420px; box-shadow: 0 0 40px rgba(0,229,255,0.4); text-align: center; animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .modal-content h2 { color: var(--accent-cyan); margin-top: 0; font-size: 1.5rem; }
     .modal-content p { font-size: 1rem; line-height: 1.5; margin-bottom: 20px; }
-    
     .tutorial-steps { text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; }
     .tutorial-steps li { margin-bottom: 10px; font-size: 0.95rem; line-height: 1.5; list-style-type: none; }
     .tutorial-steps li::before { content: '🧪'; margin-right: 8px; }
-
     .transfer-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-    .transfer-code { font-size: 2rem; font-weight: 900; color: var(--accent-gold); letter-spacing: 3px; user-select: all; }
-    .transfer-input { width: 80%; padding: 10px; font-size: 1.2rem; font-weight: bold; text-align: center; border-radius: 8px; border: 2px solid #4a4e69; background: #0f111a; color: #fff; text-transform: uppercase; margin-bottom: 10px; }
+    .transfer-code { font-size: 2rem; font-weight: 900; color: var(--accent-gold); letter-spacing: 3px; user-select: all; -webkit-user-select: text;} /* パスワードだけは選択・コピー可能に */
+    .transfer-input { width: 80%; padding: 10px; font-size: 1.2rem; font-weight: bold; text-align: center; border-radius: 8px; border: 2px solid #4a4e69; background: #0f111a; color: #fff; text-transform: uppercase; margin-bottom: 10px; -webkit-user-select: text; user-select: text;}
     .transfer-input:focus { outline: none; border-color: var(--accent-cyan); }
 
-    /* サイドバー（メニュー） */
-    #sidebar {
-        width: 280px; background-color: var(--bg-panel);
-        border-right: 1px solid #2a2e45; display: flex; flex-direction: column;
-        overflow-y: auto; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 1000; flex-shrink: 0;
-        transition: transform 0.3s ease;
-    }
-    .app-title {
-        padding: 20px 15px 15px; font-size: 1.4rem; font-weight: 900;
-        color: #fff; text-align: center;
-        background: linear-gradient(135deg, #1a1d2d 0%, #0f111a 100%); letter-spacing: 2px;
-    }
+    /* サイドバー */
+    #sidebar { width: 280px; background-color: var(--bg-panel); border-right: 1px solid #2a2e45; display: flex; flex-direction: column; overflow-y: auto; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 1000; flex-shrink: 0; transition: transform 0.3s ease; }
+    .app-title { padding: 20px 15px 15px; font-size: 1.4rem; font-weight: 900; color: #fff; text-align: center; background: linear-gradient(135deg, #1a1d2d 0%, #0f111a 100%); letter-spacing: 2px; }
     .app-title span { display: block; font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 4px; margin-top: 5px; font-weight: bold; }
-    
     #status-area { background: rgba(0, 0, 0, 0.4); padding: 15px; text-align: center; border-bottom: 1px solid #2a2e45; }
     #rank-title { font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 5px; }
     #point-display { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
     .pt-unit { font-size: 0.9rem; color: var(--text-sub); }
-
     .section-title { padding: 12px 15px; font-size: 0.85rem; color: var(--text-sub); background-color: #141724; border-top: 1px solid #2a2e45; border-bottom: 1px solid #2a2e45; font-weight: bold; }
     .section-title:first-of-type { border-top: none; }
-    
     .menu-list { list-style: none; padding: 0; margin: 0; }
     .menu-item { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.04); cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: #d0d4e5; }
-    
     @media (hover: hover) {
         .menu-item:hover { background-color: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); }
         .menu-item.practice-btn:hover { background-color: rgba(255, 196, 0, 0.15); }
         .coeff-btn:hover { background: var(--accent-cyan); color: #000; transform: scale(1.05); }
     }
-    
     .menu-item:active { background-color: rgba(0, 229, 255, 0.2); }
     .menu-item.active { background-color: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border-left: 4px solid var(--accent-cyan); font-weight: bold; }
     .menu-item.practice-btn { color: var(--accent-gold); }
     .menu-item.transfer-btn { color: var(--text-main); font-weight: bold; background: rgba(255,255,255,0.05); }
 
-    /* モバイル用オーバーレイ・ヘッダー */
+    /* モバイルヘッダー */
     #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 900; opacity: 0; transition: opacity 0.3s; }
     #mobile-header { display: none; justify-content: space-between; align-items: center; padding: 10px 20px; background: #1a1d2d; border-bottom: 1px solid #2a2e45; }
     .mobile-title { font-size: 1.2rem; font-weight: 900; color: var(--accent-cyan); letter-spacing: 2px; }
     #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
     /* メインエリア */
-    #main-content { 
-        flex: 1; display: flex; flex-direction: column; padding: 20px; 
-        overflow-y: auto; overflow-x: hidden; position: relative; 
-        padding-bottom: 180px; 
-    }
-    
+    #main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; overflow-x: hidden; position: relative; padding-bottom: 180px; }
     #reaction-header { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
     #reaction-title { font-size: 1.8rem; margin: 0 0 5px 0; font-weight: 800; }
     .instruction { color: var(--accent-cyan); font-size: 1.1rem; margin: 0; font-weight: bold; background: rgba(0, 229, 255, 0.1); display: inline-block; padding: 5px 15px; border-radius: 20px; }
     #practice-status { color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 8px rgba(255, 196, 0, 0.3); }
 
     /* 学習エリア */
-    #workspace-wrapper {
-        width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px;
-        display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        flex-shrink: 0; min-height: 250px;
-    }
+    #workspace-wrapper { width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); flex-shrink: 0; min-height: 250px; }
     #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; transform-origin: center center; transition: transform 0.2s ease-out; }
-
     .substance-group { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); padding: 18px 15px; border-radius: 12px; border: 2px solid transparent; gap: 15px; min-width: 120px; transition: 0.3s; }
     .substance-group.error { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08); }
     .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; }
-
     .stage2-ui { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .coeff-controls { display: flex; gap: 15px; }
     .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; }
     .coeff-btn:active { background: var(--accent-cyan); color: #000; transform: scale(0.95); }
-    
     .formula-display { display: flex; align-items: baseline; }
     .big-coeff { font-size: 3rem; font-weight: 900; color: var(--accent-gold); margin-right: 2px; line-height: 1; }
     .hidden-coeff { color: rgba(255,255,255,0.1); }
     .chem-formula { font-size: 2.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; }
 
-    /* プルダウンの矢印カスタム化 */
-    select.formula-select { 
-        font-size: 1.6rem; padding: 10px 35px 10px 15px; background-color: #0f111a; font-weight: bold; color: #fff; 
-        border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; 
-        -webkit-appearance: none; -moz-appearance: none; appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300e5ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-        background-repeat: no-repeat; background-position: right 10px center; background-size: 18px;
-    }
+    select.formula-select { font-size: 1.6rem; padding: 10px 35px 10px 15px; background-color: #0f111a; font-weight: bold; color: #fff; border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300e5ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 18px; }
     select.formula-select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
 
     /* 粒子モデル */
@@ -146,7 +101,6 @@
     .molecule-auto.covalent { flex-wrap: wrap; max-width: 80px; gap: 0; }
     .molecule-auto.covalent .atom { margin: -2px; } 
     .molecule-auto.ionic { flex-wrap: wrap; gap: 2px; width: max-content; max-width: 65px; }
-    
     .atom { width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; flex-shrink: 0; box-shadow: inset -3px -3px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.4); position: relative; z-index: 1; }
     .molecule-auto.covalent .atom { z-index: 2; }
     .molecule-auto.covalent .atom:nth-child(2) { z-index: 1; }
@@ -163,17 +117,10 @@
     .primary-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #009eb3, 0 2px 5px rgba(0,0,0,0.4); }
     .primary-btn.next-btn { background-color: var(--accent-gold); box-shadow: 0 6px 0 #cc9d00; }
     .primary-btn.next-btn:active { box-shadow: 0 0 0 #cc9d00; }
-    
     #feedback { font-size: 1.1rem; text-align: center; line-height: 1.4; font-weight: bold; width: 100%; min-height: 30px; }
     .feedback-error { color: var(--accent-red); background: rgba(255, 61, 0, 0.1); padding: 5px 20px; border-radius: 8px; display: inline-block;}
     
-    /* 解説ボックス */
-    #explanation-box { 
-        display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); 
-        padding: 15px; padding-right: 140px; 
-        border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.7; 
-        max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; box-sizing: border-box;
-    }
+    #explanation-box { display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); padding: 15px; padding-right: 140px; border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.7; max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; box-sizing: border-box; }
     .exp-title { color: var(--accent-green); font-weight: 900; font-size: 1.1rem; margin-bottom: 5px; }
 
     .goku-clear-text { color: var(--accent-gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 196, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
@@ -184,14 +131,12 @@
     @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg) translateX(var(--tx)); opacity: 0; } }
 
     /* 人体模型ケン */
-    #ken-character { 
-        position: fixed; bottom: 0px; right: 30px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; 
-    }
+    #ken-character { position: fixed; bottom: 0px; right: 30px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; }
     .ken-bounce { animation: kenJump 0.4s ease; }
     @keyframes kenJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
     #ken-speech { background: #fff; color: #000; padding: 10px 15px; border-radius: 12px; font-weight: bold; font-size: 0.95rem; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 220px; text-align: center; }
     #ken-speech::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
-    #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; pointer-events: none; } /* svgの誤タッチを防止 */
 
     /* レスポンシブ対応 */
     @media (max-width: 1024px) {
@@ -202,12 +147,7 @@
         #mobile-header { display: flex; }
         
         #main-content { padding: 10px; padding-bottom: 20px; }
-        
-        #ken-character { 
-            position: relative; right: auto; bottom: auto;
-            margin: 30px auto 10px; 
-            transform: scale(0.9); transform-origin: center top; 
-        }
+        #ken-character { position: relative; right: auto; bottom: auto; margin: 30px auto 10px; transform: scale(0.9); transform-origin: center top; }
         #explanation-box { padding: 12px; padding-right: 12px; }
 
         #reaction-title { font-size: 1.4rem; }
@@ -281,16 +221,11 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title">
-        極・化学反応式
-        <span>GOKU-CHEMI</span>
-    </div>
-    
+    <div class="app-title">極・化学反応式<span>GOKU-CHEMI</span></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
     </div>
-
     <div class="section-title">📚 化学反応式リスト</div>
     <ul class="menu-list" id="menu-list"></ul>
     <div class="section-title">🎮 練習モード（ランダム出題）</div>
@@ -298,7 +233,6 @@
         <li class="menu-item practice-btn" onclick="startPractice('std')">🟢 標準トレーニング (5問)</li>
         <li class="menu-item practice-btn" onclick="startPractice('hard')">🔥 最難関チャレンジ (3問)</li>
     </ul>
-    
     <div class="section-title">⚙️ 設定</div>
     <ul class="menu-list">
         <li class="menu-item transfer-btn" onclick="openTransferModal()">🔄 データ引き継ぎ</li>
@@ -310,7 +244,6 @@
         <div class="mobile-title">GOKU-CHEMI</div>
         <button id="menu-toggle-btn" onclick="toggleMenu()">☰ メニュー</button>
     </div>
-
     <div id="reaction-header">
         <div>
             <h2 id="reaction-title">反応を選択してください</h2>
@@ -318,18 +251,12 @@
         </div>
         <div id="practice-status"></div>
     </div>
-
-    <div id="workspace-wrapper">
-        <div id="workspace"></div>
-    </div>
-
+    <div id="workspace-wrapper"><div id="workspace"></div></div>
     <div id="action-area">
         <div id="feedback"></div>
         <button id="check-btn" class="primary-btn" onclick="checkAnswer()">これで確認！</button>
         <div id="explanation-box"></div>
     </div>
-
-    <!-- ケンくん -->
     <div id="ken-character">
         <div id="ken-speech">さあ、実験を始めようか！</div>
         <div id="ken-image-container"></div>
@@ -340,21 +267,19 @@
 // --- ポイントシステム ---
 let userPoints = 0;
 const ranks = [
-    { pt: 0,    title: "🔰 見習い錬金術師" },
-    { pt: 100,  title: "🧪 駆け出しケミスト" },
-    { pt: 300,  title: "👨‍🔬 実験室のホープ" },
-    { pt: 600,  title: "🔬 一人前の研究者" },
-    { pt: 1000, title: "🎓 優秀な科学者" },
-    { pt: 1500, title: "🧬 真理の探求者" },
-    { pt: 2500, title: "⚡ 錬金術の達人" },
-    { pt: 4000, title: "👑 GOKU-CHEMI マスター" },
-    { pt: 6000, title: "🌟 伝説の錬金術師" },
+    { pt: 0,    title: "🔰 見習い錬金術師" }, { pt: 100,  title: "🧪 駆け出しケミスト" }, { pt: 300,  title: "👨‍🔬 実験室のホープ" },
+    { pt: 600,  title: "🔬 一人前の研究者" }, { pt: 1000, title: "🎓 優秀な科学者" }, { pt: 1500, title: "🧬 真理の探求者" },
+    { pt: 2500, title: "⚡ 錬金術の達人" }, { pt: 4000, title: "👑 GOKU-CHEMI マスター" }, { pt: 6000, title: "🌟 伝説の錬金術師" },
     { pt: 9999, title: "🌌 究極の創造神" }
 ];
 
 function initPoints() {
     let saved = localStorage.getItem('gokuChemiPoints');
-    if (saved !== null) { userPoints = parseInt(saved, 10); }
+    if (saved !== null) { 
+        let parsed = parseInt(saved, 10);
+        // ★ NaN混入防止の超安全装置
+        if (!isNaN(parsed) && parsed >= 0) userPoints = parsed; 
+    }
     updatePointUI();
 }
 function addPoints(pts) {
@@ -377,7 +302,7 @@ function generateTransferCode() {
 }
 function executeTransfer() {
     let input = document.getElementById('transfer-input').value.trim().toUpperCase();
-    if (input === "") return; // 空白入力時は何もしない
+    if (input === "") return; 
     if (!input.startsWith("GK") || input.length < 3) { alert("パスワードが正しくありません！"); return; }
     let baseStr = input.substring(2);
     let num = parseInt(baseStr, 36);
@@ -391,7 +316,6 @@ function executeTransfer() {
     closeTransferModal();
 }
 
-// モーダル制御（背景スクロール防止を追加）
 function openTransferModal() { 
     document.getElementById('my-transfer-code').innerText = generateTransferCode(); 
     document.getElementById('transfer-input').value = ""; 
@@ -422,53 +346,67 @@ function closeMenu() { document.getElementById('sidebar').classList.remove('open
 // --- 人体模型ケン SVG ---
 const kenBaseOpen = `
 <svg viewBox="0 0 100 120" style="width:100%; height:100%; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.3));" xmlns="http://www.w3.org/2000/svg">
-    <path d="M 50 65 C 25 65 25 115 50 115 Z" fill="#d32f2f" />
-    <path d="M 50 65 C 75 65 75 115 50 115 Z" fill="#ffdfc4" />
-    <path d="M 50 15 C 10 15 15 65 50 65 Z" fill="#f5f5f5" />
-    <path d="M 50 15 C 90 15 85 65 50 65 Z" fill="#ffdfc4" />
-    <path d="M 32 54 L 32 59 M 38 55 L 38 60 M 44 54 L 44 59" stroke="#bdbdbd" stroke-width="2" />
-    <path d="M 30 75 Q 40 70 50 73" stroke="#f5f5f5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M 28 85 Q 39 80 50 83" stroke="#f5f5f5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M 32 95 Q 41 91 50 93" stroke="#f5f5f5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M 44 75 A 4 4 0 0 0 36 75 A 4 4 0 0 0 44 83 Z" fill="#e91e63" /> 
-    <path d="M 42 86 Q 47 84 50 86 Q 53 90 45 92 Z" fill="#8d6e63" /> 
-    <rect x="36" y="96" width="28" height="5" rx="2.5" fill="#4db6ac" /> 
-    <rect x="38" y="103" width="24" height="6" rx="3" fill="#ffd54f" /> 
-    <line x1="50" y1="15" x2="50" y2="115" stroke="#424242" stroke-width="1.5" stroke-dasharray="3,3" />
+    <path d="M 50 65 C 20 65 20 115 50 115 Z" fill="#b71c1c" />
+    <path d="M 50 65 C 80 65 80 115 50 115 Z" fill="#ffe0b2" />
+    <path d="M 50 15 C 10 15 15 65 50 65 Z" fill="#e8f5e9" /> 
+    <path d="M 50 15 C 90 15 85 65 50 65 Z" fill="#ffe0b2" /> 
+    <path d="M 49 70 C 35 70 25 75 28 88 C 35 92 45 88 49 85 Z" fill="#a0522d" />
+    <path d="M 46 82 C 40 82 40 88 46 90 C 49 88 50 85 50 82 Z" fill="#ef5350" />
+    <path d="M 49 86 C 35 86 28 92 32 96 C 40 99 48 97 49 95 Z" fill="#3e2723" />
+    <path d="M 49 93 C 45 93 35 96 38 99 C 43 101 48 99 49 97 Z" fill="#f1f8e9" />
+    <path d="M 48 98 C 30 98 28 110 48 110" fill="none" stroke="#ffccbc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 33 104 C 40 107 45 104 48 106" fill="none" stroke="#ffab91" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 27 75 Q 38 72 48 74" stroke="#f5f5f5" stroke-width="1.5" fill="none" />
+    <path d="M 26 80 Q 38 77 48 79" stroke="#f5f5f5" stroke-width="1.5" fill="none" />
+    <path d="M 26 85 Q 38 82 48 84" stroke="#f5f5f5" stroke-width="1.5" fill="none" />
+    <circle cx="26" cy="75" r="1.5" fill="#cddc39" />
+    <circle cx="25" cy="80" r="1.5" fill="#cddc39" />
+    <circle cx="25" cy="85" r="1.5" fill="#cddc39" />
+    <circle cx="26" cy="90" r="1.5" fill="#cddc39" />
+    <line x1="50" y1="15" x2="50" y2="115" stroke="#424242" stroke-width="1" />
 `;
 const kenBaseClose = `</svg>`;
 
 const faceNormal = `
-    <ellipse cx="34" cy="40" rx="8" ry="9" fill="#424242" />
-    <circle cx="35" cy="39" r="2.5" fill="#fff" /> 
-    <circle cx="66" cy="40" r="6" fill="#6d4c41" />
-    <circle cx="67" cy="38" r="2" fill="#fff" /> 
-    <path d="M 54 52 Q 60 56 66 50" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <circle cx="32" cy="40" r="2.5" fill="#000" />
+    <circle cx="68" cy="40" r="5" fill="#4e342e" />
+    <circle cx="69" cy="38" r="1.5" fill="#fff" />
+    <path d="M 44 52 Q 50 56 56 52" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+`;
 const faceThink = `
-    <ellipse cx="34" cy="40" rx="8" ry="9" fill="#424242" />
-    <circle cx="35" cy="39" r="2.5" fill="#fff" /> 
-    <path d="M 62 40 Q 66 36 70 40" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M 54 54 Q 57 51 60 54 T 66 54" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <text x="75" y="25" font-size="22" fill="#fff" font-weight="bold" stroke="#000" stroke-width="1.5" paint-order="stroke">?</text>`;
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <path d="M 29 40 Q 32 36 35 40" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="68" cy="40" r="5" fill="#4e342e" />
+    <path d="M 65 40 Q 68 36 71 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 44 54 Q 48 51 50 54 T 56 54" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="75" y="25" font-size="22" fill="#fff" font-weight="bold" stroke="#000" stroke-width="1.5" paint-order="stroke">?</text>
+`;
 const faceError = `
-    <ellipse cx="34" cy="40" rx="8" ry="9" fill="#424242" />
-    <path d="M 71 37 L 65 41 L 71 45" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <ellipse cx="60" cy="54" rx="4" ry="5" fill="#6d4c41" />
-    <text x="75" y="25" font-size="22" fill="#ff3d00" font-weight="bold" stroke="#fff" stroke-width="1.5" paint-order="stroke">!</text>`;
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <path d="M 28 37 L 36 43 M 36 37 L 28 43" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 72 37 L 64 43 L 72 47" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="50" cy="54" rx="4" ry="5" fill="#4e342e" />
+    <text x="75" y="25" font-size="22" fill="#ff3d00" font-weight="bold" stroke="#fff" stroke-width="1.5" paint-order="stroke">!</text>
+`;
 const faceHint = `
-    <ellipse cx="34" cy="40" rx="8" ry="9" fill="#424242" />
-    <circle cx="35" cy="39" r="2.5" fill="#fff" /> 
-    <circle cx="66" cy="40" r="6" fill="#6d4c41" />
-    <circle cx="66" cy="40" r="3" fill="#ffeb3b" />
-    <path d="M 54 52 Q 60 55 66 52" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <text x="75" y="25" font-size="18">💡</text>`;
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <circle cx="32" cy="40" r="3" fill="#ffeb3b" />
+    <circle cx="68" cy="40" r="5" fill="#4e342e" />
+    <circle cx="68" cy="40" r="2.5" fill="#ffeb3b" />
+    <path d="M 44 52 Q 50 55 56 52" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="75" y="25" font-size="18">💡</text>
+`;
 const faceSuccess = `
-    <path d="M 28 42 Q 34 34 40 42" stroke="#424242" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M 60 42 Q 66 34 72 42" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M 54 50 Q 60 62 66 50 Z" fill="#ff8a80" stroke="#6d4c41" stroke-width="2" stroke-linejoin="round"/>
-    <circle cx="66" cy="48" r="4" fill="#ff8a80" opacity="0.6" />
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <path d="M 28 42 Q 32 36 36 42" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 64 42 Q 68 36 72 42" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 44 50 Q 50 62 56 50 Z" fill="#ff8a80" stroke="#4e342e" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="68" cy="48" r="4" fill="#ff8a80" opacity="0.6" />
+    <circle cx="32" cy="48" r="4" fill="#ff8a80" opacity="0.6" />
     <text x="8" y="25" font-size="16">✨</text>
-    <text x="78" y="45" font-size="16">✨</text>`;
+    <text x="78" y="45" font-size="16">✨</text>
+`;
 
 const kenEmotions = {
     normal:  { emoji: kenBaseOpen + faceNormal + kenBaseClose,   text: 'さあ、実験を始めようか！' },
@@ -491,20 +429,20 @@ function updateKen(emotion) {
 
 // --- 原子カラー定義 ---
 const atomStyles = {
-    H: { color: '#ffffff', text: '#000', border: '2px solid #ccc' },
-    O: { color: '#e53935', text: '#fff', border: '2px solid #b71c1c' }, 
-    C: { color: '#424242', text: '#fff', border: '2px solid #212121' },
-    N: { color: '#1e88e5', text: '#fff', border: '2px solid #1565c0' },
-    Cl:{ color: '#43a047', text: '#fff', border: '2px solid #2e7d32' },
-    S: { color: '#fdd835', text: '#000', border: '2px solid #fbc02d' },
-    Na:{ color: '#8e24aa', text: '#fff', border: '2px solid #6a1b9a' },
-    Mg:{ color: '#00acc1', text: '#000', border: '2px solid #00838f' },
-    Al:{ color: '#9575cd', text: '#fff', border: '2px solid #7e57c2' },
-    Fe:{ color: '#607d8b', text: '#fff', border: '2px solid #455a64' },
-    Cu:{ color: '#fb8c00', text: '#000', border: '2px solid #ef6c00' }, 
-    Ag:{ color: '#e0e0e0', text: '#000', border: '2px solid #9e9e9e' },
-    Ba:{ color: '#795548', text: '#fff', border: '2px solid #5d4037' },
-    Ca:{ color: '#d81b60', text: '#fff', border: '2px solid #c2185b' }
+    H: { color: '#ffffff', text: '#000', border: '2px solid #bdbdbd' }, 
+    O: { color: '#d32f2f', text: '#fff', border: '2px solid #b71c1c' }, 
+    C: { color: '#212121', text: '#fff', border: '2px solid #000000' }, 
+    N: { color: '#1976d2', text: '#fff', border: '2px solid #0d47a1' }, 
+    Cl:{ color: '#1de9b6', text: '#000', border: '2px solid #00bfa5' }, 
+    S: { color: '#ffeb3b', text: '#000', border: '2px solid #fbc02d' }, 
+    Na:{ color: '#9c27b0', text: '#fff', border: '2px solid #6a1b9a' }, 
+    Mg:{ color: '#2e7d32', text: '#fff', border: '2px solid #1b5e20' }, 
+    Al:{ color: '#b0bec5', text: '#000', border: '2px solid #78909c' }, 
+    Fe:{ color: '#795548', text: '#fff', border: '2px solid #4e342e' }, 
+    Cu:{ color: '#ffb74d', text: '#000', border: '2px solid #f57c00' }, 
+    Ag:{ color: '#e0e0e0', text: '#000', border: '2px solid #9e9e9e' }, 
+    Ba:{ color: '#cddc39', text: '#000', border: '2px solid #afb42b' }, 
+    Ca:{ color: '#757575', text: '#fff', border: '2px solid #424242' }  
 };
 const metals = ['Na', 'Mg', 'Al', 'Fe', 'Cu', 'Ag', 'Ba', 'Ca'];
 
@@ -583,11 +521,10 @@ function getMoleculeHtml(formula) {
     const layoutType = hasMetal ? 'ionic' : 'covalent';
     let html = `<div class="molecule-auto ${layoutType}">`;
     atoms.forEach(type => {
-        const style = atomStyles[type] || { color: '#FFF', text: '#000', border: '2px solid #ccc' };
+        const style = atomStyles[type] || { color: '#FFF', text: '#000', border: '2px solid #bdbdbd' };
         const tShadow = style.text === '#000' 
             ? '1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 0 2px 3px rgba(0,0,0,0.5)' 
             : '1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 3px rgba(0,0,0,0.8)';
-        
         html += `<div class="atom" style="background-color:${style.color}; color:${style.text}; border:${style.border}; text-shadow:${tShadow};">${type}</div>`;
     });
     html += `</div>`;
