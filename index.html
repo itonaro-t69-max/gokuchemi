@@ -62,31 +62,18 @@
         color: #fff; text-align: center;
         background: linear-gradient(135deg, #1a1d2d 0%, #0f111a 100%); letter-spacing: 2px;
     }
-    .app-title span {
-        display: block; font-size: 0.8rem; color: var(--accent-cyan);
-        letter-spacing: 4px; margin-top: 5px; font-weight: bold;
-    }
+    .app-title span { display: block; font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 4px; margin-top: 5px; font-weight: bold; }
     
-    /* ステータス（ポイント・称号）表示エリア */
-    #status-area {
-        background: rgba(0, 0, 0, 0.4); padding: 15px; text-align: center;
-        border-bottom: 1px solid #2a2e45;
-    }
+    #status-area { background: rgba(0, 0, 0, 0.4); padding: 15px; text-align: center; border-bottom: 1px solid #2a2e45; }
     #rank-title { font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 5px; }
     #point-display { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
     .pt-unit { font-size: 0.9rem; color: var(--text-sub); }
 
-    .section-title {
-        padding: 12px 15px; font-size: 0.85rem; color: var(--text-sub);
-        background-color: #141724; border-top: 1px solid #2a2e45; border-bottom: 1px solid #2a2e45; font-weight: bold;
-    }
+    .section-title { padding: 12px 15px; font-size: 0.85rem; color: var(--text-sub); background-color: #141724; border-top: 1px solid #2a2e45; border-bottom: 1px solid #2a2e45; font-weight: bold; }
     .section-title:first-of-type { border-top: none; }
     
     .menu-list { list-style: none; padding: 0; margin: 0; }
-    .menu-item {
-        padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.04);
-        cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: #d0d4e5;
-    }
+    .menu-item { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.04); cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: #d0d4e5; }
     .menu-item:hover, .menu-item:focus-visible { background-color: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); outline: none; }
     .menu-item.active { background-color: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border-left: 4px solid var(--accent-cyan); font-weight: bold; }
     .menu-item.practice-btn { color: var(--accent-gold); }
@@ -94,14 +81,8 @@
     .menu-item.transfer-btn { color: var(--text-main); font-weight: bold; background: rgba(255,255,255,0.05); }
 
     /* モバイル用オーバーレイ・ヘッダー */
-    #sidebar-overlay {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6); z-index: 900; opacity: 0; transition: opacity 0.3s;
-    }
-    #mobile-header {
-        display: none; justify-content: space-between; align-items: center;
-        padding: 10px 20px; background: #1a1d2d; border-bottom: 1px solid #2a2e45;
-    }
+    #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 900; opacity: 0; transition: opacity 0.3s; }
+    #mobile-header { display: none; justify-content: space-between; align-items: center; padding: 10px 20px; background: #1a1d2d; border-bottom: 1px solid #2a2e45; }
     .mobile-title { font-size: 1.2rem; font-weight: 900; color: var(--accent-cyan); letter-spacing: 2px; }
     #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
@@ -119,12 +100,10 @@
     }
     #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; transform-origin: center center; transition: transform 0.2s ease-out; }
 
-    /* 各物質ブロック */
     .substance-group { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); padding: 18px 15px; border-radius: 12px; border: 2px solid transparent; gap: 15px; min-width: 120px; transition: 0.3s; }
     .substance-group.error { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08); }
     .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; }
 
-    /* 化学式・係数エリア */
     .stage2-ui { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .coeff-controls { display: flex; gap: 15px; }
     .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; }
@@ -136,12 +115,14 @@
 
     select.formula-select { font-size: 1.6rem; padding: 10px 15px; background: #0f111a; font-weight: bold; color: #fff; border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; }
 
-    /* 粒子モデル */
+    /* ★ 粒子モデル（はみ出し防止の折り返し処理） ★ */
     .models-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 140px; min-height: 50px; }
     .molecule-auto { display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
-    .molecule-auto.covalent .atom { margin-left: -2px; }
-    .molecule-auto.covalent .atom:first-child { margin-left: 0; }
+    
+    .molecule-auto.covalent { flex-wrap: wrap; max-width: 80px; gap: 0; }
+    .molecule-auto.covalent .atom { margin: -2px; } /* 重なりを2pxに軽減し、折り返す */
     .molecule-auto.ionic { flex-wrap: wrap; gap: 2px; width: max-content; max-width: 65px; }
+    
     .atom { width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; flex-shrink: 0; box-shadow: inset -4px -4px 6px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.6); position: relative; z-index: 1; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 3px rgba(0,0,0,0.8); }
     .molecule-auto.covalent .atom { z-index: 2; }
     .molecule-auto.covalent .atom:nth-child(2) { z-index: 1; }
@@ -152,7 +133,7 @@
     .operator-st2 { margin-top: 110px; }
     .arrow { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
 
-    /* アクション・フィードバックエリア */
+    /* アクションエリア */
     #action-area { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 130px; }
     .primary-btn { padding: 16px 60px; font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: 2px; background-color: var(--accent-cyan); border: none; border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #009eb3, 0 10px 20px rgba(0,0,0,0.4); transition: 0.1s; width: fit-content; }
     .primary-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #009eb3, 0 2px 5px rgba(0,0,0,0.4); }
@@ -163,7 +144,11 @@
     .feedback-error { color: var(--accent-red); background: rgba(255, 61, 0, 0.1); padding: 5px 20px; border-radius: 8px; display: inline-block;}
     
     /* 解説ボックス */
-    #explanation-box { display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); padding: 15px; border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.6; max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; }
+    #explanation-box { 
+        display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); 
+        padding: 15px; padding-right: 140px; border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.6; 
+        max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; box-sizing: border-box;
+    }
     .exp-title { color: var(--accent-green); font-weight: 900; font-size: 1.1rem; margin-bottom: 5px; }
 
     .goku-clear-text { color: var(--accent-gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 196, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
@@ -205,6 +190,7 @@
         .operator-st2 { margin-top: 85px; }
         .primary-btn { padding: 12px 30px; font-size: 1.2rem; }
         #ken-character { right: 0; bottom: -15px; transform: scale(0.65); transform-origin: bottom right; }
+        #explanation-box { padding-right: 90px; }
     }
     @media (max-height: 500px) and (orientation: landscape) {
         #mobile-header { padding: 5px 15px; }
@@ -219,20 +205,19 @@
         .primary-btn { padding: 8px 25px; font-size: 1.1rem; box-shadow: 0 4px 0 #009eb3; }
         .primary-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #009eb3; }
         #feedback { font-size: 0.95rem; min-height: 25px; }
-        #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
+        #explanation-box { padding: 8px; padding-right: 60px; font-size: 0.85rem; margin-top: 5px; }
         #ken-character { transform: scale(0.4); right: -20px; bottom: -30px; }
     }
 </style>
 </head>
 <body>
 
-<!-- ★ チュートリアルモーダル ★ -->
 <div id="tutorial-modal" class="modal-overlay">
     <div class="modal-content">
         <h2>🧪 GOKU-CHEMI へようこそ！</h2>
         <p>このアプリは、化学反応式を「極める」ためのシミュレーターだ！</p>
         <ul class="tutorial-steps">
-            <li><b>STEP 1:</b> 正しい化学式を選ぼう！</li>
+            <li><b>STEP 1:</b> 正しい化学式を選ぼう！引っ掛け問題に注意だ。</li>
             <li><b>STEP 2:</b> ＋/－ボタンで係数を変えて、左右の原子数を合わせよう！</li>
             <li><b>CLEAR:</b> 最も簡単な整数比にできたらポイントGET！</li>
         </ul>
@@ -240,7 +225,6 @@
     </div>
 </div>
 
-<!-- ★ 引き継ぎモーダル ★ -->
 <div id="transfer-modal" class="modal-overlay">
     <div class="modal-content">
         <h2>⚙️ データ引き継ぎ</h2>
@@ -259,7 +243,6 @@
     </div>
 </div>
 
-<!-- モバイル用サイドバー背景 -->
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
@@ -268,7 +251,6 @@
         <span>GOKU-CHEMI</span>
     </div>
     
-    <!-- ★ ポイント・称号エリア ★ -->
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
@@ -302,7 +284,6 @@
         <div id="practice-status"></div>
     </div>
 
-    <!-- 自動縮小ラッパー -->
     <div id="workspace-wrapper">
         <div id="workspace"></div>
     </div>
@@ -310,22 +291,18 @@
     <div id="action-area">
         <div id="feedback"></div>
         <button id="check-btn" class="primary-btn" onclick="checkAnswer()">これで確認！</button>
-        <!-- 解説ボックス -->
         <div id="explanation-box"></div>
     </div>
 </main>
 
-<!-- 人体模型ケン -->
 <div id="ken-character">
     <div id="ken-speech">さあ、実験を始めようか！</div>
     <div id="ken-image-container"></div>
 </div>
 
 <script>
-// --- ★ ポイントシステム（ハイブリッド方式） ★ ---
+// --- ポイントシステム ---
 let userPoints = 0;
-
-// ★ 新しい称号データ（10段階） ★
 const ranks = [
     { pt: 0,    title: "🔰 見習い錬金術師" },
     { pt: 100,  title: "🧪 駆け出しケミスト" },
@@ -341,25 +318,19 @@ const ranks = [
 
 function initPoints() {
     let saved = localStorage.getItem('gokuChemiPoints');
-    if (saved !== null) {
-        userPoints = parseInt(saved, 10);
-    }
+    if (saved !== null) { userPoints = parseInt(saved, 10); }
     updatePointUI();
 }
-
 function addPoints(pts) {
     userPoints += pts; 
     localStorage.setItem('gokuChemiPoints', userPoints);
     updatePointUI();
 }
-
 function updatePointUI() {
     document.getElementById('point-display').innerHTML = `${userPoints} <span class="pt-unit">Pt</span>`;
     let currentRank = ranks[0].title;
     for (let i = 0; i < ranks.length; i++) {
-        if (userPoints >= ranks[i].pt) {
-            currentRank = ranks[i].title;
-        }
+        if (userPoints >= ranks[i].pt) currentRank = ranks[i].title;
     }
     document.getElementById('rank-title').innerText = currentRank;
 }
@@ -368,81 +339,55 @@ function generateTransferCode() {
     let num = (userPoints * 7) + 1234;
     return "GK" + num.toString(36).toUpperCase();
 }
-
 function executeTransfer() {
     let input = document.getElementById('transfer-input').value.trim().toUpperCase();
-    if (!input.startsWith("GK") || input.length < 3) {
-        alert("パスワードが正しくありません！");
-        return;
-    }
+    if (!input.startsWith("GK") || input.length < 3) { alert("パスワードが正しくありません！"); return; }
     let baseStr = input.substring(2);
     let num = parseInt(baseStr, 36);
-    if (isNaN(num)) {
-        alert("パスワードが正しくありません！");
-        return;
-    }
+    if (isNaN(num)) { alert("パスワードが正しくありません！"); return; }
     let rawPt = (num - 1234) / 7;
-    if (!Number.isInteger(rawPt) || rawPt < 0) {
-        alert("パスワードが正しくありません！");
-        return;
-    }
+    if (!Number.isInteger(rawPt) || rawPt < 0) { alert("パスワードが正しくありません！"); return; }
     userPoints = rawPt;
     localStorage.setItem('gokuChemiPoints', userPoints);
     updatePointUI();
     alert(`復元成功！ ${userPoints} Pt から再開します！`);
     closeTransferModal();
 }
+function openTransferModal() { document.getElementById('my-transfer-code').innerText = generateTransferCode(); document.getElementById('transfer-input').value = ""; document.getElementById('transfer-modal').style.display = 'flex'; closeMenu(); }
+function closeTransferModal() { document.getElementById('transfer-modal').style.display = 'none'; }
 
-function openTransferModal() {
-    document.getElementById('my-transfer-code').innerText = generateTransferCode();
-    document.getElementById('transfer-input').value = "";
-    document.getElementById('transfer-modal').style.display = 'flex';
-    closeMenu();
-}
-function closeTransferModal() {
-    document.getElementById('transfer-modal').style.display = 'none';
-}
-
-// --- チュートリアル表示（初回のみ） ---
+// --- チュートリアル ---
 function checkTutorial() {
-    if (!localStorage.getItem('gokuChemiTutorialDone')) {
-        document.getElementById('tutorial-modal').style.display = 'flex';
-    }
+    if (!localStorage.getItem('gokuChemiTutorialDone')) { document.getElementById('tutorial-modal').style.display = 'flex'; }
 }
 function closeTutorial() {
     document.getElementById('tutorial-modal').style.display = 'none';
     localStorage.setItem('gokuChemiTutorialDone', 'true');
 }
 
-function toggleMenu() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebar-overlay').classList.toggle('active');
-}
-function closeMenu() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebar-overlay').classList.remove('active');
-}
+function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
+function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
 
 // --- 人体模型ケン SVG ---
 const kenBaseOpen = `
 <svg viewBox="0 0 100 120" style="width:100%; height:100%; filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.5));" xmlns="http://www.w3.org/2000/svg">
-    <path d="M 50 60 C 15 60 10 120 50 120 Z" fill="#8e0000" />
-    <path d="M 50 60 C 85 60 90 120 50 120 Z" fill="#f5cbba" />
-    <path d="M 50 10 C 15 10 15 50 50 60 Z" fill="#dce775" />
-    <path d="M 50 10 C 85 10 85 50 50 60 Z" fill="#f5cbba" />
-    <ellipse cx="36" cy="74" rx="10" ry="15" fill="#d45d5c" />
-    <ellipse cx="64" cy="74" rx="10" ry="15" fill="#d45d5c" />
-    <circle cx="50" cy="80" r="6" fill="#ffcc80" stroke="#d32f2f" stroke-width="1" />
-    <path d="M 33 90 C 45 84 55 84 67 90 C 67 98 45 98 33 98 Z" fill="#4e342e" />
-    <rect x="33" y="99" width="34" height="6" rx="3" fill="#81c784" />
-    <rect x="35" y="106" width="30" height="10" rx="5" fill="#f48fb1" />
+    <path d="M 50 60 C 15 60 10 120 50 120 Z" fill="#b71c1c" />
+    <path d="M 50 60 C 85 60 90 120 50 120 Z" fill="#ffccbc" />
+    <path d="M 50 10 C 15 10 15 50 50 60 Z" fill="#f5f5f5" />
+    <path d="M 50 10 C 85 10 85 50 50 60 Z" fill="#ffccbc" />
+    <ellipse cx="36" cy="74" rx="10" ry="14" fill="#ef5350" />
+    <ellipse cx="64" cy="74" rx="10" ry="14" fill="#ef5350" />
+    <circle cx="50" cy="80" r="6" fill="#ffee58" stroke="#c62828" stroke-width="1" />
+    <path d="M 33 90 C 45 84 55 84 67 90 C 67 98 45 98 33 98 Z" fill="#5d4037" />
+    <rect x="33" y="99" width="34" height="5" rx="2.5" fill="#66bb6a" />
+    <rect x="36" y="105" width="28" height="9" rx="4" fill="#f48fb1" />
 `;
 const kenBaseClose = `</svg>`;
-const faceNormal = `<circle cx="34" cy="35" r="6" fill="#33691e" /><circle cx="34" cy="35" r="2" fill="#dce775" /><circle cx="66" cy="35" r="3" fill="#3e2723" /><path d="M 43 50 Q 50 54 57 50" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-const faceThink = `<circle cx="34" cy="35" r="6" fill="#33691e" /><circle cx="34" cy="35" r="2" fill="#dce775" /><line x1="62" y1="35" x2="70" y2="35" stroke="#3e2723" stroke-width="2" stroke-linecap="round"/><path d="M 43 52 Q 46 48 50 52 T 57 52" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><text x="75" y="25" font-size="20" fill="#fff" font-weight="bold">?</text>`;
-const faceError = `<line x1="30" y1="31" x2="38" y2="39" stroke="#33691e" stroke-width="2" stroke-linecap="round"/><line x1="38" y1="31" x2="30" y2="39" stroke="#33691e" stroke-width="2" stroke-linecap="round"/><line x1="62" y1="31" x2="70" y2="39" stroke="#3e2723" stroke-width="2" stroke-linecap="round"/><line x1="70" y1="31" x2="62" y2="39" stroke="#3e2723" stroke-width="2" stroke-linecap="round"/><path d="M 43 54 Q 50 48 57 54" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><text x="75" y="25" font-size="20" fill="#ff3d00" font-weight="bold">!</text>`;
-const faceHint = `<circle cx="34" cy="35" r="7" fill="#33691e" /><circle cx="34" cy="35" r="2.5" fill="#dce775" /><circle cx="66" cy="35" r="4" fill="#3e2723" /><path d="M 45 50 Q 50 53 55 50" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><text x="75" y="25" font-size="18" fill="#ffc400">💡</text>`;
-const faceSuccess = `<path d="M 30 37 Q 34 31 38 37" stroke="#33691e" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M 62 37 Q 66 31 70 37" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M 42 48 Q 50 62 58 48 Z" fill="#e57373" stroke="#3e2723" stroke-width="1" /><text x="10" y="25" font-size="15" fill="#ffc400">✨</text><text x="75" y="45" font-size="15" fill="#ffc400">✨</text>`;
+const faceNormal = `<circle cx="34" cy="35" r="5" fill="#424242" /><circle cx="34" cy="35" r="2" fill="#fff" /><circle cx="34" cy="35" r="1" fill="#000" /><circle cx="66" cy="35" r="3" fill="#3e2723" /><circle cx="67" cy="34" r="1" fill="#fff" /><path d="M 43 50 Q 50 54 57 50" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+const faceThink = `<circle cx="34" cy="35" r="5" fill="#424242" /><circle cx="34" cy="35" r="2" fill="#fff" /><circle cx="34" cy="35" r="1" fill="#000" /><line x1="62" y1="35" x2="70" y2="35" stroke="#3e2723" stroke-width="2" stroke-linecap="round"/><path d="M 43 52 Q 46 48 50 52 T 57 52" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><text x="75" y="25" font-size="20" fill="#fff" font-weight="bold">?</text>`;
+const faceError = `<line x1="30" y1="31" x2="38" y2="39" stroke="#424242" stroke-width="2" stroke-linecap="round"/><line x1="38" y1="31" x2="30" y2="39" stroke="#424242" stroke-width="2" stroke-linecap="round"/><line x1="62" y1="31" x2="70" y2="39" stroke="#3e2723" stroke-width="2" stroke-linecap="round"/><line x1="70" y1="31" x2="62" y2="39" stroke="#3e2723" stroke-width="2" stroke-linecap="round"/><path d="M 43 54 Q 50 48 57 54" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><text x="75" y="25" font-size="20" fill="#ff3d00" font-weight="bold">!</text>`;
+const faceHint = `<circle cx="34" cy="35" r="6" fill="#424242" /><circle cx="34" cy="35" r="2.5" fill="#fff" /><circle cx="34" cy="35" r="1.5" fill="#000" /><circle cx="66" cy="35" r="4" fill="#3e2723" /><circle cx="67" cy="34" r="1.5" fill="#fff" /><path d="M 45 50 Q 50 53 55 50" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><text x="75" y="25" font-size="18" fill="#ffc400">💡</text>`;
+const faceSuccess = `<path d="M 30 37 Q 34 31 38 37" stroke="#424242" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M 62 37 Q 66 31 70 37" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M 42 48 Q 50 62 58 48 Z" fill="#e57373" stroke="#3e2723" stroke-width="1" /><text x="10" y="25" font-size="15" fill="#ffc400">✨</text><text x="75" y="45" font-size="15" fill="#ffc400">✨</text>`;
 
 const kenEmotions = {
     normal:  { emoji: kenBaseOpen + faceNormal + kenBaseClose,   text: 'さあ、実験を始めようか！' },
@@ -577,6 +522,8 @@ function triggerCelebration() {
     }
 }
 
+// デバウンス処理を追加したスマートな画面フィット
+let resizeTimer;
 function fitWorkspace() {
     const wrapper = document.getElementById('workspace-wrapper');
     const workspace = document.getElementById('workspace');
@@ -595,8 +542,14 @@ function fitWorkspace() {
         workspace.style.transform = `scale(${scale})`;
     });
 }
-window.addEventListener('resize', () => setTimeout(fitWorkspace, 100));
-window.addEventListener('orientationchange', () => setTimeout(fitWorkspace, 300));
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitWorkspace, 100);
+});
+window.addEventListener('orientationchange', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitWorkspace, 300);
+});
 
 // --- 初期化・描画 ---
 window.onload = () => {
@@ -651,14 +604,58 @@ function loadPracticeQuestion() {
     setupReaction(q.reaction, q.pool);
 }
 
+// 意地悪なダミー生成ロジック
 function generateDistractors(correct, pool) {
     let options = new Set([correct]);
-    let shuffledPool = [...pool].sort(() => 0.5 - Math.random());
-    for (let f of shuffledPool) {
-        if (options.size >= 5) break;
-        options.add(f);
+    const commonErrors = {
+        'CO2': ['CO', 'CO3', 'C2O', 'O2'], 'H2O': ['HO', 'H2O2', 'OH', 'O2'], 'O2': ['O', 'O3', 'O4'],
+        'H2': ['H', 'H3', 'OH'], 'Cu': ['Cu2', 'CuO', 'C'], 'CuO': ['Cu2O', 'Cu', 'CO2'],
+        'Ag2O': ['AgO', 'Ag', 'AgO2'], 'Na2CO3': ['NaCO3', 'Na3CO3', 'NaHCO3'], 'NaHCO3': ['Na2CO3', 'NaH2CO3', 'NaCO3'],
+        'FeS': ['Fe2S', 'FeS2', 'Fe'], 'CuCl2': ['CuCl', 'Cu2Cl', 'Cl2'], 'MgCl2': ['MgCl', 'Mg2Cl', 'Mg'],
+        'C2H6O': ['C2H4O', 'CH4O', 'C2H6'], 'AlCl3': ['AlCl2', 'Al2Cl3', 'AlCl'], 'NH3': ['NH2', 'NH4', 'N2H3'],
+        'HNO3': ['HNO2', 'H2NO3', 'NO3'], 'Cu(NO3)2': ['CuNO3', 'Cu2(NO3)', 'Cu(NO2)2'], 'FeS2': ['FeS', 'Fe2S', 'Fe2S3'],
+        'SO2': ['SO', 'SO3', 'S2O'], 'H2S': ['HS', 'H2S2', 'S2'], 'CH4O': ['CH3O', 'C2H6O', 'CH4'],
+        'Al2O3': ['AlO', 'AlO2', 'Al3O2'], 'CaCO3': ['Ca2CO3', 'CaCO2', 'Ca(CO3)2'], 'CaCl2': ['CaCl', 'Ca2Cl', 'Ca'],
+        'H2SO4': ['HSO4', 'H2SO3', 'H3SO4'], 'Al(OH)3': ['AlOH', 'Al(OH)2', 'Al2(OH)3'], 'Al2(SO4)3': ['AlSO4', 'Al3(SO4)2', 'Al2SO4'],
+        'Fe2O3': ['FeO', 'FeO2', 'Fe3O4'], 'CO': ['C2O', 'CO2', 'C'], 'CH4': ['CH3', 'C2H4', 'CH5'],
+        'C3H8': ['C3H6', 'C4H8', 'C2H8'], 'C4H10': ['C4H8', 'C3H10', 'C5H10'], 'NO': ['N2O', 'NO2', 'N'],
+        'NO2': ['NO', 'N2O', 'NO3'], 'Ba(OH)2': ['BaOH', 'Ba2(OH)', 'Ba(OH)3'], 'BaSO4': ['Ba2SO4', 'BaSO3', 'Ba(SO4)2'],
+        'NaOH': ['Na2OH', 'Na(OH)2', 'NaO'], 'NaCl': ['Na2Cl', 'NaCl2', 'Na'], 'HCl': ['H2Cl', 'HCl2', 'Cl2'],
+        'Mg': ['Mg2', 'Mn', 'Mo'], 'Fe': ['Fe2', 'F', 'Fl'], 'C': ['C2', 'O', 'H'],
+        'Ag': ['Ag2', 'A', 'Ar'], 'Al': ['Al2', 'A', 'Am'], 'S': ['S2', 'Si', 'Se']
+    };
+    if (commonErrors[correct]) commonErrors[correct].forEach(d => options.add(d));
+
+    if (options.size < 5) {
+        let re = /([A-Z][a-z]*)(\d*)/g;
+        let match; let parts = [];
+        while ((match = re.exec(correct)) !== null) parts.push({ elem: match[1], num: match[2] ? parseInt(match[2]) : 1 });
+        if (parts.length > 0) {
+            for (let i = 0; i < 15 && options.size < 5; i++) {
+                let fake = "";
+                parts.forEach(p => {
+                    let n = p.num; let r = Math.random();
+                    if (r < 0.3) n += 1; else if (r < 0.6 && n > 1) n -= 1; else if (r < 0.8) n += 2;
+                    fake += p.elem + (n > 1 ? n : "");
+                });
+                if (fake !== correct && fake !== "") options.add(fake);
+            }
+        }
     }
-    return ['?', ...Array.from(options).sort()];
+    
+    // ★ 修正：それでも足りない分は全体のプールから補充 ★
+    if (options.size < 5) {
+        let shuffledPool = [...pool].sort(() => 0.5 - Math.random());
+        for (let f of shuffledPool) {
+            if (options.size >= 5) break;
+            options.add(f);
+        }
+    }
+
+    let arr = Array.from(options).filter(o => o !== correct);
+    arr = arr.sort(() => 0.5 - Math.random()).slice(0, 4);
+    arr.push(correct);
+    return ['?', ...arr.sort(() => 0.5 - Math.random())];
 }
 
 function setupReaction(reaction, pool) {
@@ -869,6 +866,7 @@ function checkStage2() {
         if(currentReactionData && currentReactionData.exp) {
             expBox.innerHTML = `<div class="exp-title">📖 反応の解説</div><div>${currentReactionData.exp}</div>`;
             expBox.style.display = 'block';
+            setTimeout(() => expBox.scrollIntoView({behavior: "smooth", block: "center"}), 100);
         }
 
         if (appMode.startsWith('practice')) {
