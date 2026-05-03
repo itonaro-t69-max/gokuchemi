@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>極・化学反応式 (GOKU-CHEM)</title>
+<title>極・化学反応式 (GOKU-CHEMI)</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -21,12 +21,35 @@
         background-color: var(--bg-dark);
         color: var(--text-main);
         font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
-        display: flex;
-        height: 100vh; /* Fallback */
-        height: 100dvh; /* iOS Safari対応 */
-        overflow: hidden;
+        display: flex; height: 100vh; height: 100dvh; overflow: hidden;
     }
     
+    /* モーダル共通 (チュートリアル＆引き継ぎ) */
+    .modal-overlay {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85); z-index: 2000;
+        justify-content: center; align-items: center;
+    }
+    .modal-content {
+        background: var(--bg-panel); border: 2px solid var(--accent-cyan);
+        border-radius: 15px; padding: 25px 20px; max-width: 90%; width: 420px;
+        box-shadow: 0 0 40px rgba(0,229,255,0.4); text-align: center;
+        animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .modal-content h2 { color: var(--accent-cyan); margin-top: 0; font-size: 1.5rem; }
+    .modal-content p { font-size: 1rem; line-height: 1.5; margin-bottom: 20px; }
+    
+    /* チュートリアル用 */
+    .tutorial-steps { text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+    .tutorial-steps li { margin-bottom: 10px; font-size: 0.95rem; line-height: 1.4; list-style-type: none; }
+    .tutorial-steps li::before { content: '🧪'; margin-right: 8px; }
+
+    /* 引き継ぎ用 */
+    .transfer-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+    .transfer-code { font-size: 2rem; font-weight: 900; color: var(--accent-gold); letter-spacing: 3px; user-select: all; }
+    .transfer-input { width: 80%; padding: 10px; font-size: 1.2rem; font-weight: bold; text-align: center; border-radius: 8px; border: 2px solid #4a4e69; background: #0f111a; color: #fff; text-transform: uppercase; margin-bottom: 10px; }
+    .transfer-input:focus { outline: none; border-color: var(--accent-cyan); }
+
     /* サイドバー（メニュー） */
     #sidebar {
         width: 280px; background-color: var(--bg-panel);
@@ -35,19 +58,27 @@
         transition: transform 0.3s ease;
     }
     .app-title {
-        padding: 20px 15px; font-size: 1.4rem; font-weight: 900;
-        color: #fff; text-align: center; border-bottom: 1px solid #2a2e45;
-        background: linear-gradient(135deg, #1a1d2d 0%, #0f111a 100%);
-        letter-spacing: 2px;
+        padding: 20px 15px 15px; font-size: 1.4rem; font-weight: 900;
+        color: #fff; text-align: center;
+        background: linear-gradient(135deg, #1a1d2d 0%, #0f111a 100%); letter-spacing: 2px;
     }
     .app-title span {
         display: block; font-size: 0.8rem; color: var(--accent-cyan);
         letter-spacing: 4px; margin-top: 5px; font-weight: bold;
     }
+    
+    /* ★ ステータス（ポイント・称号）表示エリア ★ */
+    #status-area {
+        background: rgba(0, 0, 0, 0.4); padding: 15px; text-align: center;
+        border-bottom: 1px solid #2a2e45;
+    }
+    #rank-title { font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 5px; }
+    #point-display { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
+    .pt-unit { font-size: 0.9rem; color: var(--text-sub); }
+
     .section-title {
         padding: 12px 15px; font-size: 0.85rem; color: var(--text-sub);
-        background-color: #141724; border-top: 1px solid #2a2e45; border-bottom: 1px solid #2a2e45;
-        font-weight: bold;
+        background-color: #141724; border-top: 1px solid #2a2e45; border-bottom: 1px solid #2a2e45; font-weight: bold;
     }
     .section-title:first-of-type { border-top: none; }
     
@@ -56,15 +87,11 @@
         padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.04);
         cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: #d0d4e5;
     }
-    .menu-item:hover, .menu-item:focus-visible {
-        background-color: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); outline: none;
-    }
-    .menu-item.active {
-        background-color: rgba(0, 229, 255, 0.15); color: var(--accent-cyan);
-        border-left: 4px solid var(--accent-cyan); font-weight: bold;
-    }
+    .menu-item:hover, .menu-item:focus-visible { background-color: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); outline: none; }
+    .menu-item.active { background-color: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border-left: 4px solid var(--accent-cyan); font-weight: bold; }
     .menu-item.practice-btn { color: var(--accent-gold); }
     .menu-item.practice-btn:hover { background-color: rgba(255, 196, 0, 0.15); }
+    .menu-item.transfer-btn { color: var(--text-main); font-weight: bold; background: rgba(255,255,255,0.05); }
 
     /* モバイル用オーバーレイ・ヘッダー */
     #sidebar-overlay {
@@ -76,167 +103,95 @@
         padding: 10px 20px; background: #1a1d2d; border-bottom: 1px solid #2a2e45;
     }
     .mobile-title { font-size: 1.2rem; font-weight: 900; color: var(--accent-cyan); letter-spacing: 2px; }
-    #menu-toggle-btn {
-        background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px;
-        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;
-    }
+    #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
     /* メインエリア */
-    #main-content {
-        flex: 1; display: flex; flex-direction: column; padding: 20px; overflow: hidden; position: relative;
-    }
-    #reaction-header {
-        margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end;
-    }
+    #main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow: hidden; position: relative; }
+    #reaction-header { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
     #reaction-title { font-size: 1.8rem; margin: 0 0 5px 0; font-weight: 800; }
-    .instruction {
-        color: var(--accent-cyan); font-size: 1.1rem; margin: 0; font-weight: bold;
-        background: rgba(0, 229, 255, 0.1); display: inline-block; padding: 5px 15px; border-radius: 20px;
-    }
-    #practice-status {
-        color: var(--accent-gold); font-size: 1.2rem; font-weight: bold;
-        text-shadow: 0 0 8px rgba(255, 196, 0, 0.3);
-    }
+    .instruction { color: var(--accent-cyan); font-size: 1.1rem; margin: 0; font-weight: bold; background: rgba(0, 229, 255, 0.1); display: inline-block; padding: 5px 15px; border-radius: 20px; }
+    #practice-status { color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 8px rgba(255, 196, 0, 0.3); }
 
     /* 学習エリア */
     #workspace-wrapper {
-        flex: 1; width: 100%; background: #141724;
-        border: 2px solid #2a2e45; border-radius: 12px;
-        display: flex; justify-content: center; align-items: flex-start;
-        overflow: hidden; padding: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        flex: 1; width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px;
+        display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
     }
-    #workspace {
-        display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap;
-        gap: 12px; transform-origin: center top; transition: transform 0.2s ease-out;
-    }
+    #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; transform-origin: center center; transition: transform 0.2s ease-out; }
 
-    /* 各物質のブロック */
-    .substance-group {
-        display: flex; flex-direction: column; align-items: center;
-        background: rgba(255,255,255,0.04); padding: 18px 15px;
-        border-radius: 12px; border: 2px solid transparent;
-        gap: 15px; min-width: 120px; transition: 0.3s;
-    }
-    .substance-group.error {
-        border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08);
-    }
-    .substance-name {
-        font-size: 0.9rem; font-weight: bold; color: var(--text-main);
-        background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap;
-    }
+    /* 各物質ブロック */
+    .substance-group { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); padding: 18px 15px; border-radius: 12px; border: 2px solid transparent; gap: 15px; min-width: 120px; transition: 0.3s; }
+    .substance-group.error { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08); }
+    .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; }
 
     /* 化学式・係数エリア */
     .stage2-ui { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .coeff-controls { display: flex; gap: 15px; }
-    .coeff-btn {
-        width: 44px; height: 44px;
-        border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05);
-        color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer;
-        display: flex; justify-content: center; align-items: center; transition: 0.1s;
-    }
+    .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; }
     .coeff-btn:hover, .coeff-btn:active { background: var(--accent-cyan); color: #000; transform: scale(1.05); }
-    
     .formula-display { display: flex; align-items: baseline; }
     .big-coeff { font-size: 3rem; font-weight: 900; color: var(--accent-gold); margin-right: 2px; line-height: 1; }
     .hidden-coeff { color: rgba(255,255,255,0.1); }
     .chem-formula { font-size: 2.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; }
 
-    select.formula-select {
-        font-size: 1.6rem; padding: 10px 15px; background: #0f111a; font-weight: bold;
-        color: #fff; border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer;
-    }
+    select.formula-select { font-size: 1.6rem; padding: 10px 15px; background: #0f111a; font-weight: bold; color: #fff; border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; }
 
-    /* 粒子モデル */
-    .models-container {
-        display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
-        max-width: 140px; min-height: 50px;
-    }
-    .molecule-auto {
-        display: flex; align-items: center; justify-content: center;
-        background: rgba(0,0,0,0.3); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);
-    }
-    .molecule-auto.covalent .atom { margin-left: -8px; }
+    /* 粒子モデル（重なり軽減版） */
+    .models-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 140px; min-height: 50px; }
+    .molecule-auto { display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+    .molecule-auto.covalent .atom { margin-left: -2px; }
     .molecule-auto.covalent .atom:first-child { margin-left: 0; }
     .molecule-auto.ionic { flex-wrap: wrap; gap: 2px; width: max-content; max-width: 65px; }
-    
-    .atom {
-        width: 30px; height: 30px; border-radius: 50%;
-        display: flex; justify-content: center; align-items: center;
-        font-weight: bold; font-size: 13px; flex-shrink: 0;
-        box-shadow: inset -4px -4px 6px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.6);
-        position: relative; z-index: 1; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    }
+    .atom { width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; flex-shrink: 0; box-shadow: inset -4px -4px 6px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.6); position: relative; z-index: 1; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 3px rgba(0,0,0,0.8); }
     .molecule-auto.covalent .atom { z-index: 2; }
     .molecule-auto.covalent .atom:nth-child(2) { z-index: 1; }
     .molecule-auto.covalent .atom:nth-child(3) { z-index: 0; }
 
-    /* 演算子 */
     .operator { font-size: 2.8rem; font-weight: 900; color: #5a5e7a; align-self: flex-start; }
     .operator-st1 { margin-top: 60px; }
     .operator-st2 { margin-top: 110px; }
     .arrow { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
 
-    /* アクションエリア */
-    #action-area {
-        margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 110px;
-    }
-    .primary-btn {
-        padding: 16px 60px; font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: 2px;
-        background-color: var(--accent-cyan); border: none; border-radius: 40px; cursor: pointer;
-        box-shadow: 0 6px 0 #009eb3, 0 10px 20px rgba(0,0,0,0.4); transition: 0.1s;
-    }
+    /* アクション・フィードバックエリア */
+    #action-area { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 130px; }
+    .primary-btn { padding: 16px 60px; font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: 2px; background-color: var(--accent-cyan); border: none; border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #009eb3, 0 10px 20px rgba(0,0,0,0.4); transition: 0.1s; width: fit-content; }
     .primary-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #009eb3, 0 2px 5px rgba(0,0,0,0.4); }
     .primary-btn.next-btn { background-color: var(--accent-gold); box-shadow: 0 6px 0 #cc9d00; }
     .primary-btn.next-btn:active { box-shadow: 0 0 0 #cc9d00; }
     
-    #feedback { font-size: 1.1rem; text-align: center; line-height: 1.4; min-height: 35px; font-weight: bold; width: 100%; }
-    .feedback-error { color: var(--accent-red); background: rgba(255, 61, 0, 0.1); padding: 5px 20px; border-radius: 8px;}
+    #feedback { font-size: 1.1rem; text-align: center; line-height: 1.4; font-weight: bold; width: 100%; }
+    .feedback-error { color: var(--accent-red); background: rgba(255, 61, 0, 0.1); padding: 5px 20px; border-radius: 8px; display: inline-block;}
     
-    .goku-clear-text {
-        color: var(--accent-gold); font-size: 2rem; font-weight: 900; letter-spacing: 2px;
-        text-shadow: 0 0 20px rgba(255, 196, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5);
-        animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-    @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+    /* 解説ボックス */
+    #explanation-box { display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); padding: 15px; border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.6; max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; }
+    .exp-title { color: var(--accent-green); font-weight: 900; font-size: 1.1rem; margin-bottom: 5px; }
+
+    .goku-clear-text { color: var(--accent-gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 196, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
     @keyframes successBorder { 0% { border-color: #2a2e45; box-shadow: inset 0 0 0 transparent; } 50% { border-color: var(--accent-gold); box-shadow: inset 0 0 50px rgba(255, 196, 0, 0.3); } 100% { border-color: #2a2e45; box-shadow: inset 0 0 10px rgba(255, 196, 0, 0.1); } }
     .glow-effect { animation: successBorder 1.5s ease-out; }
     .particle { position: absolute; width: 12px; height: 12px; pointer-events: none; z-index: 100; animation: fall linear forwards; }
     @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg) translateX(var(--tx)); opacity: 0; } }
 
     /* 人体模型ケン */
-    #ken-character {
-        position: fixed; bottom: 0px; right: 30px;
-        display: flex; flex-direction: column; align-items: center;
-        z-index: 100; transition: transform 0.3s;
-    }
+    #ken-character { position: fixed; bottom: 0px; right: 30px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; }
     .ken-bounce { animation: kenJump 0.4s ease; }
     @keyframes kenJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-    #ken-speech {
-        background: #fff; color: #000; padding: 10px 15px; border-radius: 12px;
-        font-weight: bold; font-size: 0.95rem; margin-bottom: 12px; position: relative;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 220px; text-align: center;
-    }
+    #ken-speech { background: #fff; color: #000; padding: 10px 15px; border-radius: 12px; font-weight: bold; font-size: 0.95rem; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 220px; text-align: center; }
     #ken-speech::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
     #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; }
 
-    /* ★ iPad / スマートフォン用レスポンシブ対応 ★ */
+    /* レスポンシブ */
     @media (max-width: 1024px) {
-        /* ドロワーメニュー化 */
-        #sidebar {
-            position: fixed; left: -280px; height: 100%;
-        }
+        #sidebar { position: fixed; left: -280px; height: 100%; }
         #sidebar.open { transform: translateX(280px); }
         #sidebar-overlay { display: block; pointer-events: none; }
         #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
         #mobile-header { display: flex; }
         #main-content { padding: 10px; }
-        
-        /* タイトル・説明の縮小 */
         #reaction-title { font-size: 1.4rem; }
         .instruction { font-size: 0.95rem; padding: 3px 10px; }
         #practice-status { font-size: 1rem; }
-
-        /* ワークスペース内の無駄な余白を減らし、縮小率を改善 */
         #workspace { gap: 6px; }
         .substance-group { padding: 10px 8px; gap: 10px; min-width: 80px; }
         .substance-name { font-size: 0.75rem; padding: 4px 6px; }
@@ -248,14 +203,64 @@
         .operator { font-size: 1.6rem; }
         .operator-st1 { margin-top: 45px; }
         .operator-st2 { margin-top: 85px; }
-        
-        /* ボタンとケンくんの調整 */
         .primary-btn { padding: 12px 30px; font-size: 1.2rem; }
         #ken-character { right: 0; bottom: -15px; transform: scale(0.65); transform-origin: bottom right; }
+    }
+    @media (max-height: 500px) and (orientation: landscape) {
+        #mobile-header { padding: 5px 15px; }
+        .mobile-title { font-size: 1rem; }
+        #reaction-header { margin-bottom: 5px; flex-direction: row; align-items: center; }
+        #reaction-title { font-size: 1.2rem; margin: 0; margin-right: 10px; }
+        .instruction { font-size: 0.8rem; padding: 2px 8px; }
+        #practice-status { font-size: 0.9rem; }
+        #workspace-wrapper { padding: 5px 0; border-width: 1px; }
+        .substance-group { padding: 8px 5px; gap: 5px; }
+        #action-area { margin-top: 5px; min-height: 50px; gap: 5px; }
+        .primary-btn { padding: 8px 25px; font-size: 1.1rem; box-shadow: 0 4px 0 #009eb3; }
+        .primary-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #009eb3; }
+        #feedback { font-size: 0.95rem; min-height: 25px; }
+        #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
+        #ken-character { transform: scale(0.4); right: -20px; bottom: -30px; }
     }
 </style>
 </head>
 <body>
+
+<!-- ★ チュートリアルモーダル ★ -->
+<div id="tutorial-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>🧪 GOKU-CHEMI へようこそ！</h2>
+        <p>このアプリは、化学反応式を「極める」ためのシミュレーターだ！</p>
+        <ul class="tutorial-steps">
+            <li><b>STEP 1:</b> 正しい化学式を選ぼう！</li>
+            <li><b>STEP 2:</b> ＋/－ボタンで係数を変えて、左右の原子数を合わせよう！</li>
+            <li><b>CLEAR:</b> 最も簡単な整数比にできたらポイントGET！</li>
+        </ul>
+        <button class="primary-btn" style="width:100%; margin-top:10px;" onclick="closeTutorial()">実験を開始する！</button>
+    </div>
+</div>
+
+<!-- ★ 引き継ぎモーダル ★ -->
+<div id="transfer-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>⚙️ データ引き継ぎ</h2>
+        <p>今のポイントを別の端末に引き継げるぞ！</p>
+        
+        <div class="transfer-box">
+            <div style="font-size: 0.9rem; margin-bottom: 5px;">あなたの引き継ぎパスワード</div>
+            <div class="transfer-code" id="my-transfer-code">------</div>
+            <div style="font-size: 0.8rem; color: #ccc; margin-top: 5px;">※このコードをメモしてね！</div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <div style="font-size: 0.9rem; margin-bottom: 5px;">別の端末から引き継ぐ場合</div>
+            <input type="text" id="transfer-input" class="transfer-input" placeholder="パスワードを入力" maxlength="6">
+            <button class="primary-btn" style="width:100%; font-size: 1.1rem; padding: 10px;" onclick="executeTransfer()">復元する</button>
+        </div>
+        
+        <button style="margin-top:20px; background:transparent; border:none; color:var(--text-sub); text-decoration:underline; cursor:pointer;" onclick="closeTransferModal()">閉じる</button>
+    </div>
+</div>
 
 <!-- モバイル用サイドバー背景 -->
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
@@ -263,8 +268,15 @@
 <nav id="sidebar">
     <div class="app-title">
         極・化学反応式
-        <span>GOKU-CHEM</span>
+        <span>GOKU-CHEMI</span>
     </div>
+    
+    <!-- ★ ポイント・称号エリア ★ -->
+    <div id="status-area">
+        <div id="rank-title">見習い錬金術師</div>
+        <div id="point-display">0 <span class="pt-unit">Pt</span></div>
+    </div>
+
     <div class="section-title">📚 化学反応式リスト</div>
     <ul class="menu-list" id="menu-list"></ul>
     <div class="section-title">🎮 練習モード（ランダム出題）</div>
@@ -272,12 +284,16 @@
         <li class="menu-item practice-btn" onclick="startPractice('std')">🟢 標準トレーニング (5問)</li>
         <li class="menu-item practice-btn" onclick="startPractice('hard')">🔥 最難関チャレンジ (3問)</li>
     </ul>
+    
+    <div class="section-title">⚙️ 設定</div>
+    <ul class="menu-list">
+        <li class="menu-item transfer-btn" onclick="openTransferModal()">🔄 データ引き継ぎ</li>
+    </ul>
 </nav>
 
 <main id="main-content">
-    <!-- モバイル用ヘッダー -->
     <div id="mobile-header">
-        <div class="mobile-title">GOKU-CHEM</div>
+        <div class="mobile-title">GOKU-CHEMI</div>
         <button id="menu-toggle-btn" onclick="toggleMenu()">☰ メニュー</button>
     </div>
 
@@ -295,8 +311,10 @@
     </div>
 
     <div id="action-area">
-        <button id="check-btn" class="primary-btn" onclick="checkAnswer()">これで確認！</button>
         <div id="feedback"></div>
+        <button id="check-btn" class="primary-btn" onclick="checkAnswer()">これで確認！</button>
+        <!-- 解説ボックス -->
+        <div id="explanation-box"></div>
     </div>
 </main>
 
@@ -307,7 +325,104 @@
 </div>
 
 <script>
-// --- ★ メニュー開閉（モバイル対応） ★ ---
+// --- ★ ポイントシステム（ハイブリッド方式） ★ ---
+let userPoints = 0;
+
+// 称号の定義
+const ranks = [
+    { pt: 0, title: "🔰 見習い錬金術師" },
+    { pt: 100, title: "🧪 駆け出しケミスト" },
+    { pt: 500, title: "🔬 一人前の研究者" },
+    { pt: 1000, title: "🎓 ベテラン科学者" },
+    { pt: 3000, title: "👑 GOKU-CHEMI マスター" },
+    { pt: 5000, title: "🌟 伝説の錬金術師" }
+];
+
+function initPoints() {
+    let saved = localStorage.getItem('gokuChemiPoints');
+    if (saved !== null) {
+        userPoints = parseInt(saved, 10);
+    }
+    updatePointUI();
+}
+
+function addPoints(pts) {
+    userPoints += pt;
+    localStorage.setItem('gokuChemiPoints', userPoints);
+    updatePointUI();
+}
+
+function updatePointUI() {
+    document.getElementById('point-display').innerHTML = `${userPoints} <span class="pt-unit">Pt</span>`;
+    
+    // 称号の計算
+    let currentRank = ranks[0].title;
+    for (let i = 0; i < ranks.length; i++) {
+        if (userPoints >= ranks[i].pt) {
+            currentRank = ranks[i].title;
+        }
+    }
+    document.getElementById('rank-title').innerText = currentRank;
+}
+
+// パスワードの生成・復元（簡易的な暗号化）
+// ルール: "GK" + ((ポイント * 7) + 1234) を36進数に変換して大文字にする
+function generateTransferCode() {
+    let num = (userPoints * 7) + 1234;
+    return "GK" + num.toString(36).toUpperCase();
+}
+
+function executeTransfer() {
+    let input = document.getElementById('transfer-input').value.trim().toUpperCase();
+    if (!input.startsWith("GK") || input.length < 3) {
+        alert("パスワードが正しくありません！");
+        return;
+    }
+    
+    let baseStr = input.substring(2);
+    let num = parseInt(baseStr, 36);
+    
+    if (isNaN(num)) {
+        alert("パスワードが正しくありません！");
+        return;
+    }
+    
+    let rawPt = (num - 1234) / 7;
+    if (!Number.isInteger(rawPt) || rawPt < 0) {
+        alert("パスワードが正しくありません！");
+        return;
+    }
+    
+    // 復元成功
+    userPoints = rawPt;
+    localStorage.setItem('gokuChemiPoints', userPoints);
+    updatePointUI();
+    alert(`復元成功！ ${userPoints} Pt から再開します！`);
+    closeTransferModal();
+}
+
+function openTransferModal() {
+    document.getElementById('my-transfer-code').innerText = generateTransferCode();
+    document.getElementById('transfer-input').value = "";
+    document.getElementById('transfer-modal').style.display = 'flex';
+    closeMenu();
+}
+function closeTransferModal() {
+    document.getElementById('transfer-modal').style.display = 'none';
+}
+
+
+// --- チュートリアル表示（初回のみ） ---
+function checkTutorial() {
+    if (!localStorage.getItem('gokuChemiTutorialDone')) {
+        document.getElementById('tutorial-modal').style.display = 'flex';
+    }
+}
+function closeTutorial() {
+    document.getElementById('tutorial-modal').style.display = 'none';
+    localStorage.setItem('gokuChemiTutorialDone', 'true');
+}
+
 function toggleMenu() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebar-overlay').classList.toggle('active');
@@ -317,7 +432,7 @@ function closeMenu() {
     document.getElementById('sidebar-overlay').classList.remove('active');
 }
 
-// --- ★ 人体模型ケン SVG ★ ---
+// --- 人体模型ケン SVG ---
 const kenBaseOpen = `
 <svg viewBox="0 0 100 120" style="width:100%; height:100%; filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.5));" xmlns="http://www.w3.org/2000/svg">
     <path d="M 50 60 C 15 60 10 120 50 120 Z" fill="#8e0000" />
@@ -359,53 +474,53 @@ function updateKen(emotion) {
 
 // --- データ定義 ---
 const atomStyles = {
-    H: { color: '#ffffff', text: '#111' }, O: { color: '#ff3d00', text: '#fff' },
+    H: { color: '#ffffff', text: '#fff' }, O: { color: '#ff3d00', text: '#fff' },
     C: { color: '#2a2a2a', text: '#fff', border: '1px solid #555' }, N: { color: '#2979ff', text: '#fff' },
-    Cl: { color: '#76ff03', text: '#111' }, S: { color: '#ffea00', text: '#111' },
+    Cl: { color: '#76ff03', text: '#fff' }, S: { color: '#ffea00', text: '#fff' },
     Na: { color: '#00b0ff', text: '#fff' }, Mg: { color: '#f50057', text: '#fff' },
-    Al: { color: '#90caf9', text: '#111' }, Fe: { color: '#546e7a', text: '#fff' },
-    Cu: { color: '#d84315', text: '#fff' }, Ag: { color: '#e0e0e0', text: '#111' },
-    Ba: { color: '#d500f9', text: '#fff' }, Ca: { color: '#ffb300', text: '#111' }
+    Al: { color: '#90caf9', text: '#fff' }, Fe: { color: '#546e7a', text: '#fff' },
+    Cu: { color: '#d84315', text: '#fff' }, Ag: { color: '#e0e0e0', text: '#fff' },
+    Ba: { color: '#d500f9', text: '#fff' }, Ca: { color: '#ffb300', text: '#fff' }
 };
 const metals = ['Na', 'Mg', 'Al', 'Fe', 'Cu', 'Ag', 'Ba', 'Ca'];
 
 const standardReactions = [
-    { title: "炭酸水素ナトリウムの熱分解", left: [{n:"炭酸水素ナトリウム", f:"NaHCO3"}], right: [{n:"炭酸ナトリウム", f:"Na2CO3"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}] },
-    { title: "酸化銀の熱分解", left: [{n:"酸化銀", f:"Ag2O"}], right: [{n:"銀", f:"Ag"}, {n:"酸素", f:"O2"}] },
-    { title: "水の電気分解", left: [{n:"水", f:"H2O"}], right: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}] },
-    { title: "塩化銅の電気分解", left: [{n:"塩化銅", f:"CuCl2"}], right: [{n:"銅", f:"Cu"}, {n:"塩素", f:"Cl2"}] },
-    { title: "塩化マグネシウムの電気分解", left: [{n:"塩化マグネシウム", f:"MgCl2"}], right: [{n:"マグネシウム", f:"Mg"}, {n:"塩素", f:"Cl2"}] },
-    { title: "鉄と硫黄の化合", left: [{n:"鉄", f:"Fe"}, {n:"硫黄", f:"S"}], right: [{n:"硫化鉄", f:"FeS"}] },
-    { title: "銅と硫黄の化合", left: [{n:"銅", f:"Cu"}, {n:"硫黄", f:"S"}], right: [{n:"硫化銅", f:"Cu2S"}] },
-    { title: "水素と酸素の化合", left: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}] },
-    { title: "銅の酸化", left: [{n:"銅", f:"Cu"}, {n:"酸素", f:"O2"}], right: [{n:"酸化銅", f:"CuO"}] },
-    { title: "マグネシウムの燃焼", left: [{n:"マグネシウム", f:"Mg"}, {n:"酸素", f:"O2"}], right: [{n:"酸化マグネシウム", f:"MgO"}] },
-    { title: "炭素の燃焼", left: [{n:"炭素", f:"C"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}] },
-    { title: "鉄の燃焼", left: [{n:"鉄", f:"Fe"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄", f:"FeO"}] },
-    { title: "酸化銅の炭素による還元", left: [{n:"酸化銅", f:"CuO"}, {n:"炭素", f:"C"}], right: [{n:"銅", f:"Cu"}, {n:"二酸化炭素", f:"CO2"}] },
-    { title: "酸化銅の水素による還元", left: [{n:"酸化銅", f:"CuO"}, {n:"水素", f:"H2"}], right: [{n:"銅", f:"Cu"}, {n:"水", f:"H2O"}] },
-    { title: "メタンの燃焼", left: [{n:"メタン", f:"CH4"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}] },
-    { title: "エタノールの燃焼", left: [{n:"エタノール", f:"C2H6O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}] },
-    { title: "塩酸と水酸化ナトリウム", left: [{n:"塩酸", f:"HCl"}, {n:"水酸化ナトリウム", f:"NaOH"}], right: [{n:"塩化ナトリウム", f:"NaCl"}, {n:"水", f:"H2O"}] },
-    { title: "硫酸と水酸化バリウム", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化バリウム", f:"Ba(OH)2"}], right: [{n:"硫酸バリウム", f:"BaSO4"}, {n:"水", f:"H2O"}] }
+    { title: "炭酸水素ナトリウムの熱分解", left: [{n:"炭酸水素ナトリウム", f:"NaHCO3"}], right: [{n:"炭酸ナトリウム", f:"Na2CO3"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "炭酸水素ナトリウム（ベーキングパウダーの主成分）を加熱すると、炭酸ナトリウム、水、二酸化炭素に分解されます。カルメ焼きがふくらむ理由です。" },
+    { title: "酸化銀の熱分解", left: [{n:"酸化銀", f:"Ag2O"}], right: [{n:"銀", f:"Ag"}, {n:"酸素", f:"O2"}], exp: "黒色の酸化銀を加熱すると、還元されて白色の銀と酸素に分かれます。銀は磨くと特有の光沢が出ます。" },
+    { title: "水の電気分解", left: [{n:"水", f:"H2O"}], right: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], exp: "水に少量の水酸化ナトリウムなどを溶かして電圧をかけると、陽極（＋）から酸素、陰極（－）から水素が発生します。" },
+    { title: "塩化銅の電気分解", left: [{n:"塩化銅", f:"CuCl2"}], right: [{n:"銅", f:"Cu"}, {n:"塩素", f:"Cl2"}], exp: "青色の塩化銅水溶液を電気分解すると、陰極（－）に赤い銅が付着し、陽極（＋）からプールの消毒液のにおいがする塩素が発生します。" },
+    { title: "塩化マグネシウムの電気分解", left: [{n:"塩化マグネシウム", f:"MgCl2"}], right: [{n:"マグネシウム", f:"Mg"}, {n:"塩素", f:"Cl2"}], exp: "塩化マグネシウム水溶液を電気分解すると、陰極から金属マグネシウム、陽極から塩素ガスが発生します。" },
+    { title: "鉄と硫黄の化合", left: [{n:"鉄", f:"Fe"}, {n:"硫黄", f:"S"}], right: [{n:"硫化鉄", f:"FeS"}], exp: "鉄と硫黄の粉末を混ぜて加熱すると、黒色の硫化鉄になります。反応する時に熱を出すため途中で加熱を止めても反応が進みます。" },
+    { title: "銅と硫黄の化合", left: [{n:"銅", f:"Cu"}, {n:"硫黄", f:"S"}], right: [{n:"硫化銅", f:"Cu2S"}], exp: "銅と硫黄を混ぜて加熱すると、激しく熱と光を出して反応し、黒色の硫化銅ができます。" },
+    { title: "水素と酸素の化合", left: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}], exp: "水素と酸素の混合気体に点火すると、音を立てて爆発的に反応し水ができます。この仕組みを利用したのが燃料電池です。" },
+    { title: "銅の酸化", left: [{n:"銅", f:"Cu"}, {n:"酸素", f:"O2"}], right: [{n:"酸化銅", f:"CuO"}], exp: "赤色の銅を空気中で加熱すると、酸素と結びついて黒色の酸化銅になります。" },
+    { title: "マグネシウムの燃焼", left: [{n:"マグネシウム", f:"Mg"}, {n:"酸素", f:"O2"}], right: [{n:"酸化マグネシウム", f:"MgO"}], exp: "マグネシウムは強い光と熱を出して激しく燃え、白色の酸化マグネシウムになります。昔のカメラのフラッシュにも使われました。" },
+    { title: "炭素の燃焼", left: [{n:"炭素", f:"C"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}], exp: "炭素（木炭など）が完全燃焼すると、二酸化炭素が発生します。" },
+    { title: "鉄の燃焼", left: [{n:"鉄", f:"Fe"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄", f:"FeO"}], exp: "スチールウール（鉄）を空気中で燃やすと、黒っぽい酸化鉄になります。質量は結びついた酸素の分だけ増えます。" },
+    { title: "酸化銅の炭素による還元", left: [{n:"酸化銅", f:"CuO"}, {n:"炭素", f:"C"}], right: [{n:"銅", f:"Cu"}, {n:"二酸化炭素", f:"CO2"}], exp: "酸化銅と炭素の粉末を混ぜて加熱すると、酸素と結びつきやすい炭素が酸素を奪い（還元）、赤色の銅ができます。" },
+    { title: "酸化銅の水素による還元", left: [{n:"酸化銅", f:"CuO"}, {n:"水素", f:"H2"}], right: [{n:"銅", f:"Cu"}, {n:"水", f:"H2O"}], exp: "加熱した黒色の酸化銅に水素ガスを触れさせると、水素が酸素を奪って水になり、赤色の銅が現れます。" },
+    { title: "メタンの燃焼", left: [{n:"メタン", f:"CH4"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタン（都市ガスの主成分）などの有機物が燃焼すると、必ず二酸化炭素と水が発生します。" },
+    { title: "エタノールの燃焼", left: [{n:"エタノール", f:"C2H6O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "エタノールが燃焼すると、二酸化炭素と水が発生します。エタノール分子の中に酸素(O)が含まれているため、係数合わせに注意が必要です。" },
+    { title: "塩酸と水酸化ナトリウム", left: [{n:"塩酸", f:"HCl"}, {n:"水酸化ナトリウム", f:"NaOH"}], right: [{n:"塩化ナトリウム", f:"NaCl"}, {n:"水", f:"H2O"}], exp: "塩酸（酸）と水酸化ナトリウム水溶液（アルカリ）の中和反応です。塩化ナトリウム（食塩）と水ができます。" },
+    { title: "硫酸と水酸化バリウム", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化バリウム", f:"Ba(OH)2"}], right: [{n:"硫酸バリウム", f:"BaSO4"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化バリウムの中和反応です。白い沈殿物である硫酸バリウムと水ができます。" }
 ];
 
 const hardReactions = [
-    { title: "プロパンの燃焼", left: [{n:"プロパン", f:"C3H8"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}] },
-    { title: "アルミニウムと塩酸", left: [{n:"アルミニウム", f:"Al"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水素", f:"H2"}] },
-    { title: "アンモニアの酸化", left: [{n:"アンモニア", f:"NH3"}, {n:"酸素", f:"O2"}], right: [{n:"一酸化窒素", f:"NO"}, {n:"水", f:"H2O"}] },
-    { title: "銅と濃硝酸", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"二酸化窒素", f:"NO2"}] },
-    { title: "黄鉄鉱の燃焼", left: [{n:"二硫化鉄", f:"FeS2"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"二酸化硫黄", f:"SO2"}] },
-    { title: "ブタンの燃焼", left: [{n:"ブタン", f:"C4H10"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}] },
-    { title: "銅と希硝酸", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"一酸化窒素", f:"NO"}] },
-    { title: "硫化水素の燃焼", left: [{n:"硫化水素", f:"H2S"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}, {n:"二酸化硫黄", f:"SO2"}] },
-    { title: "メタノールの燃焼", left: [{n:"メタノール", f:"CH4O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}] },
-    { title: "酸化アルミニウムと塩酸", left: [{n:"酸化アルミニウム", f:"Al2O3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水", f:"H2O"}] },
-    { title: "炭酸カルシウムと塩酸", left: [{n:"炭酸カルシウム", f:"CaCO3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}] },
-    { title: "硫酸と水酸化アルミニウム", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化アルミニウム", f:"Al(OH)3"}], right: [{n:"硫酸アルミニウム", f:"Al2(SO4)3"}, {n:"水", f:"H2O"}] },
-    { title: "テルミット反応", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"アルミニウム", f:"Al"}], right: [{n:"鉄", f:"Fe"}, {n:"酸化アルミニウム", f:"Al2O3"}] },
-    { title: "酸化鉄(III)の一酸化炭素による還元", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"一酸化炭素", f:"CO"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}] },
-    { title: "酸化鉄(III)の炭素による還元", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"炭素", f:"C"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}] }
+    { title: "プロパンの燃焼", left: [{n:"プロパン", f:"C3H8"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "プロパン（LPガスの主成分）の燃焼です。炭素と水素の数が多いので、必要な酸素分子の数も多くなります。" },
+    { title: "アルミニウムと塩酸", left: [{n:"アルミニウム", f:"Al"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水素", f:"H2"}], exp: "アルミニウムなどの金属に塩酸を加えると、水素が発生して溶け、塩化アルミニウムになります。" },
+    { title: "アンモニアの酸化", left: [{n:"アンモニア", f:"NH3"}, {n:"酸素", f:"O2"}], right: [{n:"一酸化窒素", f:"NO"}, {n:"水", f:"H2O"}], exp: "アンモニアを白金触媒を使って酸化させる反応です。一酸化窒素と水ができます。" },
+    { title: "銅と濃硝酸", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"二酸化窒素", f:"NO2"}], exp: "銅に濃硝酸を加えると、激しく反応して赤褐色の有毒ガス（二酸化窒素）が発生します。" },
+    { title: "黄鉄鉱の燃焼", left: [{n:"二硫化鉄", f:"FeS2"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"二酸化硫黄", f:"SO2"}], exp: "黄鉄鉱（二硫化鉄）を燃焼させる反応です。有害な二酸化硫黄が発生します。" },
+    { title: "ブタンの燃焼", left: [{n:"ブタン", f:"C4H10"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "ブタン（カセットコンロのガスの主成分）の燃焼です。係数がすべて大きくなる高校入試の難問です。" },
+    { title: "銅と希硝酸", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"一酸化窒素", f:"NO"}], exp: "銅に薄い硝酸を加えると、無色の一酸化窒素が発生します。空気に触れるとすぐに赤褐色の二酸化窒素に変わります。" },
+    { title: "硫化水素の燃焼", left: [{n:"硫化水素", f:"H2S"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}, {n:"二酸化硫黄", f:"SO2"}], exp: "温泉のにおいの元である有毒な硫化水素を燃やすと、水と二酸化硫黄になります。" },
+    { title: "メタノールの燃焼", left: [{n:"メタノール", f:"CH4O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタノール（アルコールの一種）の燃焼です。エタノールと同様に二酸化炭素と水ができます。" },
+    { title: "酸化アルミニウムと塩酸", left: [{n:"酸化アルミニウム", f:"Al2O3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水", f:"H2O"}], exp: "酸化アルミニウムは、酸（塩酸）とも反応して塩化アルミニウムと水を作ります。" },
+    { title: "炭酸カルシウムと塩酸", left: [{n:"炭酸カルシウム", f:"CaCO3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "石灰石やチョークに塩酸をかけると、二酸化炭素が発生します。実験室で二酸化炭素を作る定番の方法です。" },
+    { title: "硫酸と水酸化アルミニウム", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化アルミニウム", f:"Al(OH)3"}], right: [{n:"硫酸アルミニウム", f:"Al2(SO4)3"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化アルミニウムの中和反応です。イオンの価数が違うため、係数合わせが複雑になります。" },
+    { title: "テルミット反応", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"アルミニウム", f:"Al"}], right: [{n:"鉄", f:"Fe"}, {n:"酸化アルミニウム", f:"Al2O3"}], exp: "酸化鉄とアルミニウムの粉末に点火すると、激しい熱を出してアルミニウムが酸素を奪い、液状の鉄が得られます。" },
+    { title: "酸化鉄(III)の一酸化炭素による還元", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"一酸化炭素", f:"CO"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}], exp: "製鉄所で鉄鉱石（酸化鉄）から鉄を取り出す（還元する）際に起きる重要な反応です。" },
+    { title: "酸化鉄(III)の炭素による還元", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"炭素", f:"C"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}], exp: "酸化鉄を炭素の粉末と一緒に加熱して還元する反応です。銅の還元と同じ原理です。" }
 ];
 
 const allStandardFormulas = [...new Set(standardReactions.flatMap(r => [...r.left, ...r.right].map(i => i.f)))];
@@ -416,16 +531,15 @@ let practiceQuestions = [];
 let currentQIndex = 0;
 let substances = []; 
 let stage = 1;
+let currentReactionData = null;
 
 // --- ユーティリティ ---
 function getGCD(a, b) { return b === 0 ? a : getGCD(b, a % b); }
-
 function toSubscript(str) {
     if (str === '?') return '?';
     const subMap = { '0':'₀', '1':'₁', '2':'₂', '3':'₃', '4':'₄', '5':'₅', '6':'₆', '7':'₇', '8':'₈', '9':'₉' };
     return str.replace(/\d/g, m => subMap[m]);
 }
-
 function expandFormula(formula) {
     let f = formula.replace(/\((.*?)\)(\d+)/g, (match, p1, p2) => p1.repeat(parseInt(p2)));
     let atoms = [];
@@ -438,7 +552,6 @@ function expandFormula(formula) {
     }
     return atoms;
 }
-
 function getMoleculeHtml(formula) {
     const atoms = expandFormula(formula);
     const hasMetal = atoms.some(a => metals.includes(a));
@@ -472,33 +585,31 @@ function triggerCelebration() {
     }
 }
 
-// 【改善】モバイルや画面回転時にも確実にフィットさせる処理
 function fitWorkspace() {
     const wrapper = document.getElementById('workspace-wrapper');
     const workspace = document.getElementById('workspace');
     if(!wrapper || !workspace) return;
-    
     workspace.style.transform = 'scale(1)';
-    
-    // ブラウザの描画更新を待ってから計算する
     requestAnimationFrame(() => {
-        // モバイルでは余白の余裕を少なめ(10px)にして縮小率を緩和
-        const margin = window.innerWidth <= 1024 ? 10 : 30;
-        const wrapperWidth = wrapper.clientWidth - margin;
+        const marginX = window.innerWidth <= 1024 ? 10 : 30;
+        const marginY = 10;
+        const wrapperWidth = wrapper.clientWidth - marginX;
+        const wrapperHeight = wrapper.clientHeight - marginY;
         const workspaceWidth = workspace.scrollWidth;
-        
-        if (workspaceWidth > wrapperWidth && wrapperWidth > 0) {
-            const scale = wrapperWidth / workspaceWidth;
-            workspace.style.transform = `scale(${scale})`;
-        }
+        const workspaceHeight = workspace.scrollHeight;
+        let scale = 1;
+        if (workspaceWidth > wrapperWidth && wrapperWidth > 0) scale = Math.min(scale, wrapperWidth / workspaceWidth);
+        if (workspaceHeight > wrapperHeight && wrapperHeight > 0) scale = Math.min(scale, wrapperHeight / workspaceHeight);
+        workspace.style.transform = `scale(${scale})`;
     });
 }
-// 画面リサイズと回転検知（少し遅延させて確実に行う）
 window.addEventListener('resize', () => setTimeout(fitWorkspace, 100));
 window.addEventListener('orientationchange', () => setTimeout(fitWorkspace, 300));
 
 // --- 初期化・描画 ---
 window.onload = () => {
+    initPoints();
+    checkTutorial();
     buildMenu();
     updateKen('normal');
     selectFreeReaction(0);
@@ -560,6 +671,8 @@ function generateDistractors(correct, pool) {
 
 function setupReaction(reaction, pool) {
     stage = 1; substances = []; let idCounter = 0;
+    currentReactionData = reaction;
+
     const addSub = (item, side) => {
         substances.push({
             id: `sub-${idCounter++}`, side: side, name: item.n,
@@ -573,6 +686,7 @@ function setupReaction(reaction, pool) {
     document.getElementById('reaction-title').innerText = reaction.title;
     document.getElementById('instruction-text').innerText = "STEP1: 物質名から正しい化学式を選ぼう。";
     document.getElementById('feedback').innerHTML = '';
+    document.getElementById('explanation-box').style.display = 'none';
     document.getElementById('workspace-wrapper').classList.remove('glow-effect');
     
     const checkBtn = document.getElementById('check-btn');
@@ -606,6 +720,7 @@ function changeCoeff(id, delta) {
             checkBtn.className = "primary-btn";
             checkBtn.onclick = checkAnswer;
             updateKen('hint');
+            document.getElementById('explanation-box').style.display = 'none';
         }
 
         document.getElementById('feedback').innerHTML = '';
@@ -631,7 +746,7 @@ function renderWorkspace() {
     workspace.innerHTML += `<div class="operator arrow ${opClass}">➡</div>`;
     renderSide('right');
 
-    setTimeout(fitWorkspace, 50); // DOM反映後に実行
+    setTimeout(fitWorkspace, 50); 
 }
 
 function generateSubstanceHTML(sub) {
@@ -742,16 +857,25 @@ function checkStage2() {
     const feedback = document.getElementById('feedback');
     const wrapper = document.getElementById('workspace-wrapper');
     const checkBtn = document.getElementById('check-btn');
+    const expBox = document.getElementById('explanation-box');
     
     if (isCorrect) {
+        // ★ ポイント加算（1問クリアで10Pt）
+        addPoints(10);
+
         triggerCelebration();
         updateKen('success');
         wrapper.classList.remove('glow-effect');
         void wrapper.offsetWidth; 
         wrapper.classList.add('glow-effect');
         
-        feedback.innerHTML = `<div class="goku-clear-text">🔥 GOKU-CLEAR! 完璧だ！ 🔥</div>`;
+        feedback.innerHTML = `<div class="goku-clear-text">🔥 GOKU-CLEAR! 完璧だ！ (+10 Pt) 🔥</div>`;
         
+        if(currentReactionData && currentReactionData.exp) {
+            expBox.innerHTML = `<div class="exp-title">📖 反応の解説</div><div>${currentReactionData.exp}</div>`;
+            expBox.style.display = 'block';
+        }
+
         if (appMode.startsWith('practice')) {
             checkBtn.innerText = "次のクエストへ ➡";
             checkBtn.className = "primary-btn next-btn";
@@ -766,6 +890,7 @@ function checkStage2() {
         errorMessages.forEach(msg => { html += `<div>⚠️ ${msg}</div>`; });
         html += `</div>`;
         feedback.innerHTML = html;
+        expBox.style.display = 'none';
     }
 }
 
@@ -774,13 +899,18 @@ function nextPracticeQuestion() {
     if (currentQIndex < practiceQuestions.length) {
         loadPracticeQuestion();
     } else {
+        // ★ 練習モード全問正解ボーナス ★
+        let bonus = appMode === 'practice_std' ? 50 : 270;
+        addPoints(bonus);
+
         triggerCelebration(); 
         updateKen('success');
         document.getElementById('ken-speech').innerText = "本当に素晴らしい！君は化学の天才だ！";
         document.getElementById('reaction-title').innerText = "🎉 全クエスト制覇！";
-        document.getElementById('instruction-text').innerText = "素晴らしい！極限まで達したね！";
+        document.getElementById('instruction-text').innerText = `素晴らしい！ボーナス ${bonus} Pt 獲得！`;
         document.getElementById('workspace').innerHTML = `<div class="goku-clear-text" style="text-align:center; padding:50px 0;">MISSION COMPLETE!!</div>`;
         document.getElementById('feedback').innerHTML = '';
+        document.getElementById('explanation-box').style.display = 'none';
         document.getElementById('check-btn').style.display = 'none';
         document.getElementById('workspace-wrapper').style.transform = 'none';
     }
