@@ -22,6 +22,12 @@
         color: var(--text-main);
         font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
         display: flex; height: 100vh; height: 100dvh; overflow: hidden;
+        touch-action: manipulation; /* ★ iOSダブルタップズーム防止 */
+    }
+    
+    /* モーダル表示時の背景スクロールロック用クラス */
+    body.modal-open {
+        overflow: hidden;
     }
     
     /* モーダル共通 (チュートリアル＆引き継ぎ) */
@@ -73,7 +79,6 @@
     .menu-list { list-style: none; padding: 0; margin: 0; }
     .menu-item { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.04); cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: #d0d4e5; }
     
-    /* PC向けのホバー処理（スマホのホバー残りを防止） */
     @media (hover: hover) {
         .menu-item:hover { background-color: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); }
         .menu-item.practice-btn:hover { background-color: rgba(255, 196, 0, 0.15); }
@@ -118,8 +123,6 @@
     .stage2-ui { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .coeff-controls { display: flex; gap: 15px; }
     .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; }
-    
-    /* ボタン押し込み時の処理（全端末共通） */
     .coeff-btn:active { background: var(--accent-cyan); color: #000; transform: scale(0.95); }
     
     .formula-display { display: flex; align-items: baseline; }
@@ -143,7 +146,8 @@
     .molecule-auto.covalent { flex-wrap: wrap; max-width: 80px; gap: 0; }
     .molecule-auto.covalent .atom { margin: -2px; } 
     .molecule-auto.ionic { flex-wrap: wrap; gap: 2px; width: max-content; max-width: 65px; }
-    .atom { width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; flex-shrink: 0; box-shadow: inset -4px -4px 6px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.6); position: relative; z-index: 1; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 3px rgba(0,0,0,0.8); }
+    
+    .atom { width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; flex-shrink: 0; box-shadow: inset -3px -3px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.4); position: relative; z-index: 1; }
     .molecule-auto.covalent .atom { z-index: 2; }
     .molecule-auto.covalent .atom:nth-child(2) { z-index: 1; }
     .molecule-auto.covalent .atom:nth-child(3) { z-index: 0; }
@@ -204,7 +208,7 @@
             margin: 30px auto 10px; 
             transform: scale(0.9); transform-origin: center top; 
         }
-        #explanation-box { padding: 12px; padding-right: 12px; } /* スマホ余白の最適化 */
+        #explanation-box { padding: 12px; padding-right: 12px; }
 
         #reaction-title { font-size: 1.4rem; }
         .instruction { font-size: 0.95rem; padding: 3px 10px; }
@@ -325,6 +329,7 @@
         <div id="explanation-box"></div>
     </div>
 
+    <!-- ケンくん -->
     <div id="ken-character">
         <div id="ken-speech">さあ、実験を始めようか！</div>
         <div id="ken-image-container"></div>
@@ -372,6 +377,7 @@ function generateTransferCode() {
 }
 function executeTransfer() {
     let input = document.getElementById('transfer-input').value.trim().toUpperCase();
+    if (input === "") return; // 空白入力時は何もしない
     if (!input.startsWith("GK") || input.length < 3) { alert("パスワードが正しくありません！"); return; }
     let baseStr = input.substring(2);
     let num = parseInt(baseStr, 36);
@@ -384,64 +390,82 @@ function executeTransfer() {
     alert(`復元成功！ ${userPoints} Pt から再開します！`);
     closeTransferModal();
 }
-function openTransferModal() { document.getElementById('my-transfer-code').innerText = generateTransferCode(); document.getElementById('transfer-input').value = ""; document.getElementById('transfer-modal').style.display = 'flex'; closeMenu(); }
-function closeTransferModal() { document.getElementById('transfer-modal').style.display = 'none'; }
 
-// --- チュートリアル ---
+// モーダル制御（背景スクロール防止を追加）
+function openTransferModal() { 
+    document.getElementById('my-transfer-code').innerText = generateTransferCode(); 
+    document.getElementById('transfer-input').value = ""; 
+    document.getElementById('transfer-modal').style.display = 'flex'; 
+    document.body.classList.add('modal-open');
+    closeMenu(); 
+}
+function closeTransferModal() { 
+    document.getElementById('transfer-modal').style.display = 'none'; 
+    document.body.classList.remove('modal-open');
+}
+
 function checkTutorial() {
-    if (!localStorage.getItem('gokuChemiTutorialDone')) { document.getElementById('tutorial-modal').style.display = 'flex'; }
+    if (!localStorage.getItem('gokuChemiTutorialDone')) { 
+        document.getElementById('tutorial-modal').style.display = 'flex'; 
+        document.body.classList.add('modal-open');
+    }
 }
 function closeTutorial() {
     document.getElementById('tutorial-modal').style.display = 'none';
+    document.body.classList.remove('modal-open');
     localStorage.setItem('gokuChemiTutorialDone', 'true');
 }
 
 function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
 function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
 
-// --- 人体模型ケン SVG (iOS文字消え対策済) ---
+// --- 人体模型ケン SVG ---
 const kenBaseOpen = `
 <svg viewBox="0 0 100 120" style="width:100%; height:100%; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.3));" xmlns="http://www.w3.org/2000/svg">
-    <path d="M 50 65 C 25 65 25 115 50 115 Z" fill="#ff7373" />
+    <path d="M 50 65 C 25 65 25 115 50 115 Z" fill="#d32f2f" />
     <path d="M 50 65 C 75 65 75 115 50 115 Z" fill="#ffdfc4" />
-    <path d="M 50 15 C 10 15 15 65 50 65 Z" fill="#ffffff" />
+    <path d="M 50 15 C 10 15 15 65 50 65 Z" fill="#f5f5f5" />
     <path d="M 50 15 C 90 15 85 65 50 65 Z" fill="#ffdfc4" />
-    <path d="M 44 75 A 4 4 0 0 0 36 75 A 4 4 0 0 0 44 83 Z" fill="#ff1744" /> 
-    <rect x="36" y="90" width="28" height="6" rx="3" fill="#81c784" /> 
-    <rect x="38" y="98" width="24" height="7" rx="3.5" fill="#64b5f6" /> 
-    <line x1="50" y1="15" x2="50" y2="65" stroke="#e0e0e0" stroke-width="1.5" stroke-dasharray="3,3" />
-    <line x1="50" y1="65" x2="50" y2="115" stroke="#ffcdd2" stroke-width="1.5" stroke-dasharray="3,3" />
+    <path d="M 32 54 L 32 59 M 38 55 L 38 60 M 44 54 L 44 59" stroke="#bdbdbd" stroke-width="2" />
+    <path d="M 30 75 Q 40 70 50 73" stroke="#f5f5f5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 28 85 Q 39 80 50 83" stroke="#f5f5f5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 32 95 Q 41 91 50 93" stroke="#f5f5f5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 44 75 A 4 4 0 0 0 36 75 A 4 4 0 0 0 44 83 Z" fill="#e91e63" /> 
+    <path d="M 42 86 Q 47 84 50 86 Q 53 90 45 92 Z" fill="#8d6e63" /> 
+    <rect x="36" y="96" width="28" height="5" rx="2.5" fill="#4db6ac" /> 
+    <rect x="38" y="103" width="24" height="6" rx="3" fill="#ffd54f" /> 
+    <line x1="50" y1="15" x2="50" y2="115" stroke="#424242" stroke-width="1.5" stroke-dasharray="3,3" />
 `;
 const kenBaseClose = `</svg>`;
+
 const faceNormal = `
-    <circle cx="34" cy="40" r="7" fill="#424242" />
-    <circle cx="35" cy="38" r="2.5" fill="#fff" /> 
+    <ellipse cx="34" cy="40" rx="8" ry="9" fill="#424242" />
+    <circle cx="35" cy="39" r="2.5" fill="#fff" /> 
     <circle cx="66" cy="40" r="6" fill="#6d4c41" />
     <circle cx="67" cy="38" r="2" fill="#fff" /> 
-    <path d="M 46 52 Q 50 56 54 52" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+    <path d="M 54 52 Q 60 56 66 50" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
 const faceThink = `
-    <circle cx="34" cy="40" r="7" fill="#424242" />
-    <path d="M 31 40 Q 34 36 37 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="66" cy="40" r="6" fill="#6d4c41" />
-    <path d="M 63 40 Q 66 36 69 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <path d="M 46 54 Q 48 51 50 54 T 54 54" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="34" cy="40" rx="8" ry="9" fill="#424242" />
+    <circle cx="35" cy="39" r="2.5" fill="#fff" /> 
+    <path d="M 62 40 Q 66 36 70 40" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 54 54 Q 57 51 60 54 T 66 54" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
     <text x="75" y="25" font-size="22" fill="#fff" font-weight="bold" stroke="#000" stroke-width="1.5" paint-order="stroke">?</text>`;
 const faceError = `
-    <path d="M 29 37 L 35 41 L 29 45" stroke="#424242" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="34" cy="40" rx="8" ry="9" fill="#424242" />
     <path d="M 71 37 L 65 41 L 71 45" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <ellipse cx="50" cy="54" rx="4" ry="5" fill="#6d4c41" />
+    <ellipse cx="60" cy="54" rx="4" ry="5" fill="#6d4c41" />
     <text x="75" y="25" font-size="22" fill="#ff3d00" font-weight="bold" stroke="#fff" stroke-width="1.5" paint-order="stroke">!</text>`;
 const faceHint = `
-    <circle cx="34" cy="40" r="7" fill="#424242" />
-    <circle cx="34" cy="40" r="3.5" fill="#ffeb3b" />
+    <ellipse cx="34" cy="40" rx="8" ry="9" fill="#424242" />
+    <circle cx="35" cy="39" r="2.5" fill="#fff" /> 
     <circle cx="66" cy="40" r="6" fill="#6d4c41" />
     <circle cx="66" cy="40" r="3" fill="#ffeb3b" />
-    <path d="M 46 52 Q 50 55 54 52" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 54 52 Q 60 55 66 52" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
     <text x="75" y="25" font-size="18">💡</text>`;
 const faceSuccess = `
     <path d="M 28 42 Q 34 34 40 42" stroke="#424242" stroke-width="2.5" fill="none" stroke-linecap="round"/>
     <path d="M 60 42 Q 66 34 72 42" stroke="#6d4c41" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M 44 50 Q 50 62 56 50 Z" fill="#ff8a80" stroke="#6d4c41" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M 54 50 Q 60 62 66 50 Z" fill="#ff8a80" stroke="#6d4c41" stroke-width="2" stroke-linejoin="round"/>
     <circle cx="66" cy="48" r="4" fill="#ff8a80" opacity="0.6" />
     <text x="8" y="25" font-size="16">✨</text>
     <text x="78" y="45" font-size="16">✨</text>`;
@@ -465,15 +489,22 @@ function updateKen(emotion) {
     kenChar.classList.add('ken-bounce');
 }
 
-// --- データ定義 ---
+// --- 原子カラー定義 ---
 const atomStyles = {
-    H: { color: '#ffffff', text: '#fff' }, O: { color: '#ff3d00', text: '#fff' },
-    C: { color: '#2a2a2a', text: '#fff', border: '1px solid #555' }, N: { color: '#2979ff', text: '#fff' },
-    Cl: { color: '#76ff03', text: '#fff' }, S: { color: '#ffea00', text: '#fff' },
-    Na: { color: '#00b0ff', text: '#fff' }, Mg: { color: '#f50057', text: '#fff' },
-    Al: { color: '#90caf9', text: '#fff' }, Fe: { color: '#546e7a', text: '#fff' },
-    Cu: { color: '#d84315', text: '#fff' }, Ag: { color: '#e0e0e0', text: '#fff' },
-    Ba: { color: '#d500f9', text: '#fff' }, Ca: { color: '#ffb300', text: '#fff' }
+    H: { color: '#ffffff', text: '#000', border: '2px solid #ccc' },
+    O: { color: '#e53935', text: '#fff', border: '2px solid #b71c1c' }, 
+    C: { color: '#424242', text: '#fff', border: '2px solid #212121' },
+    N: { color: '#1e88e5', text: '#fff', border: '2px solid #1565c0' },
+    Cl:{ color: '#43a047', text: '#fff', border: '2px solid #2e7d32' },
+    S: { color: '#fdd835', text: '#000', border: '2px solid #fbc02d' },
+    Na:{ color: '#8e24aa', text: '#fff', border: '2px solid #6a1b9a' },
+    Mg:{ color: '#00acc1', text: '#000', border: '2px solid #00838f' },
+    Al:{ color: '#9575cd', text: '#fff', border: '2px solid #7e57c2' },
+    Fe:{ color: '#607d8b', text: '#fff', border: '2px solid #455a64' },
+    Cu:{ color: '#fb8c00', text: '#000', border: '2px solid #ef6c00' }, 
+    Ag:{ color: '#e0e0e0', text: '#000', border: '2px solid #9e9e9e' },
+    Ba:{ color: '#795548', text: '#fff', border: '2px solid #5d4037' },
+    Ca:{ color: '#d81b60', text: '#fff', border: '2px solid #c2185b' }
 };
 const metals = ['Na', 'Mg', 'Al', 'Fe', 'Cu', 'Ag', 'Ba', 'Ca'];
 
@@ -545,15 +576,19 @@ function expandFormula(formula) {
     }
     return atoms;
 }
+
 function getMoleculeHtml(formula) {
     const atoms = expandFormula(formula);
     const hasMetal = atoms.some(a => metals.includes(a));
     const layoutType = hasMetal ? 'ionic' : 'covalent';
     let html = `<div class="molecule-auto ${layoutType}">`;
     atoms.forEach(type => {
-        const style = atomStyles[type] || { color: '#FFF', text: '#000' };
-        const border = style.border ? `border: ${style.border};` : '';
-        html += `<div class="atom" style="background-color:${style.color}; color:${style.text}; ${border}">${type}</div>`;
+        const style = atomStyles[type] || { color: '#FFF', text: '#000', border: '2px solid #ccc' };
+        const tShadow = style.text === '#000' 
+            ? '1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 0 2px 3px rgba(0,0,0,0.5)' 
+            : '1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 3px rgba(0,0,0,0.8)';
+        
+        html += `<div class="atom" style="background-color:${style.color}; color:${style.text}; border:${style.border}; text-shadow:${tShadow};">${type}</div>`;
     });
     html += `</div>`;
     return html;
@@ -578,7 +613,6 @@ function triggerCelebration() {
     }
 }
 
-// デバウンス処理
 let resizeTimer;
 function fitWorkspace() {
     const wrapper = document.getElementById('workspace-wrapper');
