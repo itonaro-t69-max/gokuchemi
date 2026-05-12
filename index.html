@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<!-- ★ セーフエリア対応（viewport-fit=cover）を追加 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>極・化学反応式 (GOKU-CHEMI)</title>
 <style>
@@ -14,18 +13,11 @@
         --text-main: #f0f0f5; --text-sub: #a0a4b8;
     }
     body {
-        margin: 0; padding: 0;
-        /* ★ iPhoneなどのノッチ（切り欠き）を避けるセーフエリア余白 */
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
+        margin: 0; padding: 0; padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);
         background-color: var(--bg-dark); color: var(--text-main);
         font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-        display: flex; height: 100vh; height: 100dvh; overflow: hidden;
-        touch-action: manipulation;
-        
-        /* ★ 画像やテキストの不要なドラッグ・選択を防止（アプリ感アップ） */
-        -webkit-user-select: none; user-select: none;
-        -webkit-user-drag: none;
+        display: flex; height: 100vh; height: 100dvh; overflow: hidden; touch-action: manipulation;
+        -webkit-user-select: none; user-select: none; -webkit-user-drag: none;
     }
     body.modal-open { overflow: hidden; }
     
@@ -38,7 +30,7 @@
     .tutorial-steps li { margin-bottom: 10px; font-size: 0.95rem; line-height: 1.5; list-style-type: none; }
     .tutorial-steps li::before { content: '🧪'; margin-right: 8px; }
     .transfer-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-    .transfer-code { font-size: 2rem; font-weight: 900; color: var(--accent-gold); letter-spacing: 3px; user-select: all; -webkit-user-select: text;} /* パスワードだけは選択・コピー可能に */
+    .transfer-code { font-size: 2rem; font-weight: 900; color: var(--accent-gold); letter-spacing: 3px; user-select: all; -webkit-user-select: text;}
     .transfer-input { width: 80%; padding: 10px; font-size: 1.2rem; font-weight: bold; text-align: center; border-radius: 8px; border: 2px solid #4a4e69; background: #0f111a; color: #fff; text-transform: uppercase; margin-bottom: 10px; -webkit-user-select: text; user-select: text;}
     .transfer-input:focus { outline: none; border-color: var(--accent-cyan); }
 
@@ -62,114 +54,163 @@
     .menu-item:active { background-color: rgba(0, 229, 255, 0.2); }
     .menu-item.active { background-color: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border-left: 4px solid var(--accent-cyan); font-weight: bold; }
     .menu-item.practice-btn { color: var(--accent-gold); }
+    .menu-item.review-btn { color: #ff5252; font-weight: bold; }
+    .menu-item.review-btn:hover { background-color: rgba(255, 82, 82, 0.15); }
     .menu-item.transfer-btn { color: var(--text-main); font-weight: bold; background: rgba(255,255,255,0.05); }
 
     /* モバイルヘッダー */
     #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 900; opacity: 0; transition: opacity 0.3s; }
-    #mobile-header { display: none; justify-content: space-between; align-items: center; padding: 10px 20px; background: #1a1d2d; border-bottom: 1px solid #2a2e45; }
+    #mobile-header { display: none; justify-content: space-between; align-items: center; padding: 10px 20px; background: #1a1d2d; border-bottom: 1px solid #2a2e45; z-index: 50; position: relative;}
     .mobile-title { font-size: 1.2rem; font-weight: 900; color: var(--accent-cyan); letter-spacing: 2px; }
     #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
-    /* メインエリア */
-    #main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; overflow-x: hidden; position: relative; padding-bottom: 180px; }
-    #reaction-header { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
-    #reaction-title { font-size: 1.8rem; margin: 0 0 5px 0; font-weight: 800; }
-    .instruction { color: var(--accent-cyan); font-size: 1.1rem; margin: 0; font-weight: bold; background: rgba(0, 229, 255, 0.1); display: inline-block; padding: 5px 15px; border-radius: 20px; }
-    #practice-status { color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 8px rgba(255, 196, 0, 0.3); }
+    /* メインエリア・パーティクルコンテナ */
+    /* Z-indexの階層調整：パーティクルは中間(z=10)、テキストエリアは手前(z=100)で被り防止 */
+    #particle-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: hidden; }
+    #main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; overflow-x: hidden; position: relative; z-index: 5; padding-bottom: 180px; }
+    
+    #reaction-header { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; position: relative; z-index: 20;}
+    #reaction-title { font-size: 1.8rem; margin: 0 0 5px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+    .instruction { color: var(--accent-cyan); font-size: 1.1rem; margin: 0; font-weight: bold; background: rgba(0, 229, 255, 0.15); display: inline-block; padding: 5px 15px; border-radius: 20px; backdrop-filter: blur(4px); }
+    #practice-status { color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 8px rgba(255, 196, 0, 0.3), 0 2px 4px #000; }
 
     /* 学習エリア */
-    #workspace-wrapper { width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); flex-shrink: 0; min-height: 250px; }
+    #workspace-wrapper { width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.5); flex-shrink: 0; min-height: 250px; position: relative; z-index: 20; }
     #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; transform-origin: center center; transition: transform 0.2s ease-out; }
     .substance-group { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); padding: 18px 15px; border-radius: 12px; border: 2px solid transparent; gap: 15px; min-width: 120px; transition: 0.3s; }
     .substance-group.error { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08); }
-    .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; }
+    .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
     .stage2-ui { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .coeff-controls { display: flex; gap: 15px; }
-    .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; }
+    .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; backdrop-filter: blur(2px);}
     .coeff-btn:active { background: var(--accent-cyan); color: #000; transform: scale(0.95); }
-    .formula-display { display: flex; align-items: baseline; }
-    .big-coeff { font-size: 3rem; font-weight: 900; color: var(--accent-gold); margin-right: 2px; line-height: 1; }
-    .hidden-coeff { color: rgba(255,255,255,0.1); }
-    .chem-formula { font-size: 2.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; }
+    .formula-display { display: flex; align-items: baseline; position: relative; z-index: 100; } /* 手前に */
+    .big-coeff { font-size: 3rem; font-weight: 900; color: var(--accent-gold); margin-right: 2px; line-height: 1; text-shadow: 0 2px 5px #000; }
+    .hidden-coeff { color: rgba(255,255,255,0.1); text-shadow: none;}
+    .chem-formula { font-size: 2.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; text-shadow: 0 2px 5px #000; }
 
-    select.formula-select { font-size: 1.6rem; padding: 10px 35px 10px 15px; background-color: #0f111a; font-weight: bold; color: #fff; border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300e5ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 18px; }
+    select.formula-select { font-size: 1.6rem; padding: 10px 35px 10px 15px; background-color: #0f111a; font-weight: bold; color: #fff; border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300e5ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.6); position: relative; z-index: 100;}
     select.formula-select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
 
     /* 粒子モデル */
     .models-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 140px; min-height: 50px; }
-    .molecule-auto { display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
-    .molecule-auto.covalent { flex-wrap: wrap; max-width: 80px; gap: 0; }
+    .molecule-auto { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; background: rgba(0,0,0,0.4); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); gap: 2px; }
+    .molecule-auto.covalent { gap: 0; }
     .molecule-auto.covalent .atom { margin: -2px; } 
-    .molecule-auto.ionic { flex-wrap: wrap; gap: 2px; width: max-content; max-width: 65px; }
     .atom { width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; flex-shrink: 0; box-shadow: inset -3px -3px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.4); position: relative; z-index: 1; }
     .molecule-auto.covalent .atom { z-index: 2; }
     .molecule-auto.covalent .atom:nth-child(2) { z-index: 1; }
     .molecule-auto.covalent .atom:nth-child(3) { z-index: 0; }
 
-    .operator { font-size: 2.8rem; font-weight: 900; color: #5a5e7a; align-self: flex-start; }
+    .operator { font-size: 2.8rem; font-weight: 900; color: #5a5e7a; align-self: flex-start; text-shadow: 0 2px 5px #000; position: relative; z-index: 100;}
     .operator-st1 { margin-top: 60px; }
     .operator-st2 { margin-top: 110px; }
-    .arrow { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
+    .arrow { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4), 0 2px 5px #000; }
 
     /* アクションエリア */
-    #action-area { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; }
-    .primary-btn { padding: 16px 60px; font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: 2px; background-color: var(--accent-cyan); border: none; border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #009eb3, 0 10px 20px rgba(0,0,0,0.4); transition: 0.1s; width: fit-content; }
+    #action-area { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; position: relative; z-index: 100;} /* ボタンや解説は手前 */
+    .primary-btn { padding: 16px 60px; font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: 2px; background-color: var(--accent-cyan); border: none; border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #009eb3, 0 10px 20px rgba(0,0,0,0.6); transition: 0.1s; width: fit-content; }
     .primary-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #009eb3, 0 2px 5px rgba(0,0,0,0.4); }
     .primary-btn.next-btn { background-color: var(--accent-gold); box-shadow: 0 6px 0 #cc9d00; }
     .primary-btn.next-btn:active { box-shadow: 0 0 0 #cc9d00; }
     #feedback { font-size: 1.1rem; text-align: center; line-height: 1.4; font-weight: bold; width: 100%; min-height: 30px; }
-    .feedback-error { color: var(--accent-red); background: rgba(255, 61, 0, 0.1); padding: 5px 20px; border-radius: 8px; display: inline-block;}
+    .feedback-error { color: var(--accent-red); background: rgba(255, 61, 0, 0.15); padding: 5px 20px; border-radius: 8px; display: inline-block; backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
     
-    #explanation-box { display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); padding: 15px; padding-right: 140px; border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.7; max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; box-sizing: border-box; }
+    #explanation-box { display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); padding: 15px; padding-right: 140px; border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.7; max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; box-sizing: border-box; backdrop-filter: blur(6px); box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
     .exp-title { color: var(--accent-green); font-weight: 900; font-size: 1.1rem; margin-bottom: 5px; }
 
-    .goku-clear-text { color: var(--accent-gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 196, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    /* クリア文字も一番手前に */
+    .goku-clear-text { position: relative; z-index: 100; color: var(--accent-gold); font-size: 2rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 196, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5), 0 4px 10px #000; animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; background: rgba(0,0,0,0.6); padding: 10px 30px; border-radius: 20px; border: 2px solid var(--accent-gold);}
+    
     @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
     @keyframes successBorder { 0% { border-color: #2a2e45; box-shadow: inset 0 0 0 transparent; } 50% { border-color: var(--accent-gold); box-shadow: inset 0 0 50px rgba(255, 196, 0, 0.3); } 100% { border-color: #2a2e45; box-shadow: inset 0 0 10px rgba(255, 196, 0, 0.1); } }
     .glow-effect { animation: successBorder 1.5s ease-out; }
-    .particle { position: absolute; width: 12px; height: 12px; pointer-events: none; z-index: 100; animation: fall linear forwards; }
-    @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg) translateX(var(--tx)); opacity: 0; } }
+    
+    /* 派手なパーティクル */
+    .particle { position: absolute; pointer-events: none; z-index: 10; opacity: 0; }
+    @keyframes fallRotate { 
+        0% { transform: translateY(-50px) rotate(0deg) scale(0.5); opacity: 1; } 
+        50% { opacity: 1; }
+        100% { transform: translateY(110vh) rotate(var(--rot)) translateX(var(--tx)) scale(1.2); opacity: 0; } 
+    }
 
-    /* 人体模型ケン */
+    /* 人体模型ケン (一番手前) */
     #ken-character { position: fixed; bottom: 0px; right: 30px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; }
     .ken-bounce { animation: kenJump 0.4s ease; }
     @keyframes kenJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-    #ken-speech { background: #fff; color: #000; padding: 10px 15px; border-radius: 12px; font-weight: bold; font-size: 0.95rem; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 220px; text-align: center; }
-    #ken-speech::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
-    #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; pointer-events: none; } /* svgの誤タッチを防止 */
+    #ken-speech { background: #fff; color: #000; padding: 10px 15px; border-radius: 12px; font-weight: bold; font-size: 0.95rem; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 220px; text-align: center; border: 2px solid #ccc; }
+    #ken-speech::after { content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); border-width: 12px 12px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+    #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; pointer-events: none; background: rgba(0,0,0,0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.5);} 
 
-    /* レスポンシブ対応 */
-    @media (max-width: 1024px) {
+    /* ========================================================
+       📱 デバイスごとの完全レスポンシブ分岐 (5パターン)
+       ======================================================== */
+
+    /* 1. PC (基本設定: そのまま) */
+
+    /* 2. タブレット横 (iPad Landscapeなど 幅1024px以下) */
+    @media (max-width: 1024px) and (orientation: landscape) {
         #sidebar { position: fixed; left: -280px; height: 100%; }
         #sidebar.open { transform: translateX(280px); }
         #sidebar-overlay { display: block; pointer-events: none; }
         #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
         #mobile-header { display: flex; }
-        
-        #main-content { padding: 10px; padding-bottom: 20px; }
-        #ken-character { position: relative; right: auto; bottom: auto; margin: 30px auto 10px; transform: scale(0.9); transform-origin: center top; }
-        #explanation-box { padding: 12px; padding-right: 12px; }
+        #main-content { padding: 15px; padding-bottom: 20px; }
+        #ken-character { position: absolute; right: 20px; bottom: 20px; transform: scale(0.85); transform-origin: right bottom; }
+        #explanation-box { padding-right: 120px; } 
+        .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 100px; }
+    }
 
-        #reaction-title { font-size: 1.4rem; }
-        .instruction { font-size: 0.95rem; padding: 3px 10px; }
+    /* 3. タブレット縦 (iPad Portraitなど 幅834px以下) */
+    @media (max-width: 834px) and (orientation: portrait) {
+        #sidebar { position: fixed; left: -280px; height: 100%; }
+        #sidebar.open { transform: translateX(280px); }
+        #sidebar-overlay { display: block; pointer-events: none; }
+        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
+        #mobile-header { display: flex; }
+        #main-content { padding: 15px; padding-bottom: 20px; }
+        /* ケンくんは解説の下（中央）へ */
+        #ken-character { position: relative; right: auto; bottom: auto; margin: 30px auto 10px; transform: scale(0.9); transform-origin: center top; }
+        #explanation-box { padding-right: 15px; } 
+        #reaction-title { font-size: 1.6rem; }
+        .substance-group { padding: 15px 10px; min-width: 100px; }
+        .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 90px; }
+    }
+
+    /* 4. スマホ縦 (幅600px以下) */
+    @media (max-width: 600px) and (orientation: portrait) {
+        #sidebar { position: fixed; left: -280px; height: 100%; }
+        #sidebar.open { transform: translateX(280px); }
+        #sidebar-overlay { display: block; pointer-events: none; }
+        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
+        #mobile-header { display: flex; }
+        #main-content { padding: 10px; padding-bottom: 20px; }
+        #ken-character { position: relative; right: auto; bottom: auto; margin: 20px auto 10px; transform: scale(0.8); transform-origin: center top; }
+        #explanation-box { padding: 12px; font-size: 0.95rem; }
+        #reaction-title { font-size: 1.3rem; }
+        .instruction { font-size: 0.9rem; padding: 3px 10px; }
         #practice-status { font-size: 1rem; }
-        #workspace { gap: 6px; }
-        .substance-group { padding: 10px 8px; gap: 10px; min-width: 80px; }
+        #workspace { gap: 4px; }
+        .substance-group { padding: 10px 5px; gap: 8px; min-width: 70px; }
         .substance-name { font-size: 0.75rem; padding: 4px 6px; }
-        select.formula-select { font-size: 1.2rem; padding: 5px 25px 5px 8px; background-size: 14px;}
-        .coeff-btn { width: 36px; height: 36px; font-size: 1.4rem; }
+        select.formula-select { font-size: 1.1rem; padding: 5px 22px 5px 6px; background-size: 12px;}
+        .coeff-btn { width: 34px; height: 34px; font-size: 1.4rem; }
         .big-coeff { font-size: 2rem; }
-        .chem-formula { font-size: 1.6rem; }
-        .models-container { max-width: 100px; gap: 4px; }
+        .chem-formula { font-size: 1.4rem; }
         .operator { font-size: 1.6rem; }
-        .operator-st1 { margin-top: 45px; }
-        .operator-st2 { margin-top: 85px; }
+        .operator-st1 { margin-top: 40px; } .operator-st2 { margin-top: 80px; }
         .primary-btn { padding: 12px 30px; font-size: 1.2rem; }
     }
-    
+
+    /* 5. スマホ横 (高さ500px以下) */
     @media (max-height: 500px) and (orientation: landscape) {
-        #mobile-header { padding: 5px 15px; }
+        #sidebar { position: fixed; left: -280px; height: 100%; }
+        #sidebar.open { transform: translateX(280px); }
+        #sidebar-overlay { display: block; pointer-events: none; }
+        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
+        #mobile-header { display: flex; padding: 5px 15px; }
         .mobile-title { font-size: 1rem; }
+        #main-content { padding: 10px; padding-bottom: 10px; }
         #reaction-header { margin-bottom: 5px; flex-direction: row; align-items: center; }
         #reaction-title { font-size: 1.2rem; margin: 0; margin-right: 10px; }
         .instruction { font-size: 0.8rem; padding: 2px 8px; }
@@ -180,14 +221,14 @@
         .primary-btn { padding: 8px 25px; font-size: 1.1rem; box-shadow: 0 4px 0 #009eb3; }
         .primary-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #009eb3; }
         #feedback { font-size: 0.95rem; min-height: 25px; }
-        #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
-        #ken-character { transform: scale(0.6); margin: 10px auto 0; }
+        #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; padding-right: 80px;} /* 横画面はケンくんを右下に */
+        #ken-character { position: fixed; right: 10px; bottom: 10px; transform: scale(0.5); transform-origin: right bottom; margin:0;}
     }
 </style>
 </head>
 <body>
 
-<div id="tutorial-modal" class="modal-overlay">
+<div id="particle-container"></div> <div id="tutorial-modal" class="modal-overlay">
     <div class="modal-content">
         <h2>🧪 GOKU-CHEMI へようこそ！</h2>
         <p>このアプリは、化学反応式を「極める」ためのシミュレーターだ！</p>
@@ -228,10 +269,11 @@
     </div>
     <div class="section-title">📚 化学反応式リスト</div>
     <ul class="menu-list" id="menu-list"></ul>
-    <div class="section-title">🎮 練習モード（ランダム出題）</div>
+    <div class="section-title">🎮 練習・復習モード</div>
     <ul class="menu-list">
         <li class="menu-item practice-btn" onclick="startPractice('std')">🟢 標準トレーニング (5問)</li>
         <li class="menu-item practice-btn" onclick="startPractice('hard')">🔥 最難関チャレンジ (3問)</li>
+        <li class="menu-item review-btn" id="review-btn" onclick="startPractice('review')" style="display:none;">📖 弱点克服 (0問)</li>
     </ul>
     <div class="section-title">⚙️ 設定</div>
     <ul class="menu-list">
@@ -264,8 +306,10 @@
 </main>
 
 <script>
-// --- ポイントシステム ---
+// --- システム・データ管理 ---
 let userPoints = 0;
+let userMistakes = []; 
+
 const ranks = [
     { pt: 0,    title: "🔰 見習い錬金術師" }, { pt: 100,  title: "🧪 駆け出しケミスト" }, { pt: 300,  title: "👨‍🔬 実験室のホープ" },
     { pt: 600,  title: "🔬 一人前の研究者" }, { pt: 1000, title: "🎓 優秀な科学者" }, { pt: 1500, title: "🧬 真理の探求者" },
@@ -273,20 +317,32 @@ const ranks = [
     { pt: 9999, title: "🌌 究極の創造神" }
 ];
 
-function initPoints() {
-    let saved = localStorage.getItem('gokuChemiPoints');
-    if (saved !== null) { 
-        let parsed = parseInt(saved, 10);
-        // ★ NaN混入防止の超安全装置
+function initData() {
+    let savedPt = localStorage.getItem('gokuChemiPoints');
+    if (savedPt !== null) { 
+        let parsed = parseInt(savedPt, 10);
         if (!isNaN(parsed) && parsed >= 0) userPoints = parsed; 
     }
+    
+    // ★セーブデータの型チェック（異常値・バグ防止の安全装置）
+    let savedMis = localStorage.getItem('gokuChemiMistakes');
+    if (savedMis !== null) {
+        try { 
+            let parsedMis = JSON.parse(savedMis); 
+            if (Array.isArray(parsedMis)) { userMistakes = parsedMis; } 
+            else { userMistakes = []; }
+        } catch(e) { userMistakes = []; }
+    }
     updatePointUI();
+    updateReviewMenu();
 }
+
 function addPoints(pts) {
     userPoints += pts; 
     localStorage.setItem('gokuChemiPoints', userPoints);
     updatePointUI();
 }
+
 function updatePointUI() {
     document.getElementById('point-display').innerHTML = `${userPoints} <span class="pt-unit">Pt</span>`;
     let currentRank = ranks[0].title;
@@ -296,50 +352,47 @@ function updatePointUI() {
     document.getElementById('rank-title').innerText = currentRank;
 }
 
-function generateTransferCode() {
-    let num = (userPoints * 7) + 1234;
-    return "GK" + num.toString(36).toUpperCase();
+function recordMistake(title) {
+    if (!userMistakes.includes(title)) {
+        userMistakes.push(title);
+        localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes));
+        updateReviewMenu();
+    }
 }
+
+function clearMistake(title) {
+    if (userMistakes.includes(title)) {
+        userMistakes = userMistakes.filter(t => t !== title);
+        localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes));
+        updateReviewMenu();
+    }
+}
+
+function updateReviewMenu() {
+    const btn = document.getElementById('review-btn');
+    if (userMistakes.length > 0) {
+        btn.style.display = 'block';
+        btn.innerText = `📖 弱点克服 (${userMistakes.length}問)`;
+    } else {
+        btn.style.display = 'none';
+    }
+}
+
+function generateTransferCode() { return "GK" + ((userPoints * 7) + 1234).toString(36).toUpperCase(); }
 function executeTransfer() {
     let input = document.getElementById('transfer-input').value.trim().toUpperCase();
     if (input === "") return; 
     if (!input.startsWith("GK") || input.length < 3) { alert("パスワードが正しくありません！"); return; }
-    let baseStr = input.substring(2);
-    let num = parseInt(baseStr, 36);
-    if (isNaN(num)) { alert("パスワードが正しくありません！"); return; }
+    let num = parseInt(input.substring(2), 36);
     let rawPt = (num - 1234) / 7;
-    if (!Number.isInteger(rawPt) || rawPt < 0) { alert("パスワードが正しくありません！"); return; }
-    userPoints = rawPt;
-    localStorage.setItem('gokuChemiPoints', userPoints);
-    updatePointUI();
-    alert(`復元成功！ ${userPoints} Pt から再開します！`);
-    closeTransferModal();
+    if (!Number.isInteger(rawPt) || rawPt < 0 || isNaN(rawPt)) { alert("パスワードが正しくありません！"); return; }
+    userPoints = rawPt; localStorage.setItem('gokuChemiPoints', userPoints);
+    updatePointUI(); alert(`復元成功！ ${userPoints} Pt から再開します！`); closeTransferModal();
 }
-
-function openTransferModal() { 
-    document.getElementById('my-transfer-code').innerText = generateTransferCode(); 
-    document.getElementById('transfer-input').value = ""; 
-    document.getElementById('transfer-modal').style.display = 'flex'; 
-    document.body.classList.add('modal-open');
-    closeMenu(); 
-}
-function closeTransferModal() { 
-    document.getElementById('transfer-modal').style.display = 'none'; 
-    document.body.classList.remove('modal-open');
-}
-
-function checkTutorial() {
-    if (!localStorage.getItem('gokuChemiTutorialDone')) { 
-        document.getElementById('tutorial-modal').style.display = 'flex'; 
-        document.body.classList.add('modal-open');
-    }
-}
-function closeTutorial() {
-    document.getElementById('tutorial-modal').style.display = 'none';
-    document.body.classList.remove('modal-open');
-    localStorage.setItem('gokuChemiTutorialDone', 'true');
-}
-
+function openTransferModal() { document.getElementById('my-transfer-code').innerText = generateTransferCode(); document.getElementById('transfer-input').value = ""; document.getElementById('transfer-modal').style.display = 'flex'; document.body.classList.add('modal-open'); closeMenu(); }
+function closeTransferModal() { document.getElementById('transfer-modal').style.display = 'none'; document.body.classList.remove('modal-open'); }
+function checkTutorial() { if (!localStorage.getItem('gokuChemiTutorialDone')) { document.getElementById('tutorial-modal').style.display = 'flex'; document.body.classList.add('modal-open'); } }
+function closeTutorial() { document.getElementById('tutorial-modal').style.display = 'none'; document.body.classList.remove('modal-open'); localStorage.setItem('gokuChemiTutorialDone', 'true'); }
 function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
 function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
 
@@ -515,11 +568,17 @@ function expandFormula(formula) {
     return atoms;
 }
 
+// ★ 粒子モデルのスマート配置 (NaHCO3などで縦長になりすぎるのを防ぐ)
 function getMoleculeHtml(formula) {
     const atoms = expandFormula(formula);
     const hasMetal = atoms.some(a => metals.includes(a));
     const layoutType = hasMetal ? 'ionic' : 'covalent';
-    let html = `<div class="molecule-auto ${layoutType}">`;
+    
+    let cols = atoms.length <= 3 ? atoms.length : Math.ceil(Math.sqrt(atoms.length));
+    if(!hasMetal && atoms.length <= 4) cols = atoms.length; 
+    let maxWidth = cols * 32 + 15; 
+    
+    let html = `<div class="molecule-auto ${layoutType}" style="max-width:${maxWidth}px;">`;
     atoms.forEach(type => {
         const style = atomStyles[type] || { color: '#FFF', text: '#000', border: '2px solid #bdbdbd' };
         const tShadow = style.text === '#000' 
@@ -531,22 +590,39 @@ function getMoleculeHtml(formula) {
     return html;
 }
 
+// ★ 超ド派手＆文字に被らないパーティクル演出
 function triggerCelebration() {
-    const colors = ['#00e5ff', '#ffc400', '#00e676', '#ff3d00', '#ffffff'];
-    const container = document.getElementById('main-content');
-    for (let i = 0; i < 60; i++) {
+    const emojis = ['✨', '🌟', '💎', '🔥', '🧪', '🎉'];
+    const colors = ['#00e5ff', '#ffc400', '#00e676', '#ff3d00', '#ffffff', '#e040fb'];
+    const container = document.getElementById('particle-container');
+    container.innerHTML = ''; 
+    
+    for (let i = 0; i < 80; i++) {
         let particle = document.createElement('div');
         particle.className = 'particle';
         particle.style.left = (Math.random() * 100) + '%';
-        particle.style.top = '-20px';
-        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        if(Math.random() > 0.5) particle.style.borderRadius = '50%';
-        let duration = (Math.random() * 1.5 + 1);
-        particle.style.animationDuration = duration + 's';
-        let tx = (Math.random() * 200 - 100) + 'px';
+        
+        if (Math.random() > 0.3) {
+            particle.style.width = (Math.random() * 10 + 5) + 'px';
+            particle.style.height = (Math.random() * 10 + 5) + 'px';
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            if(Math.random() > 0.5) particle.style.borderRadius = '50%';
+        } else {
+            particle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            particle.style.fontSize = (Math.random() * 15 + 15) + 'px';
+        }
+
+        let duration = (Math.random() * 2 + 1.5);
+        particle.style.animation = `fallRotate ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
+        
+        let tx = (Math.random() * 300 - 150) + 'px';
+        let rot = (Math.random() * 720 - 360) + 'deg';
         particle.style.setProperty('--tx', tx);
+        particle.style.setProperty('--rot', rot);
+        
+        particle.style.animationDelay = (Math.random() * 0.5) + 's';
+        
         container.appendChild(particle);
-        setTimeout(() => particle.remove(), duration * 1000);
     }
 }
 
@@ -557,7 +633,7 @@ function fitWorkspace() {
     if(!wrapper || !workspace) return;
     workspace.style.transform = 'scale(1)';
     requestAnimationFrame(() => {
-        const marginX = window.innerWidth <= 1024 ? 10 : 30;
+        const marginX = window.innerWidth <= 600 ? 5 : (window.innerWidth <= 1024 ? 10 : 30);
         const marginY = 10;
         const wrapperWidth = wrapper.clientWidth - marginX;
         const wrapperHeight = wrapper.clientHeight - marginY;
@@ -573,7 +649,7 @@ window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer
 window.addEventListener('orientationchange', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitWorkspace, 300); });
 
 window.onload = () => {
-    initPoints();
+    initData();
     checkTutorial();
     buildMenu();
     updateKen('normal');
@@ -590,6 +666,7 @@ function buildMenu() {
         li.onclick = () => selectFreeReaction(i);
         list.appendChild(li);
     });
+    updateReviewMenu();
 }
 
 function selectFreeReaction(index) {
@@ -602,24 +679,30 @@ function selectFreeReaction(index) {
 }
 
 function startPractice(type) {
+    if (type === 'review' && userMistakes.length === 0) return;
     appMode = `practice_${type}`;
     closeMenu();
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
     
-    let sourcePool = type === 'std' ? standardReactions : hardReactions;
-    let formulaPool = type === 'std' ? allStandardFormulas : [...allStandardFormulas, ...allHardFormulas];
-    let count = type === 'std' ? 5 : 3;
+    let sourcePool = [...standardReactions, ...hardReactions];
+    let formulaPool = [...allStandardFormulas, ...allHardFormulas];
     
-    let shuffled = [...sourcePool].sort(() => 0.5 - Math.random());
-    practiceQuestions = shuffled.slice(0, count).map(r => ({ reaction: r, pool: formulaPool }));
+    if (type === 'std') {
+        practiceQuestions = [...standardReactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allStandardFormulas }));
+    } else if (type === 'hard') {
+        practiceQuestions = [...hardReactions].sort(() => 0.5 - Math.random()).slice(0, 3).map(r => ({ reaction: r, pool: formulaPool }));
+    } else if (type === 'review') {
+        let reviewReactions = sourcePool.filter(r => userMistakes.includes(r.title));
+        practiceQuestions = reviewReactions.sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: formulaPool }));
+    }
+    
     currentQIndex = 0;
-    
     loadPracticeQuestion();
 }
 
 function loadPracticeQuestion() {
     const q = practiceQuestions[currentQIndex];
-    let modeName = appMode === 'practice_std' ? '標準トレーニング' : '🔥 最難関チャレンジ';
+    let modeName = appMode === 'practice_std' ? '標準トレーニング' : (appMode === 'practice_hard' ? '🔥 最難関チャレンジ' : '📖 弱点克服');
     document.getElementById('practice-status').innerText = `${modeName} (${currentQIndex + 1} / ${practiceQuestions.length})`;
     setupReaction(q.reaction, q.pool);
 }
@@ -650,7 +733,6 @@ function generateDistractors(correct, pool) {
         let re = /([A-Z][a-z]*)(\d*)/g;
         let match; let parts = [];
         while ((match = re.exec(fakeBase)) !== null) parts.push({ elem: match[1], num: match[2] ? parseInt(match[2]) : 1 });
-        
         if (parts.length > 0) {
             for (let i = 0; i < 15 && options.size < 5; i++) {
                 let fake = "";
@@ -684,11 +766,7 @@ function setupReaction(reaction, pool) {
     isCleared = false; 
 
     const addSub = (item, side) => {
-        substances.push({
-            id: `sub-${idCounter++}`, side: side, name: item.n,
-            correct: item.f, selected: '?', coeff: 1,
-            options: generateDistractors(item.f, pool)
-        });
+        substances.push({ id: `sub-${idCounter++}`, side: side, name: item.n, correct: item.f, selected: '?', coeff: 1, options: generateDistractors(item.f, pool) });
     };
     reaction.left.forEach(item => addSub(item, 'left'));
     reaction.right.forEach(item => addSub(item, 'right'));
@@ -816,11 +894,12 @@ function checkStage1() {
     } else if (hasError) {
         feedback.innerHTML = `<span class="feedback-error">⚠️ 赤くなっている化学式が間違っているよ。選び直そう！</span>`;
         updateKen('error');
+        recordMistake(currentReactionData.title); 
     } else {
         stage = 2;
         updateKen('stage1');
         document.getElementById('instruction-text').innerText = "STEP2: ＋/－ボタンで係数を調整し、左右の原子数を合わせよう！";
-        feedback.innerHTML = `<div style="color:var(--accent-cyan); font-size:1.2rem;">✨化学式クリア！次は原子の数を合わせよう！</div>`;
+        feedback.innerHTML = `<div style="color:var(--accent-cyan); font-size:1.2rem; text-shadow:0 2px 4px #000;">✨化学式クリア！次は原子の数を合わせよう！</div>`;
         setTimeout(() => { if(stage===2) document.getElementById('feedback').innerHTML = ''; }, 3000);
         renderWorkspace();
     }
@@ -853,9 +932,7 @@ function checkStage2() {
     if (isCorrect) {
         const coeffs = substances.map(s => s.coeff);
         let gcd = coeffs[0];
-        for (let i = 1; i < coeffs.length; i++) {
-            gcd = getGCD(gcd, coeffs[i]);
-        }
+        for (let i = 1; i < coeffs.length; i++) { gcd = getGCD(gcd, coeffs[i]); }
         if (gcd > 1) {
             isCorrect = false;
             errorMessages.push(`数は合っているけど、すべての係数を「${gcd}」で割って、最も簡単な整数比にできるよ！`);
@@ -871,9 +948,10 @@ function checkStage2() {
         if (!isCleared) {
             addPoints(10);
             isCleared = true; 
+            if (appMode === 'practice_review') clearMistake(currentReactionData.title);
         }
 
-        triggerCelebration();
+        triggerCelebration(); 
         updateKen('success');
         wrapper.classList.remove('glow-effect');
         void wrapper.offsetWidth; 
@@ -896,6 +974,7 @@ function checkStage2() {
         }
     } else {
         updateKen('error');
+        recordMistake(currentReactionData.title); 
         wrapper.classList.remove('glow-effect');
         let html = `<div class="feedback-error">`;
         errorMessages.forEach(msg => { html += `<div>⚠️ ${msg}</div>`; });
@@ -910,7 +989,7 @@ function nextPracticeQuestion() {
     if (currentQIndex < practiceQuestions.length) {
         loadPracticeQuestion();
     } else {
-        let bonus = appMode === 'practice_std' ? 50 : 270;
+        let bonus = appMode === 'practice_std' ? 50 : (appMode === 'practice_hard' ? 270 : 100);
         addPoints(bonus);
 
         triggerCelebration(); 
@@ -923,6 +1002,8 @@ function nextPracticeQuestion() {
         document.getElementById('explanation-box').style.display = 'none';
         document.getElementById('check-btn').style.display = 'none';
         document.getElementById('workspace-wrapper').style.transform = 'none';
+        
+        if (appMode === 'practice_review') updateReviewMenu(); 
     }
 }
 </script>
