@@ -65,7 +65,6 @@
     #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
     /* メインエリア・パーティクルコンテナ */
-    /* Z-indexの階層調整：パーティクルは中間(z=10)、テキストエリアは手前(z=100)で被り防止 */
     #particle-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: hidden; }
     #main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; overflow-x: hidden; position: relative; z-index: 5; padding-bottom: 180px; }
     
@@ -84,7 +83,7 @@
     .coeff-controls { display: flex; gap: 15px; }
     .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; backdrop-filter: blur(2px);}
     .coeff-btn:active { background: var(--accent-cyan); color: #000; transform: scale(0.95); }
-    .formula-display { display: flex; align-items: baseline; position: relative; z-index: 100; } /* 手前に */
+    .formula-display { display: flex; align-items: baseline; position: relative; z-index: 100; } 
     .big-coeff { font-size: 3rem; font-weight: 900; color: var(--accent-gold); margin-right: 2px; line-height: 1; text-shadow: 0 2px 5px #000; }
     .hidden-coeff { color: rgba(255,255,255,0.1); text-shadow: none;}
     .chem-formula { font-size: 2.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; text-shadow: 0 2px 5px #000; }
@@ -108,7 +107,7 @@
     .arrow { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4), 0 2px 5px #000; }
 
     /* アクションエリア */
-    #action-area { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; position: relative; z-index: 100;} /* ボタンや解説は手前 */
+    #action-area { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; position: relative; z-index: 100;}
     .primary-btn { padding: 16px 60px; font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: 2px; background-color: var(--accent-cyan); border: none; border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #009eb3, 0 10px 20px rgba(0,0,0,0.6); transition: 0.1s; width: fit-content; }
     .primary-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #009eb3, 0 2px 5px rgba(0,0,0,0.4); }
     .primary-btn.next-btn { background-color: var(--accent-gold); box-shadow: 0 6px 0 #cc9d00; }
@@ -119,14 +118,12 @@
     #explanation-box { display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); padding: 15px; padding-right: 140px; border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.7; max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; box-sizing: border-box; backdrop-filter: blur(6px); box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
     .exp-title { color: var(--accent-green); font-weight: 900; font-size: 1.1rem; margin-bottom: 5px; }
 
-    /* クリア文字も一番手前に */
     .goku-clear-text { position: relative; z-index: 100; color: var(--accent-gold); font-size: 2rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 196, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5), 0 4px 10px #000; animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; background: rgba(0,0,0,0.6); padding: 10px 30px; border-radius: 20px; border: 2px solid var(--accent-gold);}
     
     @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
     @keyframes successBorder { 0% { border-color: #2a2e45; box-shadow: inset 0 0 0 transparent; } 50% { border-color: var(--accent-gold); box-shadow: inset 0 0 50px rgba(255, 196, 0, 0.3); } 100% { border-color: #2a2e45; box-shadow: inset 0 0 10px rgba(255, 196, 0, 0.1); } }
     .glow-effect { animation: successBorder 1.5s ease-out; }
     
-    /* 派手なパーティクル */
     .particle { position: absolute; pointer-events: none; z-index: 10; opacity: 0; }
     @keyframes fallRotate { 
         0% { transform: translateY(-50px) rotate(0deg) scale(0.5); opacity: 1; } 
@@ -134,7 +131,7 @@
         100% { transform: translateY(110vh) rotate(var(--rot)) translateX(var(--tx)) scale(1.2); opacity: 0; } 
     }
 
-    /* 人体模型ケン (一番手前) */
+    /* 人体模型ケン */
     #ken-character { position: fixed; bottom: 0px; right: 30px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; }
     .ken-bounce { animation: kenJump 0.4s ease; }
     @keyframes kenJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
@@ -145,9 +142,6 @@
     /* ========================================================
        📱 デバイスごとの完全レスポンシブ分岐 (5パターン)
        ======================================================== */
-
-    /* 1. PC (基本設定: そのまま) */
-
     /* 2. タブレット横 (iPad Landscapeなど 幅1024px以下) */
     @media (max-width: 1024px) and (orientation: landscape) {
         #sidebar { position: fixed; left: -280px; height: 100%; }
@@ -169,7 +163,6 @@
         #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
         #mobile-header { display: flex; }
         #main-content { padding: 15px; padding-bottom: 20px; }
-        /* ケンくんは解説の下（中央）へ */
         #ken-character { position: relative; right: auto; bottom: auto; margin: 30px auto 10px; transform: scale(0.9); transform-origin: center top; }
         #explanation-box { padding-right: 15px; } 
         #reaction-title { font-size: 1.6rem; }
@@ -221,14 +214,16 @@
         .primary-btn { padding: 8px 25px; font-size: 1.1rem; box-shadow: 0 4px 0 #009eb3; }
         .primary-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #009eb3; }
         #feedback { font-size: 0.95rem; min-height: 25px; }
-        #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; padding-right: 80px;} /* 横画面はケンくんを右下に */
+        #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; padding-right: 80px;} 
         #ken-character { position: fixed; right: 10px; bottom: 10px; transform: scale(0.5); transform-origin: right bottom; margin:0;}
     }
 </style>
 </head>
 <body>
 
-<div id="particle-container"></div> <div id="tutorial-modal" class="modal-overlay">
+<div id="particle-container"></div>
+
+<div id="tutorial-modal" class="modal-overlay">
     <div class="modal-content">
         <h2>🧪 GOKU-CHEMI へようこそ！</h2>
         <p>このアプリは、化学反応式を「極める」ためのシミュレーターだ！</p>
@@ -306,7 +301,6 @@
 </main>
 
 <script>
-// --- システム・データ管理 ---
 let userPoints = 0;
 let userMistakes = []; 
 
@@ -323,8 +317,6 @@ function initData() {
         let parsed = parseInt(savedPt, 10);
         if (!isNaN(parsed) && parsed >= 0) userPoints = parsed; 
     }
-    
-    // ★セーブデータの型チェック（異常値・バグ防止の安全装置）
     let savedMis = localStorage.getItem('gokuChemiMistakes');
     if (savedMis !== null) {
         try { 
@@ -505,6 +497,7 @@ const standardReactions = [
     { title: "水の電気分解", left: [{n:"水", f:"H2O"}], right: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], exp: "水に少量の水酸化ナトリウムなどを溶かして電圧をかけると、陽極（＋）から酸素、陰極（－）から水素が発生します。" },
     { title: "塩化銅の電気分解", left: [{n:"塩化銅", f:"CuCl2"}], right: [{n:"銅", f:"Cu"}, {n:"塩素", f:"Cl2"}], exp: "青色の塩化銅水溶液を電気分解すると、陰極（－）に赤い銅が付着し、陽極（＋）からプールの消毒液のにおいがする塩素が発生します。" },
     { title: "塩化マグネシウムの電気分解", left: [{n:"塩化マグネシウム", f:"MgCl2"}], right: [{n:"マグネシウム", f:"Mg"}, {n:"塩素", f:"Cl2"}], exp: "塩化マグネシウム水溶液を電気分解すると、陰極から金属マグネシウム、陽極から塩素ガスが発生します。" },
+    { title: "過酸化水素の分解", left: [{n:"過酸化水素", f:"H2O2"}], right: [{n:"水", f:"H2O"}, {n:"酸素", f:"O2"}], exp: "オキシドール（過酸化水素水）に二酸化マンガン（触媒）を加えると、分解されて酸素が発生します。二酸化マンガン自身は変化しません。" },
     { title: "鉄と硫黄の化合", left: [{n:"鉄", f:"Fe"}, {n:"硫黄", f:"S"}], right: [{n:"硫化鉄", f:"FeS"}], exp: "鉄と硫黄の粉末を混ぜて加熱すると、黒色の硫化鉄になります。反応する時に熱を出すため途中で加熱を止めても反応が進みます。" },
     { title: "銅と硫黄の化合", left: [{n:"銅", f:"Cu"}, {n:"硫黄", f:"S"}], right: [{n:"硫化銅", f:"Cu2S"}], exp: "銅と硫黄を混ぜて加熱すると、激しく熱と光を出して反応し、黒色の硫化銅ができます。" },
     { title: "水素と酸素の化合", left: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}], exp: "水素と酸素の混合気体に点火すると、音を立てて爆発的に反応し水ができます。この仕組みを利用したのが燃料電池です。" },
@@ -514,20 +507,25 @@ const standardReactions = [
     { title: "鉄の燃焼", left: [{n:"鉄", f:"Fe"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄", f:"FeO"}], exp: "スチールウール（鉄）を空気中で燃やすと、黒っぽい酸化鉄になります。質量は結びついた酸素の分だけ増えます。" },
     { title: "酸化銅の炭素による還元", left: [{n:"酸化銅", f:"CuO"}, {n:"炭素", f:"C"}], right: [{n:"銅", f:"Cu"}, {n:"二酸化炭素", f:"CO2"}], exp: "酸化銅と炭素の粉末を混ぜて加熱すると、酸素と結びつきやすい炭素が酸素を奪い（還元）、赤色の銅ができます。" },
     { title: "酸化銅の水素による還元", left: [{n:"酸化銅", f:"CuO"}, {n:"水素", f:"H2"}], right: [{n:"銅", f:"Cu"}, {n:"水", f:"H2O"}], exp: "加熱した黒色の酸化銅に水素ガスを触れさせると、水素が酸素を奪って水になり、赤色の銅が現れます。" },
+    { title: "二酸化炭素のマグネシウム還元", left: [{n:"マグネシウム", f:"Mg"}, {n:"二酸化炭素", f:"CO2"}], right: [{n:"酸化マグネシウム", f:"MgO"}, {n:"炭素", f:"C"}], exp: "ドライアイス（二酸化炭素）の中でマグネシウムを燃やすと、マグネシウムが二酸化炭素から酸素を奪い（還元）、酸化マグネシウムと黒い炭素ができます。" },
     { title: "メタンの燃焼", left: [{n:"メタン", f:"CH4"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタン（都市ガスの主成分）などの有機物が燃焼すると、必ず二酸化炭素と水が発生します。" },
-    { title: "エタノールの燃焼", left: [{n:"エタノール", f:"C2H6O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "エタノールが燃焼すると、二酸化炭素と水が発生します。エタノール分子の中に酸素(O)が含まれているため、係数合わせに注意が必要です。" },
+    { title: "エタノールの燃焼", left: [{n:"エタノール", f:"C2H5OH"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "エタノールが燃焼すると、二酸化炭素と水が発生します。エタノール分子の中に酸素(O)が含まれているため、係数合わせに注意が必要です。" },
+    { title: "硫化鉄と塩酸", left: [{n:"硫化鉄", f:"FeS"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化鉄", f:"FeCl2"}, {n:"硫化水素", f:"H2S"}], exp: "鉄と硫黄が化合した硫化鉄に塩酸を加えると、腐卵臭（温泉のにおい）のする有毒な硫化水素が発生します。" },
     { title: "塩酸と水酸化ナトリウム", left: [{n:"塩酸", f:"HCl"}, {n:"水酸化ナトリウム", f:"NaOH"}], right: [{n:"塩化ナトリウム", f:"NaCl"}, {n:"水", f:"H2O"}], exp: "塩酸（酸）と水酸化ナトリウム水溶液（アルカリ）の中和反応です。塩化ナトリウム（食塩）と水ができます。" },
     { title: "硫酸と水酸化バリウム", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化バリウム", f:"Ba(OH)2"}], right: [{n:"硫酸バリウム", f:"BaSO4"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化バリウムの中和反応です。白い沈殿物である硫酸バリウムと水ができます。" }
 ];
 
 const hardReactions = [
     { title: "プロパンの燃焼", left: [{n:"プロパン", f:"C3H8"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "プロパン（LPガスの主成分）の燃焼です。炭素と水素の数が多いので、必要な酸素分子の数も多くなります。" },
-    { title: "アルミニウムと塩酸", left: [{n:"アルミニウム", f:"Al"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水素", f:"H2"}], exp: "アルミニウムなどの金属に塩酸を加えると、水素が発生して溶け、塩化アルミニウムになります。" },
-    { title: "アンモニアの酸化", left: [{n:"アンモニア", f:"NH3"}, {n:"酸素", f:"O2"}], right: [{n:"一酸化窒素", f:"NO"}, {n:"水", f:"H2O"}], exp: "アンモニアを白金触媒を使って酸化させる反応です。一酸化窒素と水ができます。" },
-    { title: "銅と濃硝酸", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"二酸化窒素", f:"NO2"}], exp: "銅に濃硝酸を加えると、激しく反応して赤褐色の有毒ガス（二酸化窒素）が発生します。" },
-    { title: "黄鉄鉱の燃焼", left: [{n:"二硫化鉄", f:"FeS2"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"二酸化硫黄", f:"SO2"}], exp: "黄鉄鉱（二硫化鉄）を燃焼させる反応です。有害な二酸化硫黄が発生します。" },
     { title: "ブタンの燃焼", left: [{n:"ブタン", f:"C4H10"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "ブタン（カセットコンロのガスの主成分）の燃焼です。係数がすべて大きくなる高校入試の難問です。" },
+    { title: "酸化銅のエタノール還元", left: [{n:"酸化銅", f:"CuO"}, {n:"エタノール", f:"C2H5OH"}], right: [{n:"銅", f:"Cu"}, {n:"アセトアルデヒド", f:"CH3CHO"}, {n:"水", f:"H2O"}], exp: "加熱した酸化銅をエタノールに入れると、酸化銅は還元されて赤色の銅になり、エタノールは酸化されて特有のにおいがするアセトアルデヒドに変化します。" },
+    { title: "アンモニアの発生", left: [{n:"塩化アンモニウム", f:"NH4Cl"}, {n:"水酸化カルシウム", f:"Ca(OH)2"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"アンモニア", f:"NH3"}], exp: "塩化アンモニウムと水酸化カルシウムを混ぜて加熱すると、刺激臭のあるアンモニアが発生します。水に溶けやすいため上方置換法で集めます。" },
+    { title: "吸熱反応", left: [{n:"水酸化バリウム", f:"Ba(OH)2"}, {n:"塩化アンモニウム", f:"NH4Cl"}], right: [{n:"塩化バリウム", f:"BaCl2"}, {n:"アンモニア", f:"NH3"}, {n:"水", f:"H2O"}], exp: "水酸化バリウムと塩化アンモニウムを混ぜると、周囲の熱を奪いながら反応（吸熱反応）し、温度が急激に下がります。" },
+    { title: "アンモニアの酸化", left: [{n:"アンモニア", f:"NH3"}, {n:"酸素", f:"O2"}], right: [{n:"一酸化窒素", f:"NO"}, {n:"水", f:"H2O"}], exp: "アンモニアを白金触媒を使って酸化させる反応です。一酸化窒素と水ができます。" },
+    { title: "アルミニウムと塩酸", left: [{n:"アルミニウム", f:"Al"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水素", f:"H2"}], exp: "アルミニウムなどの金属に塩酸を加えると、水素が発生して溶け、塩化アルミニウムになります。" },
+    { title: "銅と濃硝酸", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"二酸化窒素", f:"NO2"}], exp: "銅に濃硝酸を加えると、激しく反応して赤褐色の有毒ガス（二酸化窒素）が発生します。" },
     { title: "銅と希硝酸", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"一酸化窒素", f:"NO"}], exp: "銅に薄い硝酸を加えると、無色の一酸化窒素が発生します。空気に触れるとすぐに赤褐色の二酸化窒素に変わります。" },
+    { title: "黄鉄鉱の燃焼", left: [{n:"二硫化鉄", f:"FeS2"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"二酸化硫黄", f:"SO2"}], exp: "黄鉄鉱（二硫化鉄）を燃焼させる反応です。有害な二酸化硫黄が発生します。" },
     { title: "硫化水素の燃焼", left: [{n:"硫化水素", f:"H2S"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}, {n:"二酸化硫黄", f:"SO2"}], exp: "温泉のにおいの元である有毒な硫化水素を燃やすと、水と二酸化硫黄になります。" },
     { title: "メタノールの燃焼", left: [{n:"メタノール", f:"CH4O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタノール（アルコールの一種）の燃焼です。エタノールと同様に二酸化炭素と水ができます。" },
     { title: "酸化アルミニウムと塩酸", left: [{n:"酸化アルミニウム", f:"Al2O3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水", f:"H2O"}], exp: "酸化アルミニウムは、酸（塩酸）とも反応して塩化アルミニウムと水を作ります。" },
@@ -568,7 +566,6 @@ function expandFormula(formula) {
     return atoms;
 }
 
-// ★ 粒子モデルのスマート配置 (NaHCO3などで縦長になりすぎるのを防ぐ)
 function getMoleculeHtml(formula) {
     const atoms = expandFormula(formula);
     const hasMetal = atoms.some(a => metals.includes(a));
@@ -590,7 +587,6 @@ function getMoleculeHtml(formula) {
     return html;
 }
 
-// ★ 超ド派手＆文字に被らないパーティクル演出
 function triggerCelebration() {
     const emojis = ['✨', '🌟', '💎', '🔥', '🧪', '🎉'];
     const colors = ['#00e5ff', '#ffc400', '#00e676', '#ff3d00', '#ffffff', '#e040fb'];
@@ -714,7 +710,9 @@ function generateDistractors(correct, pool) {
         'H2': ['H', 'H3', 'OH'], 'Cu': ['Cu2', 'CuO', 'C'], 'CuO': ['Cu2O', 'Cu', 'CO2'],
         'Ag2O': ['AgO', 'Ag', 'AgO2'], 'Na2CO3': ['NaCO3', 'Na3CO3', 'NaHCO3'], 'NaHCO3': ['Na2CO3', 'NaH2CO3', 'NaCO3'],
         'FeS': ['Fe2S', 'FeS2', 'Fe'], 'CuCl2': ['CuCl', 'Cu2Cl', 'Cl2'], 'MgCl2': ['MgCl', 'Mg2Cl', 'Mg'],
-        'C2H6O': ['C2H4O', 'CH4O', 'C2H6'], 'AlCl3': ['AlCl2', 'Al2Cl3', 'AlCl'], 'NH3': ['NH2', 'NH4', 'N2H3'],
+        'H2O2': ['HO', 'H2O', 'HO2', 'O2'], 'C2H5OH': ['C2H6O', 'C2H4O', 'CH3OH', 'CH3CHO'], 'CH3CHO': ['C2H6O', 'C2H5OH', 'CH3OH', 'C2H4'],
+        'NH4Cl': ['NH3Cl', 'NH4Cl2', 'NCl3'], 'Ca(OH)2': ['CaOH', 'Ca2(OH)', 'Ca(OH)3'], 'BaCl2': ['BaCl', 'Ba2Cl', 'Ba(Cl)2'],
+        'AlCl3': ['AlCl2', 'Al2Cl3', 'AlCl'], 'NH3': ['NH2', 'NH4', 'N2H3'],
         'HNO3': ['HNO2', 'H2NO3', 'NO3'], 'Cu(NO3)2': ['CuNO3', 'Cu2(NO3)', 'Cu(NO2)2'], 'FeS2': ['FeS', 'Fe2S', 'Fe2S3'],
         'SO2': ['SO', 'SO3', 'S2O'], 'H2S': ['HS', 'H2S2', 'S2'], 'CH4O': ['CH3O', 'C2H6O', 'CH4'],
         'Al2O3': ['AlO', 'AlO2', 'Al3O2'], 'CaCO3': ['Ca2CO3', 'CaCO2', 'Ca(CO3)2'], 'CaCl2': ['CaCl', 'Ca2Cl', 'Ca'],
@@ -722,7 +720,7 @@ function generateDistractors(correct, pool) {
         'Fe2O3': ['FeO', 'FeO2', 'Fe3O4'], 'CO': ['C2O', 'CO2', 'C'], 'CH4': ['CH3', 'C2H4', 'CH5'],
         'C3H8': ['C3H6', 'C4H8', 'C2H8'], 'C4H10': ['C4H8', 'C3H10', 'C5H10'], 'NO': ['N2O', 'NO2', 'N'],
         'NO2': ['NO', 'N2O', 'NO3'], 'Ba(OH)2': ['BaOH', 'Ba2(OH)', 'Ba(OH)3'], 'BaSO4': ['Ba2SO4', 'BaSO3', 'Ba(SO4)2'],
-        'NaOH': ['Na2OH', 'Na(OH)2', 'NaO'], 'NaCl': ['Na2Cl', 'NaCl2', 'Na'], 'HCl': ['H2Cl', 'HCl2', 'Cl2'],
+        'NaOH': ['Na2OH', 'Na(OH)2', 'NaO'], 'NaCl': ['Na2Cl', 'NaCl2', 'Na'], 'HCl': ['H2Cl', 'HCl2', 'Cl2'], 'FeCl2': ['FeCl', 'FeCl3', 'Fe2Cl'],
         'Mg': ['Mg2', 'Mn', 'Mo'], 'Fe': ['Fe2', 'F', 'Fl'], 'C': ['C2', 'O', 'H'],
         'Ag': ['Ag2', 'A', 'Ar'], 'Al': ['Al2', 'A', 'Am'], 'S': ['S2', 'Si', 'Se']
     };
