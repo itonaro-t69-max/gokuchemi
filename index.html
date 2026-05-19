@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI) v2.0.0</title>
+<title>極・化学反応式 (GOKU-CHEMI) v2.2.0</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -33,12 +33,17 @@
     .transfer-code { font-size: 2rem; font-weight: 900; color: var(--accent-gold); letter-spacing: 3px; user-select: all; -webkit-user-select: text;}
     .transfer-input { width: 80%; padding: 10px; font-size: 1.2rem; font-weight: bold; text-align: center; border-radius: 8px; border: 2px solid #4a4e69; background: #0f111a; color: #fff; text-transform: uppercase; margin-bottom: 10px; -webkit-user-select: text; user-select: text;}
     .transfer-input:focus { outline: none; border-color: var(--accent-cyan); }
+    
+    /* 苦手ノート専用デザイン */
+    .note-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #2a2e45; border-radius: 8px; margin-bottom: 8px; font-weight: bold;}
+    .delete-btn { background: var(--accent-red); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s;}
+    .delete-btn:active { transform: scale(0.9); }
 
     /* サイドバー */
     #sidebar { width: 280px; background-color: var(--bg-panel); border-right: 1px solid #2a2e45; display: flex; flex-direction: column; overflow-y: auto; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 1000; flex-shrink: 0; transition: transform 0.3s ease; }
     .app-title { padding: 20px 15px 15px; font-size: 1.4rem; font-weight: 900; color: #fff; text-align: center; background: linear-gradient(135deg, #1a1d2d 0%, #0f111a 100%); letter-spacing: 2px; }
     .app-title span { display: block; font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 4px; margin-top: 5px; font-weight: bold; }
-    .app-version { font-size: 0.7rem; color: #6a6f87; font-weight: normal; margin-top: 8px; letter-spacing: 1px; } /* バージョン用デザイン */
+    .app-version { font-size: 0.7rem; color: #6a6f87; font-weight: normal; margin-top: 8px; letter-spacing: 1px; } 
     #status-area { background: rgba(0, 0, 0, 0.4); padding: 15px; text-align: center; border-bottom: 1px solid #2a2e45; }
     #rank-title { font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 5px; }
     #point-display { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
@@ -55,8 +60,11 @@
     .menu-item:active { background-color: rgba(0, 229, 255, 0.2); }
     .menu-item.active { background-color: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border-left: 4px solid var(--accent-cyan); font-weight: bold; }
     .menu-item.practice-btn { color: var(--accent-gold); }
+    .menu-item.sudden-death-btn { color: var(--accent-red); font-weight: bold;}
+    .menu-item.sudden-death-btn:hover { background-color: rgba(255, 61, 0, 0.15); }
     .menu-item.review-btn { color: #ff5252; font-weight: bold; }
     .menu-item.review-btn:hover { background-color: rgba(255, 82, 82, 0.15); }
+    .menu-item.note-btn { color: var(--text-main); background: rgba(255,255,255,0.02); }
     .menu-item.transfer-btn { color: var(--text-main); font-weight: bold; background: rgba(255,255,255,0.05); }
 
     /* モバイルヘッダー */
@@ -66,17 +74,21 @@
     #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
     /* メインエリア・パーティクルコンテナ */
-    #particle-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; } /* z-indexを1に固定 */
+    #particle-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
     #main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; overflow-x: hidden; position: relative; z-index: 5; padding-bottom: 180px; }
     
-    #reaction-header { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; position: relative; z-index: 20;}
+    #reaction-header { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; position: relative; z-index: 20;}
     #reaction-title { font-size: 1.8rem; margin: 0 0 5px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
     .instruction { color: var(--accent-cyan); font-size: 1.1rem; margin: 0; font-weight: bold; background: rgba(0, 229, 255, 0.15); display: inline-block; padding: 5px 15px; border-radius: 20px; backdrop-filter: blur(4px); }
     #practice-status { color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 8px rgba(255, 196, 0, 0.3), 0 2px 4px #000; }
 
+    /* タイマーバー (サドンデス用) */
+    #timer-container { display: none; width: 100%; height: 8px; background: #2a2e45; border-radius: 4px; margin-bottom: 15px; overflow: hidden; position: relative; z-index: 25; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);}
+    #timer-bar { height: 100%; width: 100%; background: var(--accent-green); transition: width 0.1s linear, background-color 0.3s; }
+
     /* 学習エリア */
     #workspace-wrapper { width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.5); flex-shrink: 0; min-height: 250px; position: relative; z-index: 20; }
-    #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; transform-origin: center center; transition: transform 0.2s ease-out; }
+    #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; transform-origin: center center; transition: transform 0.2s ease-out; width:100%;}
     .substance-group { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); padding: 18px 15px; border-radius: 12px; border: 2px solid transparent; gap: 15px; min-width: 120px; transition: 0.3s; }
     .substance-group.error { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08); }
     .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
@@ -140,10 +152,15 @@
     #ken-speech::after { content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); border-width: 12px 12px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
     #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; pointer-events: none; background: rgba(0,0,0,0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.5);} 
 
-    /* ========================================================
-       📱 デバイスごとの完全レスポンシブ分岐 (5パターン)
-       ======================================================== */
-    /* 2. タブレット横 (iPad Landscapeなど 幅1024px以下) */
+    /* リザルト画面用 */
+    .result-container { width: 100%; max-width: 600px; text-align: center; animation: popUp 0.5s ease-out; }
+    .result-box { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; margin-top: 15px; text-align: left; border: 1px solid #4a4e69; }
+    .result-list { margin: 10px 0 0 0; padding-left: 20px; line-height: 1.6; }
+    .result-list li { color: #d0d4e5; font-size: 1.05rem;}
+    .tag-f { color: var(--accent-red); font-size: 0.8rem; border: 1px solid var(--accent-red); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight:bold;}
+    .tag-c { color: var(--accent-gold); font-size: 0.8rem; border: 1px solid var(--accent-gold); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight:bold;}
+
+    /* レスポンシブ分岐 */
     @media (max-width: 1024px) and (orientation: landscape) {
         #sidebar { position: fixed; left: -280px; height: 100%; }
         #sidebar.open { transform: translateX(280px); }
@@ -155,8 +172,6 @@
         #explanation-box { padding-right: 120px; } 
         .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 100px; }
     }
-
-    /* 3. タブレット縦 (iPad Portraitなど 幅834px以下) */
     @media (max-width: 834px) and (orientation: portrait) {
         #sidebar { position: fixed; left: -280px; height: 100%; }
         #sidebar.open { transform: translateX(280px); }
@@ -170,8 +185,6 @@
         .substance-group { padding: 15px 10px; min-width: 100px; }
         .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 90px; }
     }
-
-    /* 4. スマホ縦 (幅600px以下) */
     @media (max-width: 600px) and (orientation: portrait) {
         #sidebar { position: fixed; left: -280px; height: 100%; }
         #sidebar.open { transform: translateX(280px); }
@@ -195,8 +208,6 @@
         .operator-st1 { margin-top: 40px; } .operator-st2 { margin-top: 80px; }
         .primary-btn { padding: 12px 30px; font-size: 1.2rem; }
     }
-
-    /* 5. スマホ横 (高さ500px以下) */
     @media (max-height: 500px) and (orientation: landscape) {
         #sidebar { position: fixed; left: -280px; height: 100%; }
         #sidebar.open { transform: translateX(280px); }
@@ -237,6 +248,15 @@
     </div>
 </div>
 
+<div id="note-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>📖 苦手ノート</h2>
+        <p style="margin-bottom: 10px;">記録を消して弱点を克服しよう！</p>
+        <div id="note-list" style="max-height: 300px; overflow-y: auto; text-align: left; padding-right: 5px;"></div>
+        <button class="primary-btn" style="margin-top:20px; padding:10px 30px; width:100%;" onclick="closeNoteModal()">閉じる</button>
+    </div>
+</div>
+
 <div id="transfer-modal" class="modal-overlay">
     <div class="modal-content">
         <h2>⚙️ データ引き継ぎ</h2>
@@ -258,19 +278,25 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v2.0.0</div></div>
+    <div class="app-title">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v2.2.0</div></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
     </div>
-    <div class="section-title">📚 化学反応式リスト</div>
-    <ul class="menu-list" id="menu-list"></ul>
+    
     <div class="section-title">🎮 練習・復習モード</div>
     <ul class="menu-list">
-        <li class="menu-item practice-btn" onclick="startPractice('std')">🟢 標準トレーニング (5問)</li>
-        <li class="menu-item practice-btn" onclick="startPractice('hard')">🔥 最難関チャレンジ (3問)</li>
-        <li class="menu-item review-btn" id="review-btn" onclick="startPractice('review')" style="display:none;">📖 弱点克服 (0問)</li>
+        <li class="menu-item practice-btn" onclick="startPractice('easy')">🌱 初級トレーニング (5問)</li>
+        <li class="menu-item practice-btn" onclick="startPractice('normal')">🌿 中級トレーニング (10問)</li>
+        <li class="menu-item practice-btn" onclick="startPractice('hard')">🔥 上級チャレンジ (5問)</li>
+        <li class="menu-item sudden-death-btn" onclick="startPractice('sudden_death')">💀 超上級サドンデス</li>
+        <li class="menu-item review-btn" id="review-btn" onclick="startPractice('review')" style="display:none;">📖 弱点克服モード (0問)</li>
+        <li class="menu-item note-btn" id="note-btn" onclick="openNoteModal()">📓 苦手ノートを確認</li>
     </ul>
+
+    <div class="section-title">📚 化学反応式リスト</div>
+    <ul class="menu-list" id="menu-list"></ul>
+    
     <div class="section-title">⚙️ 設定</div>
     <ul class="menu-list">
         <li class="menu-item transfer-btn" onclick="openTransferModal()">🔄 データ引き継ぎ</li>
@@ -289,6 +315,8 @@
         </div>
         <div id="practice-status"></div>
     </div>
+    <div id="timer-container"><div id="timer-bar"></div></div>
+    
     <div id="workspace-wrapper"><div id="workspace"></div></div>
     <div id="action-area">
         <div id="feedback"></div>
@@ -302,6 +330,7 @@
 </main>
 
 <script>
+// --- グローバルステートとデータ ---
 let userPoints = 0;
 let userMistakes = []; 
 
@@ -361,16 +390,53 @@ function clearMistake(title) {
     }
 }
 
+// メニューの「弱点克服（テスト）」と「苦手ノート」の表記を連動して更新
 function updateReviewMenu() {
-    const btn = document.getElementById('review-btn');
+    const reviewBtn = document.getElementById('review-btn');
+    const noteBtn = document.getElementById('note-btn');
+    
     if (userMistakes.length > 0) {
-        btn.style.display = 'block';
-        btn.innerText = `📖 弱点克服 (${userMistakes.length}問)`;
+        reviewBtn.style.display = 'block';
+        reviewBtn.innerText = `📖 弱点克服モード (${userMistakes.length}問)`;
+        noteBtn.innerText = `📓 苦手ノートを確認 (${userMistakes.length}問)`;
     } else {
-        btn.style.display = 'none';
+        reviewBtn.style.display = 'none';
+        noteBtn.innerText = `📓 苦手ノートを確認 (0問)`;
     }
 }
 
+// 苦手ノートモーダルの処理
+function openNoteModal() {
+    const listDiv = document.getElementById('note-list');
+    listDiv.innerHTML = '';
+    
+    if (userMistakes.length === 0) {
+        listDiv.innerHTML = "<p style='text-align:center; color:var(--accent-gold); font-weight:bold; font-size:1.2rem; margin-top:20px;'>🎉 苦手な問題はないよ！すごい！</p>";
+    } else {
+        userMistakes.forEach(title => {
+            const div = document.createElement('div');
+            div.className = 'note-item';
+            div.innerHTML = `<span>${title}</span><button class="delete-btn" onclick="deleteNoteItem('${title}')">✕ 削除</button>`;
+            listDiv.appendChild(div);
+        });
+    }
+    
+    document.getElementById('note-modal').style.display = 'flex';
+    document.body.classList.add('modal-open');
+    closeMenu(); 
+}
+
+function closeNoteModal() {
+    document.getElementById('note-modal').style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+function deleteNoteItem(title) {
+    clearMistake(title);
+    openNoteModal(); 
+}
+
+// データ引き継ぎ処理
 function generateTransferCode() { return "GK" + ((userPoints * 7) + 1234).toString(36).toUpperCase(); }
 function executeTransfer() {
     let input = document.getElementById('transfer-input').value.trim().toUpperCase();
@@ -520,7 +586,7 @@ const hardReactions = [
     { title: "プロパンの燃焼", left: [{n:"プロパン", f:"C3H8"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "プロパン（LPガスの主成分）の燃焼です。炭素と水素の数が多いので、必要な酸素分子の数も多くなります。" },
     { title: "ブタンの燃焼", left: [{n:"ブタン", f:"C4H10"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "ブタン（カセットコンロのガスの主成分）の燃焼です。係数がすべて大きくなる高校入試の難問です。" },
     { title: "酸化銅のエタノールによる還元", left: [{n:"酸化銅", f:"CuO"}, {n:"エタノール", f:"C2H5OH"}], right: [{n:"銅", f:"Cu"}, {n:"アセトアルデヒド", f:"CH3CHO"}, {n:"水", f:"H2O"}], exp: "加熱した酸化銅をエタノールに入れると、酸化銅は還元されて赤色の銅になり、エタノールは酸化されて特有のにおいがするアセトアルデヒドに変化します。" },
-    { title: "アンモニアの発生", left: [{n:"塩化アンモニウム", f:"NH4Cl"}, {n:"水酸化カルシウム", f:"Ca(OH)2"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"アンモニア", f:"NH3"}], exp: "塩化アンモニウムと水酸化カルシウムを混ぜて加熱すると、刺激臭のあるアンモニアが発生します。水に溶けやすいため上方置換法で集めます。" },
+    { title: "アンモニア生成反応", left: [{n:"塩化アンモニウム", f:"NH4Cl"}, {n:"水酸化カルシウム", f:"Ca(OH)2"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"アンモニア", f:"NH3"}], exp: "塩化アンモニウムと水酸化カルシウムを混ぜて加熱すると、刺激臭のあるアンモニアが発生します。水に溶けやすいため上方置換法で集めます。" },
     { title: "吸熱反応", left: [{n:"水酸化バリウム", f:"Ba(OH)2"}, {n:"塩化アンモニウム", f:"NH4Cl"}], right: [{n:"塩化バリウム", f:"BaCl2"}, {n:"アンモニア", f:"NH3"}, {n:"水", f:"H2O"}], exp: "水酸化バリウムと塩化アンモニウムを混ぜると、周囲の熱を奪いながら反応（吸熱反応）し、温度が急激に下がります。" },
     { title: "アンモニアの酸化", left: [{n:"アンモニア", f:"NH3"}, {n:"酸素", f:"O2"}], right: [{n:"一酸化窒素", f:"NO"}, {n:"水", f:"H2O"}], exp: "アンモニアを白金触媒を使って酸化させる反応です。一酸化窒素と水ができます。" },
     { title: "アルミニウムと塩酸", left: [{n:"アルミニウム", f:"Al"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水素", f:"H2"}], exp: "アルミニウムなどの金属に塩酸を加えると、水素が発生して溶け、塩化アルミニウムになります。" },
@@ -543,6 +609,7 @@ const allHardFormulas = [...new Set(hardReactions.flatMap(r => [...r.left, ...r.
 const allReactions = [...standardReactions, ...hardReactions];
 const allFormulasPool = [...allStandardFormulas, ...allHardFormulas];
 
+// --- セッション管理 ---
 let appMode = "free";
 let practiceQuestions = [];
 let currentQIndex = 0;
@@ -550,6 +617,13 @@ let substances = [];
 let stage = 1;
 let currentReactionData = null;
 let isCleared = false; 
+
+let sessionMistakes = []; 
+let isSuddenDeath = false;
+let suddenDeathScore = 0;
+let timerInterval = null;
+let timeLeft = 0;
+const TIME_LIMIT = 30;
 
 function getGCD(a, b) { return b === 0 ? a : getGCD(b, a % b); }
 function toSubscript(str) {
@@ -672,6 +746,7 @@ function buildMenu() {
 
 function selectFreeReaction(index) {
     appMode = "free";
+    stopTimer();
     closeMenu();
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.free-item')[index].classList.add('active');
@@ -679,22 +754,59 @@ function selectFreeReaction(index) {
     setupReaction(allReactions[index], allFormulasPool);
 }
 
+function startTimer() {
+    clearInterval(timerInterval);
+    document.getElementById('timer-container').style.display = 'block';
+    timeLeft = TIME_LIMIT;
+    updateTimerUI();
+    timerInterval = setInterval(() => {
+        timeLeft -= 0.1;
+        updateTimerUI();
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showResult(true, "⌛ 時間切れ！爆発だ！");
+        }
+    }, 100);
+}
+
+function updateTimerUI() {
+    let bar = document.getElementById('timer-bar');
+    let pct = Math.max(0, (timeLeft / TIME_LIMIT) * 100);
+    bar.style.width = pct + '%';
+    if (pct < 25) bar.style.backgroundColor = 'var(--accent-red)';
+    else if (pct < 50) bar.style.backgroundColor = 'var(--accent-gold)';
+    else bar.style.backgroundColor = 'var(--accent-green)';
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    document.getElementById('timer-container').style.display = 'none';
+}
+
 function startPractice(type) {
     if (type === 'review' && userMistakes.length === 0) return;
     appMode = `practice_${type}`;
     closeMenu();
+    stopTimer();
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
     
     let sourcePool = [...standardReactions, ...hardReactions];
-    let formulaPool = [...allStandardFormulas, ...allHardFormulas];
     
-    if (type === 'std') {
+    sessionMistakes = [];
+    isSuddenDeath = (type === 'sudden_death');
+    suddenDeathScore = 0;
+    
+    if (type === 'easy') {
         practiceQuestions = [...standardReactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allStandardFormulas }));
+    } else if (type === 'normal') {
+        practiceQuestions = [...standardReactions].sort(() => 0.5 - Math.random()).slice(0, 10).map(r => ({ reaction: r, pool: allStandardFormulas }));
     } else if (type === 'hard') {
-        practiceQuestions = [...hardReactions].sort(() => 0.5 - Math.random()).slice(0, 3).map(r => ({ reaction: r, pool: formulaPool }));
+        practiceQuestions = [...hardReactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allFormulasPool }));
+    } else if (type === 'sudden_death') {
+        practiceQuestions = [...sourcePool].sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
     } else if (type === 'review') {
         let reviewReactions = sourcePool.filter(r => userMistakes.includes(r.title));
-        practiceQuestions = reviewReactions.sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: formulaPool }));
+        practiceQuestions = reviewReactions.sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
     }
     
     currentQIndex = 0;
@@ -703,8 +815,16 @@ function startPractice(type) {
 
 function loadPracticeQuestion() {
     const q = practiceQuestions[currentQIndex];
-    let modeName = appMode === 'practice_std' ? '標準トレーニング' : (appMode === 'practice_hard' ? '🔥 最難関チャレンジ' : '📖 弱点克服');
-    document.getElementById('practice-status').innerText = `${modeName} (${currentQIndex + 1} / ${practiceQuestions.length})`;
+    let modeName = "";
+    if (appMode === 'practice_easy') modeName = '🌱 初級';
+    else if (appMode === 'practice_normal') modeName = '🌿 中級';
+    else if (appMode === 'practice_hard') modeName = '🔥 上級';
+    else if (appMode === 'practice_sudden_death') modeName = '💀 サドンデス';
+    else modeName = '📖 弱点克服';
+
+    let qText = isSuddenDeath ? `(連続: ${suddenDeathScore})` : `(${currentQIndex + 1} / ${practiceQuestions.length})`;
+    document.getElementById('practice-status').innerText = `${modeName} ${qText}`;
+    
     setupReaction(q.reaction, q.pool);
 }
 
@@ -779,6 +899,7 @@ function setupReaction(reaction, pool) {
     document.getElementById('feedback').innerHTML = '';
     document.getElementById('explanation-box').style.display = 'none';
     document.getElementById('workspace-wrapper').classList.remove('glow-effect');
+    document.getElementById('workspace-wrapper').className = ''; 
     
     const checkBtn = document.getElementById('check-btn');
     checkBtn.innerText = "これで確認！";
@@ -788,6 +909,8 @@ function setupReaction(reaction, pool) {
     
     updateKen('think');
     renderWorkspace();
+
+    if (isSuddenDeath) startTimer();
 }
 
 function handleFormulaSelect(id, value) {
@@ -876,6 +999,14 @@ function generateSubstanceHTML(sub) {
     return html;
 }
 
+function recordSessionMistake(title, step) {
+    recordMistake(title); 
+    let existing = sessionMistakes.find(m => m.title === title);
+    if (!existing) {
+        sessionMistakes.push({ title: title, step: step });
+    }
+}
+
 function checkAnswer() {
     if (stage === 1) checkStage1();
     else checkStage2();
@@ -891,13 +1022,20 @@ function checkStage1() {
     });
 
     const feedback = document.getElementById('feedback');
-    if (anyUnanswered) {
-        feedback.innerHTML = `<span class="feedback-error">⚠️ 「?」のままの化学式があるよ！</span>`;
+    if (hasError || anyUnanswered) {
+        recordSessionMistake(currentReactionData.title, 1);
+        
+        if (isSuddenDeath) {
+            showResult(true, "💀 化学式の選択を間違えたぞ！即終了だ！");
+            return;
+        }
+        
+        if (anyUnanswered) {
+            feedback.innerHTML = `<span class="feedback-error">⚠️ 「?」のままの化学式があるよ！</span>`;
+        } else {
+            feedback.innerHTML = `<span class="feedback-error">⚠️ 赤くなっている化学式が間違っているよ。選び直そう！</span>`;
+        }
         updateKen('error');
-    } else if (hasError) {
-        feedback.innerHTML = `<span class="feedback-error">⚠️ 赤くなっている化学式が間違っているよ。選び直そう！</span>`;
-        updateKen('error');
-        recordMistake(currentReactionData.title); 
     } else {
         stage = 2;
         updateKen('stage1');
@@ -938,7 +1076,7 @@ function checkStage2() {
         for (let i = 1; i < coeffs.length; i++) { gcd = getGCD(gcd, coeffs[i]); }
         if (gcd > 1) {
             isCorrect = false;
-            errorMessages.push(`数は合っているけど、すべての係数を「${gcd}」で割って、最も簡単な整数比にできるよ！`);
+            errorMessages.push(`最も簡単な整数比にできるよ！（すべて${gcd}で割れる）`);
         }
     }
 
@@ -952,6 +1090,11 @@ function checkStage2() {
             addPoints(10);
             isCleared = true; 
             if (appMode === 'practice_review') clearMistake(currentReactionData.title);
+        }
+
+        if (isSuddenDeath) {
+            suddenDeathScore++;
+            stopTimer(); 
         }
 
         triggerCelebration(); 
@@ -976,8 +1119,14 @@ function checkStage2() {
             checkBtn.style.display = 'none'; 
         }
     } else {
+        recordSessionMistake(currentReactionData.title, 2);
+        
+        if (isSuddenDeath) {
+            showResult(true, "💀 係数（原子の数）が合っていないぞ！即終了だ！");
+            return;
+        }
+
         updateKen('error');
-        recordMistake(currentReactionData.title); 
         wrapper.classList.remove('glow-effect');
         let html = `<div class="feedback-error">`;
         errorMessages.forEach(msg => { html += `<div>⚠️ ${msg}</div>`; });
@@ -992,22 +1141,63 @@ function nextPracticeQuestion() {
     if (currentQIndex < practiceQuestions.length) {
         loadPracticeQuestion();
     } else {
-        let bonus = appMode === 'practice_std' ? 50 : (appMode === 'practice_hard' ? 270 : 100);
-        addPoints(bonus);
-
-        triggerCelebration(); 
-        updateKen('success');
-        document.getElementById('ken-speech').innerText = "本当に素晴らしい！君は化学の天才だ！";
-        document.getElementById('reaction-title').innerText = "🎉 全クエスト制覇！";
-        document.getElementById('instruction-text').innerText = `素晴らしい！ボーナス ${bonus} Pt 獲得！`;
-        document.getElementById('workspace').innerHTML = `<div class="goku-clear-text" style="text-align:center; padding:50px 0;">MISSION COMPLETE!!</div>`;
-        document.getElementById('feedback').innerHTML = '';
-        document.getElementById('explanation-box').style.display = 'none';
-        document.getElementById('check-btn').style.display = 'none';
-        document.getElementById('workspace-wrapper').style.transform = 'none';
-        
-        if (appMode === 'practice_review') updateReviewMenu(); 
+        showResult(false, "");
     }
+}
+
+function showResult(isGameOver, reason) {
+    stopTimer();
+    let bonus = 0;
+    let html = `<div class="result-container">`;
+    
+    if (isSuddenDeath) {
+        bonus = suddenDeathScore * 20;
+        html += `<h2 style="color:var(--accent-red); margin:0; font-size:2.5rem; text-shadow:0 2px 5px #000;">GAME OVER</h2>`;
+        html += `<p style="font-size:1.2rem; font-weight:bold;">${reason}</p>`;
+        html += `<h3 style="color:var(--text-main); font-size:1.5rem;">🔥 連続正解: ${suddenDeathScore} 問</h3>`;
+    } else {
+        if (appMode === 'practice_easy') bonus = 50;
+        else if (appMode === 'practice_normal') bonus = 120;
+        else if (appMode === 'practice_hard') bonus = 300;
+        else if (appMode === 'practice_review') bonus = 100;
+        
+        html += `<h2 style="color:var(--accent-gold); margin:0; font-size:2.5rem; text-shadow:0 2px 5px #000;">MISSION COMPLETE!</h2>`;
+        html += `<p style="font-size:1.2rem; font-weight:bold;">すべてのクエストを制覇した！</p>`;
+    }
+    
+    addPoints(bonus);
+    if (bonus > 0) html += `<div style="font-size:1.4rem; color:var(--accent-cyan); font-weight:900;">✨ ボーナス ${bonus} Pt 獲得！ ✨</div>`;
+    
+    html += `<div class="result-box">`;
+    html += `<h3 style="margin-top:0; color:var(--accent-green); border-bottom:1px solid #4a4e69; padding-bottom:5px;">📊 プレイレポート (メタ認知)</h3>`;
+    
+    if (sessionMistakes.length === 0 && !isGameOver) {
+        html += `<p style="color:var(--accent-gold); font-size:1.2rem; font-weight:bold; text-align:center; padding:10px 0;">👑 PERFECT!! 一度もミスなし！神レベルだ！</p>`;
+    } else if (sessionMistakes.length > 0) {
+        html += `<p style="font-size:0.9rem; color:var(--text-sub);">【間違えた問題と原因】復習モードで苦手を潰そう！</p>`;
+        html += `<ul class="result-list">`;
+        sessionMistakes.forEach(m => {
+            let tag = m.step === 1 ? `<span class="tag-f">化学式ミス</span>` : `<span class="tag-c">係数ミス</span>`;
+            html += `<li>${m.title} ${tag}</li>`;
+        });
+        html += `</ul>`;
+    }
+    html += `</div></div>`;
+    
+    document.getElementById('workspace').innerHTML = html;
+    document.getElementById('reaction-title').innerText = isSuddenDeath ? "挑戦終了！" : "🎉 クエスト完了！";
+    document.getElementById('instruction-text').innerText = "プレイレポートを確認しよう！";
+    document.getElementById('feedback').innerHTML = '';
+    document.getElementById('explanation-box').style.display = 'none';
+    document.getElementById('check-btn').style.display = 'none';
+    document.getElementById('workspace-wrapper').style.transform = 'none';
+    
+    if (isSuddenDeath && isGameOver) updateKen('error');
+    else { updateKen('success'); triggerCelebration(); }
+    
+    document.getElementById('ken-speech').innerText = isGameOver ? "悔しい！次こそ限界を超えよう！" : "素晴らしい！君は本物の天才だ！";
+    
+    if (appMode === 'practice_review') updateReviewMenu(); 
 }
 </script>
 </body>
