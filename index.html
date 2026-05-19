@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI)</title>
+<title>極・化学反応式 (GOKU-CHEMI) v2.0.0</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -38,6 +38,7 @@
     #sidebar { width: 280px; background-color: var(--bg-panel); border-right: 1px solid #2a2e45; display: flex; flex-direction: column; overflow-y: auto; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 1000; flex-shrink: 0; transition: transform 0.3s ease; }
     .app-title { padding: 20px 15px 15px; font-size: 1.4rem; font-weight: 900; color: #fff; text-align: center; background: linear-gradient(135deg, #1a1d2d 0%, #0f111a 100%); letter-spacing: 2px; }
     .app-title span { display: block; font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 4px; margin-top: 5px; font-weight: bold; }
+    .app-version { font-size: 0.7rem; color: #6a6f87; font-weight: normal; margin-top: 8px; letter-spacing: 1px; } /* バージョン用デザイン */
     #status-area { background: rgba(0, 0, 0, 0.4); padding: 15px; text-align: center; border-bottom: 1px solid #2a2e45; }
     #rank-title { font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 5px; }
     #point-display { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
@@ -65,8 +66,7 @@
     #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
     /* メインエリア・パーティクルコンテナ */
-    /* z-indexを1に修正し、紙吹雪が確実に裏側を通るように調整 */
-    #particle-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
+    #particle-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; } /* z-indexを1に固定 */
     #main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; overflow-x: hidden; position: relative; z-index: 5; padding-bottom: 180px; }
     
     #reaction-header { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; position: relative; z-index: 20;}
@@ -258,7 +258,7 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title">極・化学反応式<span>GOKU-CHEMI</span></div>
+    <div class="app-title">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v2.0.0</div></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
@@ -307,7 +307,7 @@ let userMistakes = [];
 
 const ranks = [
     { pt: 0,    title: "🔰 見習い錬金術師" }, { pt: 100,  title: "🧪 駆け出しケミスト" }, { pt: 300,  title: "👨‍🔬 実験室のホープ" },
-    { pt: 600,  title: "🔬 一一人前の研究者" }, { pt: 1000, title: "🎓 優秀な科学者" }, { pt: 1500, title: "🧬 真理の探求者" },
+    { pt: 600,  title: "🔬 一人前の研究者" }, { pt: 1000, title: "🎓 優秀な科学者" }, { pt: 1500, title: "🧬 真理の探求者" },
     { pt: 2500, title: "⚡ 錬金術の達人" }, { pt: 4000, title: "👑 GOKU-CHEMI マスター" }, { pt: 6000, title: "🌟 伝説の錬金術師" },
     { pt: 9999, title: "🌌 究極の創造神" }
 ];
