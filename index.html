@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI) v3.0.1</title>
+<title>極・化学反応式 (GOKU-CHEMI) v3.0.4</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -74,18 +74,18 @@
     .mobile-title { font-size: 1.2rem; font-weight: 900; color: var(--accent-cyan); letter-spacing: 2px; cursor: pointer;}
     #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
-    /* ★ ホーム画面（錬金術師の実験室） ★ */
-    #home-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 15; background: radial-gradient(circle at 50% 40%, #1a1d2d 0%, #08090d 80%); }
+    /* ★ ホーム画面（ケンくん被り回避レイアウト） ★ */
+    #home-screen { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 15; background: radial-gradient(circle at 50% 40%, #1a1d2d 0%, #08090d 80%); padding-top: 15vh; }
     .home-status-badge { position: absolute; top: 20px; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 30px; border: 1px solid var(--accent-gold); display: flex; gap: 15px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 20;}
     .home-title { font-size: 3rem; font-weight: 900; color: #fff; text-shadow: 0 0 20px var(--accent-cyan), 0 4px 10px #000; margin-bottom: 5px; text-align: center; letter-spacing: 4px; z-index: 20;}
-    .home-subtitle { font-size: 1.2rem; color: var(--accent-cyan); letter-spacing: 8px; margin-bottom: 50px; font-weight: bold; z-index: 20;}
+    .home-subtitle { font-size: 1.2rem; color: var(--accent-cyan); letter-spacing: 8px; margin-bottom: 40px; font-weight: bold; z-index: 20;}
     
     .magic-start-btn { width: 220px; height: 220px; border-radius: 50%; background: rgba(0, 229, 255, 0.05); border: 4px solid var(--accent-cyan); color: #fff; font-size: 2rem; font-weight: 900; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 40px rgba(0, 229, 255, 0.4), inset 0 0 30px rgba(0, 229, 255, 0.2); transition: 0.2s; animation: pulseGlow 2.5s infinite alternate; z-index: 20; backdrop-filter: blur(4px);}
     .magic-start-btn span { font-size: 1.2rem; color: var(--accent-cyan); margin-top: 8px; letter-spacing: 3px;}
     .magic-start-btn:active { transform: scale(0.95); box-shadow: 0 0 20px rgba(0, 229, 255, 0.8); }
     @keyframes pulseGlow { 0% { box-shadow: 0 0 30px rgba(0, 229, 255, 0.3), inset 0 0 20px rgba(0, 229, 255, 0.2); border-color: rgba(0, 229, 255, 0.5);} 100% { box-shadow: 0 0 60px rgba(0, 229, 255, 0.8), inset 0 0 50px rgba(0, 229, 255, 0.5); border-color: rgba(0, 229, 255, 1); } }
 
-    .home-bottom-menu { display: flex; gap: 15px; margin-top: 60px; z-index: 20; flex-wrap: wrap; justify-content: center;}
+    .home-bottom-menu { display: flex; gap: 15px; margin-top: 40px; z-index: 20; flex-wrap: wrap; justify-content: center; margin-bottom: 120px; }
     .home-action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid #4a4e69; color: #d0d4e5; padding: 14px 24px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(4px);}
     .home-action-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--accent-gold); color: #fff; transform: translateY(-3px);}
     .home-action-btn.sudden-death { border-color: rgba(255, 61, 0, 0.5); color: #ff8a80;}
@@ -100,13 +100,20 @@
     .instruction { color: var(--accent-cyan); font-size: 1.1rem; margin: 0; font-weight: bold; background: rgba(0, 229, 255, 0.15); display: inline-block; padding: 5px 15px; border-radius: 20px; backdrop-filter: blur(4px); }
     #practice-status { color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 8px rgba(255, 196, 0, 0.3), 0 2px 4px #000; }
 
-    /* タイマーバー (サドンデス用) */
-    #timer-container { display: none; width: 100%; height: 8px; background: #2a2e45; border-radius: 4px; margin-bottom: 15px; overflow: hidden; position: relative; z-index: 25; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);}
-    #timer-bar { height: 100%; width: 100%; background: var(--accent-green); transition: width 0.1s linear, background-color 0.3s; }
+    /* タイマーバー */
+    #timer-container { display: none; width: 100%; max-width: 800px; height: 12px; background: #1a1d2d; border-radius: 6px; margin: 0 auto 15px auto; overflow: hidden; position: relative; z-index: 25; box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); border: 2px solid #4a4e69;}
+    #timer-bar { height: 100%; width: 100%; background: var(--accent-green); transition: width 0.1s linear, background-color 0.3s ease; }
 
-    /* 学習エリア */
-    #workspace-wrapper { display: none; width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px; justify-content: center; align-items: center; overflow: hidden; padding: 25px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.5); flex-shrink: 0; min-height: 250px; position: relative; z-index: 20; }
-    #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; transform-origin: center center; transition: transform 0.2s ease-out; width:100%;}
+    /* 学習エリア（1行ロマン＆横スクロール対応） */
+    #workspace-wrapper { display: none; width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px; justify-content: flex-start; align-items: center; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; padding: 25px 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.5); flex-shrink: 0; min-height: 250px; position: relative; z-index: 20; box-sizing: border-box;}
+    
+    #workspace-wrapper::-webkit-scrollbar { height: 8px; }
+    #workspace-wrapper::-webkit-scrollbar-track { background: #1a1d2d; border-radius: 4px; }
+    #workspace-wrapper::-webkit-scrollbar-thumb { background: #4a4e69; border-radius: 4px; }
+    #workspace-wrapper::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+
+    #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; min-width: max-content; margin: 0 auto;}
+    
     .substance-group { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); padding: 18px 15px; border-radius: 12px; border: 2px solid transparent; gap: 15px; min-width: 120px; transition: 0.3s; }
     .substance-group.error { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08); }
     .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
@@ -141,6 +148,9 @@
     #action-area { display: none; margin-top: 15px; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; position: relative; z-index: 100;}
     .primary-btn { padding: 16px 60px; font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: 2px; background-color: var(--accent-cyan); border: none; border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #009eb3, 0 10px 20px rgba(0,0,0,0.6); transition: 0.1s; width: fit-content; }
     .primary-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #009eb3, 0 2px 5px rgba(0,0,0,0.4); }
+    /* ★連打防止シールド用のCSS★ */
+    .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none !important; }
+    
     .primary-btn.next-btn { background-color: var(--accent-gold); box-shadow: 0 6px 0 #cc9d00; }
     .primary-btn.next-btn:active { box-shadow: 0 0 0 #cc9d00; }
     #feedback { font-size: 1.1rem; text-align: center; line-height: 1.4; font-weight: bold; width: 100%; min-height: 30px; }
@@ -171,7 +181,7 @@
     #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; pointer-events: none; background: rgba(0,0,0,0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.5);} 
 
     /* リザルト画面用 */
-    .result-container { width: 100%; max-width: 600px; text-align: center; animation: popUp 0.5s ease-out; }
+    .result-container { width: 100%; max-width: 600px; text-align: center; animation: popUp 0.5s ease-out; margin: 0 auto;}
     .result-box { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; margin-top: 15px; text-align: left; border: 1px solid #4a4e69; }
     .result-list { margin: 10px 0 0 0; padding-left: 20px; line-height: 1.6; }
     .result-list li { color: #d0d4e5; font-size: 1.05rem;}
@@ -206,7 +216,7 @@
         .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 90px; }
         .home-title { font-size: 2.2rem; margin-top: 40px;}
         .magic-start-btn { width: 160px; height: 160px; font-size: 1.4rem; }
-        .home-bottom-menu { margin-top: 40px; }
+        .home-bottom-menu { margin-top: 40px; margin-bottom: 150px; } 
     }
     @media (max-width: 600px) and (orientation: portrait) {
         #sidebar { position: fixed; left: -280px; height: 100%; }
@@ -235,10 +245,11 @@
         .magic-start-btn { width: 140px; height: 140px; font-size: 1.2rem; }
         .magic-start-btn span { font-size: 0.9rem; margin-top: 2px;}
         .home-action-btn { font-size: 0.95rem; padding: 10px 15px;}
-        .home-bottom-menu { margin-top: 30px; gap: 10px; }
+        .home-bottom-menu { margin-top: 30px; gap: 10px; margin-bottom: 120px; } 
         .home-status-badge { top: 10px; padding: 5px 12px;}
         #home-rank-title { font-size: 0.8rem;}
         #home-point-display { font-size: 1rem;}
+        #workspace-wrapper { padding: 25px 5px; } 
     }
     @media (max-height: 500px) and (orientation: landscape) {
         #sidebar { position: fixed; left: -280px; height: 100%; }
@@ -252,7 +263,7 @@
         #reaction-title { font-size: 1.2rem; margin: 0; margin-right: 10px; }
         .instruction { font-size: 0.8rem; padding: 2px 8px; }
         #practice-status { font-size: 0.9rem; }
-        #workspace-wrapper { padding: 5px 0; border-width: 1px; min-height: auto;}
+        #workspace-wrapper { padding: 15px 5px; border-width: 1px; min-height: auto;}
         .substance-group { padding: 8px 5px; gap: 5px; }
         #action-area { margin-top: 5px; min-height: auto; gap: 5px; }
         .primary-btn { padding: 8px 25px; font-size: 1.1rem; box-shadow: 0 4px 0 #009eb3; }
@@ -264,7 +275,7 @@
         .home-subtitle { margin-bottom: 15px;}
         .magic-start-btn { width: 100px; height: 100px; font-size: 1rem; border-width: 2px;}
         .magic-start-btn span { font-size: 0.7rem; margin-top: 2px;}
-        .home-bottom-menu { margin-top: 15px; gap: 10px;}
+        .home-bottom-menu { margin-top: 15px; gap: 10px; margin-bottom: 20px;}
         .home-action-btn { padding: 8px 12px; font-size: 0.85rem;}
     }
 </style>
@@ -330,7 +341,7 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.0.1</div></div>
+    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.0.4</div></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
@@ -438,7 +449,7 @@ function initData() {
 
 function addPoints(pts) {
     userPoints += pts; 
-    localStorage.setItem('gokuChemiPoints', userPoints);
+    try { localStorage.setItem('gokuChemiPoints', userPoints); } catch(e) { console.warn("Save failed"); }
     updatePointUI();
 }
 
@@ -449,11 +460,9 @@ function updatePointUI() {
         if (userPoints >= ranks[i].pt) currentRank = ranks[i].title;
     }
     
-    // サイドバーの更新
     document.getElementById('point-display').innerHTML = `${userPoints} <span class="pt-unit">Pt</span>`;
     document.getElementById('rank-title').innerText = currentRank;
     
-    // ホーム画面のバッジ更新
     document.getElementById('home-point-display').innerText = ptText;
     document.getElementById('home-rank-title').innerText = currentRank;
 }
@@ -461,7 +470,7 @@ function updatePointUI() {
 function recordMistake(title) {
     if (!userMistakes.includes(title)) {
         userMistakes.push(title);
-        localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes));
+        try { localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes)); } catch(e) { console.warn("Save failed"); }
         updateReviewMenu();
     }
 }
@@ -469,7 +478,7 @@ function recordMistake(title) {
 function clearMistake(title) {
     if (userMistakes.includes(title)) {
         userMistakes = userMistakes.filter(t => t !== title);
-        localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes));
+        try { localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes)); } catch(e) { console.warn("Save failed"); }
         updateReviewMenu();
     }
 }
@@ -495,7 +504,6 @@ function showHome() {
     stopTimer();
     document.getElementById('home-screen').style.display = 'flex';
     
-    // 実験画面のUIを隠す
     document.getElementById('reaction-header').style.display = 'none';
     document.getElementById('workspace-wrapper').style.display = 'none';
     document.getElementById('action-area').style.display = 'none';
@@ -510,7 +518,6 @@ function showHome() {
 function hideHome() {
     document.getElementById('home-screen').style.display = 'none';
     
-    // 実験画面のUIを表示
     document.getElementById('reaction-header').style.display = 'flex';
     document.getElementById('workspace-wrapper').style.display = 'flex';
     document.getElementById('action-area').style.display = 'flex';
@@ -565,13 +572,14 @@ function executeTransfer() {
     let num = parseInt(input.substring(2), 36);
     let rawPt = (num - 1234) / 7;
     if (!Number.isInteger(rawPt) || rawPt < 0 || isNaN(rawPt)) { alert("パスワードが正しくありません！"); return; }
-    userPoints = rawPt; localStorage.setItem('gokuChemiPoints', userPoints);
+    userPoints = rawPt; 
+    try { localStorage.setItem('gokuChemiPoints', userPoints); } catch(e) { console.warn("Save failed"); }
     updatePointUI(); alert(`復元成功！ ${userPoints} Pt から再開します！`); closeTransferModal();
 }
 function openTransferModal() { document.getElementById('my-transfer-code').innerText = generateTransferCode(); document.getElementById('transfer-input').value = ""; document.getElementById('transfer-modal').style.display = 'flex'; document.body.classList.add('modal-open'); closeMenu(); }
 function closeTransferModal() { document.getElementById('transfer-modal').style.display = 'none'; document.body.classList.remove('modal-open'); }
 function checkTutorial() { if (!localStorage.getItem('gokuChemiTutorialDone')) { document.getElementById('tutorial-modal').style.display = 'flex'; document.body.classList.add('modal-open'); } }
-function closeTutorial() { document.getElementById('tutorial-modal').style.display = 'none'; document.body.classList.remove('modal-open'); localStorage.setItem('gokuChemiTutorialDone', 'true'); }
+function closeTutorial() { document.getElementById('tutorial-modal').style.display = 'none'; document.body.classList.remove('modal-open'); try { localStorage.setItem('gokuChemiTutorialDone', 'true'); } catch(e) {} }
 function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
 function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
 
@@ -820,28 +828,6 @@ function triggerCelebration() {
     }
 }
 
-let resizeTimer;
-function fitWorkspace() {
-    const wrapper = document.getElementById('workspace-wrapper');
-    const workspace = document.getElementById('workspace');
-    if(!wrapper || !workspace) return;
-    workspace.style.transform = 'scale(1)';
-    requestAnimationFrame(() => {
-        const marginX = window.innerWidth <= 600 ? 5 : (window.innerWidth <= 1024 ? 10 : 30);
-        const marginY = 10;
-        const wrapperWidth = wrapper.clientWidth - marginX;
-        const wrapperHeight = wrapper.clientHeight - marginY;
-        const workspaceWidth = workspace.scrollWidth;
-        const workspaceHeight = workspace.scrollHeight;
-        let scale = 1;
-        if (workspaceWidth > wrapperWidth && wrapperWidth > 0) scale = Math.min(scale, wrapperWidth / workspaceWidth);
-        if (workspaceHeight > wrapperHeight && wrapperHeight > 0) scale = Math.min(scale, wrapperHeight / workspaceHeight);
-        workspace.style.transform = `scale(${scale})`;
-    });
-}
-window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitWorkspace, 100); });
-window.addEventListener('orientationchange', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitWorkspace, 300); });
-
 window.onload = () => {
     initData();
     checkTutorial();
@@ -865,7 +851,7 @@ function buildMenu() {
 
 function selectFreeReaction(index) {
     appMode = "free";
-    isSuddenDeath = false; // ★フリーモードでサドンデスが発動しないようにリセット
+    isSuddenDeath = false;
     stopTimer();
     hideHome();
     closeMenu();
@@ -926,7 +912,6 @@ function startPractice(type) {
     } else if (type === 'hard') {
         practiceQuestions = [...hardReactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allFormulasPool }));
     } else if (type === 'sudden_death') {
-        // ★サドンデスの初期プール（途中で無限補充）
         practiceQuestions = [...sourcePool].sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
     } else if (type === 'review') {
         let reviewReactions = sourcePool.filter(r => userMistakes.includes(r.title));
@@ -1031,6 +1016,10 @@ function setupReaction(reaction, pool) {
     checkBtn.style.display = 'block';
     checkBtn.onclick = checkAnswer; 
     
+    // ★連打防止シールド：画面ロード直後は0.5秒間ボタンを押せなくする
+    checkBtn.disabled = true;
+    setTimeout(() => { checkBtn.disabled = false; }, 500);
+    
     updateKen('think');
     renderWorkspace();
 
@@ -1082,8 +1071,6 @@ function renderWorkspace() {
     renderSide('left');
     workspace.innerHTML += `<div class="operator arrow ${opClass}">➡</div>`;
     renderSide('right');
-
-    setTimeout(fitWorkspace, 50); 
 }
 
 function generateSubstanceHTML(sub) {
@@ -1162,6 +1149,12 @@ function checkStage1() {
         updateKen('error');
     } else {
         stage = 2;
+        
+        // ★連打防止シールド：STEP2への切り替わり時も誤爆を防ぐ
+        const checkBtn = document.getElementById('check-btn');
+        checkBtn.disabled = true;
+        setTimeout(() => { checkBtn.disabled = false; }, 500);
+        
         updateKen('stage1');
         document.getElementById('instruction-text').innerText = "STEP2: ＋/－ボタンで係数を調整し、左右の原子数を合わせよう！";
         feedback.innerHTML = `<div style="color:var(--accent-cyan); font-size:1.2rem; text-shadow:0 2px 4px #000;">✨化学式クリア！次は原子の数を合わせよう！</div>`;
@@ -1239,6 +1232,9 @@ function checkStage2() {
             checkBtn.innerText = "次のクエストへ ➡";
             checkBtn.className = "primary-btn next-btn";
             checkBtn.onclick = nextPracticeQuestion;
+            // ★連打防止シールド：クリア直後も「次へ」の連打誤爆を防ぐ
+            checkBtn.disabled = true;
+            setTimeout(() => { checkBtn.disabled = false; }, 500);
         } else {
             checkBtn.style.display = 'none'; 
         }
@@ -1261,7 +1257,6 @@ function checkStage2() {
 }
 
 function nextPracticeQuestion() {
-    // ★新機能：サドンデスの無限出題エンジン
     if (isSuddenDeath) {
         let sourcePool = [...standardReactions, ...hardReactions];
         let nextReaction = sourcePool[Math.floor(Math.random() * sourcePool.length)];
@@ -1315,7 +1310,6 @@ function showResult(isGameOver, reason) {
     }
     html += `</div>`;
     
-    // ホームへ戻るボタンを追加
     html += `<button class="primary-btn" style="margin-top: 20px; font-size: 1.1rem; padding: 12px 30px;" onclick="showHome()">🏠 ホームへ戻る</button>`;
     html += `</div>`;
     
