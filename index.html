@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI) v3.0.8</title>
+<title>極・化学反応式 (GOKU-CHEMI) v3.1.1</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -95,8 +95,8 @@
     .magic-start-btn:active { transform: scale(0.95); box-shadow: 0 0 20px rgba(0, 229, 255, 0.8); }
     @keyframes pulseGlow { 0% { box-shadow: 0 0 30px rgba(0, 229, 255, 0.3), inset 0 0 20px rgba(0, 229, 255, 0.2); border-color: rgba(0, 229, 255, 0.5);} 100% { box-shadow: 0 0 60px rgba(0, 229, 255, 0.8), inset 0 0 50px rgba(0, 229, 255, 0.5); border-color: rgba(0, 229, 255, 1); } }
 
-    .home-bottom-menu { display: flex; gap: 15px; margin-top: 40px; z-index: 20; flex-wrap: wrap; justify-content: center; margin-bottom: 120px; }
-    .home-action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid #4a4e69; color: #d0d4e5; padding: 14px 24px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);}
+    .home-bottom-menu { display: flex; gap: 15px; margin-top: 40px; z-index: 20; flex-wrap: wrap; justify-content: center; margin-bottom: 120px; padding: 0 20px; width: 100%; box-sizing: border-box;}
+    .home-action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid #4a4e69; color: #d0d4e5; padding: 14px 24px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); flex: 1 1 auto; max-width: 250px;}
     .home-action-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--accent-gold); color: #fff; transform: translateY(-3px);}
     .home-action-btn.sudden-death { border-color: rgba(255, 61, 0, 0.5); color: #ff8a80;}
     .home-action-btn.sudden-death:hover { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.15);}
@@ -181,16 +181,16 @@
         100% { transform: translateY(110vh) rotate(var(--rot)) translateX(var(--tx)) scale(1.2); opacity: 0; } 
     }
 
-    /* 人体模型ケン */
-    #ken-character { position: fixed; bottom: 0px; right: 30px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; }
+    /* 人体模型ケン - 全デバイスで絶対に文字と被らないよう固定レイアウトに変更 */
+    #ken-character { position: fixed; bottom: 10px; right: 10px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; transform: scale(0.75); transform-origin: bottom right; pointer-events: none;}
     .ken-bounce { animation: kenJump 0.4s ease; }
     @keyframes kenJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-    #ken-speech { background: #fff; color: #000; padding: 10px 15px; border-radius: 12px; font-weight: bold; font-size: 0.95rem; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 220px; text-align: center; border: 2px solid #ccc; }
+    #ken-speech { background: #fff; color: #000; padding: 10px 15px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 250px; text-align: center; border: 2px solid #ccc; pointer-events: auto;}
     #ken-speech::after { content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); border-width: 12px 12px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
-    #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; pointer-events: none; background: rgba(0,0,0,0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.5);} 
+    #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; background: rgba(0,0,0,0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.5);} 
 
     /* リザルト画面用 */
-    .result-container { width: 100%; max-width: 600px; text-align: center; animation: popUp 0.5s ease-out; margin: 0 auto;}
+    .result-container { width: 100%; max-width: 600px; text-align: center; animation: popUp 0.5s ease-out; margin: 0 auto; padding-bottom: 60px;}
     .result-box { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; margin-top: 15px; text-align: left; border: 1px solid #4a4e69; }
     .result-list { margin: 10px 0 0 0; padding-left: 20px; line-height: 1.6; }
     .result-list li { color: #d0d4e5; font-size: 1.05rem;}
@@ -205,7 +205,6 @@
         #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
         #mobile-header { display: flex; }
         #main-content { padding: 15px; padding-bottom: 20px; }
-        #ken-character { position: absolute; right: 20px; bottom: 20px; transform: scale(0.85); transform-origin: right bottom; }
         #explanation-box { padding-right: 120px; } 
         .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 100px; }
         .home-title { font-size: 2.5rem; margin-top: 30px;}
@@ -218,7 +217,6 @@
         #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
         #mobile-header { display: flex; }
         #main-content { padding: 15px; padding-bottom: 20px; }
-        #ken-character { position: relative; right: auto; bottom: auto; margin: 30px auto 10px; transform: scale(0.9); transform-origin: center top; z-index: 100;}
         #explanation-box { padding-right: 15px; } 
         #reaction-title { font-size: 1.6rem; }
         .substance-group { padding: 15px 10px; min-width: 100px; }
@@ -233,8 +231,7 @@
         #sidebar-overlay { display: block; pointer-events: none; }
         #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
         #mobile-header { display: flex; }
-        #main-content { padding: 10px; padding-bottom: 20px; }
-        #ken-character { position: relative; right: auto; bottom: auto; margin: 20px auto 10px; transform: scale(0.8); transform-origin: center top; z-index: 100;}
+        #main-content { padding: 10px; padding-bottom: 80px; }
         #explanation-box { padding: 12px; font-size: 0.95rem; }
         #reaction-title { font-size: 1.3rem; }
         .instruction { font-size: 0.9rem; padding: 3px 10px; }
@@ -279,13 +276,13 @@
         .primary-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #009eb3; }
         #feedback { font-size: 0.95rem; min-height: 25px; }
         #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; padding-right: 80px;} 
-        #ken-character { position: fixed; right: 10px; bottom: 10px; transform: scale(0.5); transform-origin: right bottom; margin:0; z-index: 100;}
         .home-title { font-size: 1.8rem; margin-top: 10px;}
         .home-subtitle { margin-bottom: 15px;}
         .magic-start-btn { width: 100px; height: 100px; font-size: 1rem; border-width: 2px;}
         .magic-start-btn span { font-size: 0.7rem; margin-top: 2px;}
         .home-bottom-menu { margin-top: 15px; gap: 10px; margin-bottom: 20px;}
         .home-action-btn { padding: 8px 12px; font-size: 0.85rem;}
+        #ken-character { transform: scale(0.5); }
     }
 </style>
 </head>
@@ -311,9 +308,9 @@
         <h2>🧪 難易度を選択</h2>
         <p>自分のレベルに合わせて挑戦しよう！</p>
         <div style="display:flex; flex-direction:column; gap:12px;">
-            <button class="primary-btn" style="width:100%; background:var(--accent-green); box-shadow: 0 6px 0 #00b359;" onclick="startPractice('easy')">🌱 初級 (5問)</button>
-            <button class="primary-btn" style="width:100%; background:var(--accent-cyan); box-shadow: 0 6px 0 #009eb3;" onclick="startPractice('normal')">🌿 中級 (10問)</button>
-            <button class="primary-btn" style="width:100%; background:var(--accent-gold); box-shadow: 0 6px 0 #cc9d00;" onclick="startPractice('hard')">🔥 上級 (5問)</button>
+            <button class="primary-btn" style="width:100%; background:var(--accent-green); box-shadow: 0 6px 0 #00b359;" onclick="startPractice('easy')">🌱 初級 (中2基本 5問)</button>
+            <button class="primary-btn" style="width:100%; background:var(--accent-cyan); box-shadow: 0 6px 0 #009eb3;" onclick="startPractice('normal')">🌿 中級 (中2レベル 10問)</button>
+            <button class="primary-btn" style="width:100%; background:var(--accent-gold); box-shadow: 0 6px 0 #cc9d00;" onclick="startPractice('hard')">🔥 上級 (中3・発展 5問)</button>
             <button class="primary-btn" style="width:100%; background:var(--accent-red); box-shadow: 0 6px 0 #cc0000;" onclick="startPractice('sudden_death')">💀 超上級サドンデス</button>
         </div>
         <button style="margin-top:25px; background:transparent; border:none; color:var(--text-sub); text-decoration:underline; font-size:1rem; cursor:pointer;" onclick="closeDifficultyModal()">戻る</button>
@@ -360,7 +357,7 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.0.8</div></div>
+    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.1.1</div></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
@@ -369,9 +366,9 @@
     <div class="section-title">🎮 練習・復習モード</div>
     <ul class="menu-list">
         <li class="menu-item home-btn" onclick="showHome()">🏠 ホーム画面へ戻る</li>
-        <li class="menu-item practice-btn" onclick="startPractice('easy')">🌱 初級トレーニング (5問)</li>
-        <li class="menu-item practice-btn" onclick="startPractice('normal')">🌿 中級トレーニング (10問)</li>
-        <li class="menu-item practice-btn" onclick="startPractice('hard')">🔥 上級チャレンジ (5問)</li>
+        <li class="menu-item practice-btn" onclick="startPractice('easy')">🌱 初級 (中2基本 5問)</li>
+        <li class="menu-item practice-btn" onclick="startPractice('normal')">🌿 中級 (中2レベル 10問)</li>
+        <li class="menu-item practice-btn" onclick="startPractice('hard')">🔥 上級 (中3・発展 5問)</li>
         <li class="menu-item sudden-death-btn" onclick="startPractice('sudden_death')">💀 超上級サドンデス</li>
         <li class="menu-item review-btn" id="review-btn" onclick="startPractice('review')" style="display:none;">📖 弱点克服モード (0問)</li>
         <li class="menu-item note-btn" id="note-btn" onclick="openNoteModal()">📓 苦手ノートを確認</li>
@@ -621,13 +618,13 @@ function generateDictItem(r, isHard) {
 function openDictionaryModal() {
     const listDiv = document.getElementById('dictionary-list');
     if (listDiv.innerHTML.trim() === '') {
-        let html = `<h3 style="color:var(--accent-cyan); margin-top:0;">🟢 標準レベル</h3>`;
-        standardReactions.forEach(r => html += generateDictItem(r, false));
-        html += `<h3 style="color:var(--accent-gold); margin-top:20px;">🔥 上級レベル</h3>`;
-        hardReactions.forEach(r => html += generateDictItem(r, true));
+        let html = `<h3 style="color:var(--accent-cyan); margin-top:0;">🟢 中2レベル (化学変化・燃焼)</h3>`;
+        grade2Reactions.forEach(r => html += generateDictItem(r, false));
+        html += `<h3 style="color:var(--accent-gold); margin-top:20px;">🔥 中3・発展レベル (イオン・中和・発展)</h3>`;
+        grade3Reactions.forEach(r => html += generateDictItem(r, true));
         listDiv.innerHTML = html;
     }
-    listDiv.scrollTop = 0; // スクロール位置のリセット
+    listDiv.scrollTop = 0; 
     document.getElementById('dictionary-modal').style.display = 'flex';
     document.body.classList.add('modal-open');
     closeMenu();
@@ -760,12 +757,10 @@ const atomStyles = {
 };
 const metals = ['Na', 'Mg', 'Al', 'Fe', 'Cu', 'Ag', 'Ba', 'Ca'];
 
-const standardReactions = [
+const grade2Reactions = [
     { title: "炭酸水素ナトリウムの熱分解", eq: "2NaHCO3 ➡ Na2CO3 + H2O + CO2", left: [{n:"炭酸水素ナトリウム", f:"NaHCO3"}], right: [{n:"炭酸ナトリウム", f:"Na2CO3"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "炭酸水素ナトリウム（ベーキングパウダーの主成分）を加熱すると、炭酸ナトリウム、水、二酸化炭素に分解されます。カルメ焼きがふくらむ理由です。" },
     { title: "酸化銀の熱分解", eq: "2Ag2O ➡ 4Ag + O2", left: [{n:"酸化銀", f:"Ag2O"}], right: [{n:"銀", f:"Ag"}, {n:"酸素", f:"O2"}], exp: "黒色の酸化銀を加熱すると、還元されて白色の銀と酸素に分かれます。銀は磨くと特有の光沢が出ます。" },
     { title: "水の電気分解", eq: "2H2O ➡ 2H2 + O2", left: [{n:"水", f:"H2O"}], right: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], exp: "水に少量の水酸化ナトリウムなどを溶かして電圧をかけると、陽極（＋）から酸素、陰極（－）から水素が発生します。" },
-    { title: "塩化銅の電気分解", eq: "CuCl2 ➡ Cu + Cl2", left: [{n:"塩化銅", f:"CuCl2"}], right: [{n:"銅", f:"Cu"}, {n:"塩素", f:"Cl2"}], exp: "青色の塩化銅水溶液を電気分解すると、陰極（－）に赤い銅が付着し、陽極（＋）からプールの消毒液のにおいがする塩素が発生します。" },
-    { title: "塩化マグネシウムの電気分解", eq: "MgCl2 ➡ Mg + Cl2", left: [{n:"塩化マグネシウム", f:"MgCl2"}], right: [{n:"マグネシウム", f:"Mg"}, {n:"塩素", f:"Cl2"}], exp: "塩化マグネシウム水溶液を電気分解すると、陰極から金属マグネシウム、陽極から塩素ガスが発生します。" },
     { title: "過酸化水素の分解", eq: "2H2O2 ➡ 2H2O + O2", left: [{n:"過酸化水素", f:"H2O2"}], right: [{n:"水", f:"H2O"}, {n:"酸素", f:"O2"}], exp: "オキシドール（過酸化水素水）に二酸化マンガン（触媒）を加えると、分解されて酸素が発生します。二酸化マンガン自身は変化しません。" },
     { title: "鉄と硫黄の化合", eq: "Fe + S ➡ FeS", left: [{n:"鉄", f:"Fe"}, {n:"硫黄", f:"S"}], right: [{n:"硫化鉄", f:"FeS"}], exp: "鉄と硫黄の粉末を混ぜて加熱すると、黒色の硫化鉄になります。反応する時に熱を出すため途中で加熱を止めても反応が進みます。" },
     { title: "銅と硫黄の化合", eq: "2Cu + S ➡ Cu2S", left: [{n:"銅", f:"Cu"}, {n:"硫黄", f:"S"}], right: [{n:"硫化銅", f:"Cu2S"}], exp: "銅と硫黄を混ぜて加熱すると、激しく熱と光を出して反応し、黒色の硫化銅ができます。" },
@@ -779,36 +774,38 @@ const standardReactions = [
     { title: "二酸化炭素のマグネシウムによる還元", eq: "2Mg + CO2 ➡ 2MgO + C", left: [{n:"マグネシウム", f:"Mg"}, {n:"二酸化炭素", f:"CO2"}], right: [{n:"酸化マグネシウム", f:"MgO"}, {n:"炭素", f:"C"}], exp: "ドライアイス（二酸化炭素）の中でマグネシウムを燃やすと、マグネシウムが二酸化炭素から酸素を奪い（還元）、酸化マグネシウムと黒い炭素ができます。" },
     { title: "メタンの燃焼", eq: "CH4 + 2O2 ➡ CO2 + 2H2O", left: [{n:"メタン", f:"CH4"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタン（都市ガスの主成分）などの有機物が燃焼すると、必ず二酸化炭素と水が発生します。" },
     { title: "エタノールの燃焼", eq: "C2H5OH + 3O2 ➡ 2CO2 + 3H2O", left: [{n:"エタノール", f:"C2H5OH"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "エタノールが燃焼すると、二酸化炭素と水が発生します。エタノール分子の中に酸素(O)が含まれているため、係数合わせに注意が必要です。" },
-    { title: "硫化鉄と塩酸", eq: "FeS + 2HCl ➡ FeCl2 + H2S", left: [{n:"硫化鉄", f:"FeS"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化鉄", f:"FeCl2"}, {n:"硫化水素", f:"H2S"}], exp: "鉄と硫黄が化合した硫化鉄に塩酸を加えると、腐卵臭（温泉のにおい）のする有毒な硫化水素が発生します。" },
-    { title: "塩酸と水酸化ナトリウム", eq: "HCl + NaOH ➡ NaCl + H2O", left: [{n:"塩酸", f:"HCl"}, {n:"水酸化ナトリウム", f:"NaOH"}], right: [{n:"塩化ナトリウム", f:"NaCl"}, {n:"水", f:"H2O"}], exp: "塩酸（酸）と水酸化ナトリウム水溶液（アルカリ）の中和反応です。塩化ナトリウム（食塩）と水ができます。" },
-    { title: "硫酸と水酸化バリウム", eq: "H2SO4 + Ba(OH)2 ➡ BaSO4 + 2H2O", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化バリウム", f:"Ba(OH)2"}], right: [{n:"硫酸バリウム", f:"BaSO4"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化バリウムの中和反応です。白い沈殿物である硫酸バリウムと水ができます。" }
+    { title: "メタノールの燃焼", eq: "2CH4O + 3O2 ➡ 2CO2 + 4H2O", left: [{n:"メタノール", f:"CH4O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタノール（アルコールの一種）の燃焼です。エタノールと同様に二酸化炭素と水ができます。" },
+    { title: "アンモニア生成反応", eq: "2NH4Cl + Ca(OH)2 ➡ CaCl2 + 2H2O + 2NH3", left: [{n:"塩化アンモニウム", f:"NH4Cl"}, {n:"水酸化カルシウム", f:"Ca(OH)2"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"アンモニア", f:"NH3"}], exp: "塩化アンモニウムと水酸化カルシウムを混ぜて加熱すると、刺激臭のあるアンモニアが発生します。水に溶けやすいため上方置換法で集めます。" },
+    { title: "吸熱反応", eq: "Ba(OH)2 + 2NH4Cl ➡ BaCl2 + 2NH3 + 2H2O", left: [{n:"水酸化バリウム", f:"Ba(OH)2"}, {n:"塩化アンモニウム", f:"NH4Cl"}], right: [{n:"塩化バリウム", f:"BaCl2"}, {n:"アンモニア", f:"NH3"}, {n:"水", f:"H2O"}], exp: "水酸化バリウムと塩化アンモニウムを混ぜると、周囲の熱を奪いながら反応（吸熱反応）し、温度が急激に下がります。" }
 ];
 
-const hardReactions = [
-    { title: "プロパンの燃焼", eq: "C3H8 + 5O2 ➡ 3CO2 + 4H2O", left: [{n:"プロパン", f:"C3H8"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "プロパン（LPガスの主成分）の燃焼です。炭素と水素の数が多いので、必要な酸素分子の数も多くなります。" },
-    { title: "ブタンの燃焼", eq: "2C4H10 + 13O2 ➡ 8CO2 + 10H2O", left: [{n:"ブタン", f:"C4H10"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "ブタン（カセットコンロのガスの主成分）の燃焼です。係数がすべて大きくなる高校入試の難問です。" },
-    { title: "酸化銅のエタノールによる還元", eq: "CuO + C2H5OH ➡ Cu + CH3CHO + H2O", left: [{n:"酸化銅", f:"CuO"}, {n:"エタノール", f:"C2H5OH"}], right: [{n:"銅", f:"Cu"}, {n:"アセトアルデヒド", f:"CH3CHO"}, {n:"水", f:"H2O"}], exp: "加熱した酸化銅をエタノールに入れると、酸化銅は還元されて赤色の銅になり、エタノールは酸化されて特有のにおいがするアセトアルデヒドに変化します。" },
-    { title: "アンモニア生成反応", eq: "2NH4Cl + Ca(OH)2 ➡ CaCl2 + 2H2O + 2NH3", left: [{n:"塩化アンモニウム", f:"NH4Cl"}, {n:"水酸化カルシウム", f:"Ca(OH)2"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"アンモニア", f:"NH3"}], exp: "塩化アンモニウムと水酸化カルシウムを混ぜて加熱すると、刺激臭のあるアンモニアが発生します。水に溶けやすいため上方置換法で集めます。" },
-    { title: "吸熱反応", eq: "Ba(OH)2 + 2NH4Cl ➡ BaCl2 + 2NH3 + 2H2O", left: [{n:"水酸化バリウム", f:"Ba(OH)2"}, {n:"塩化アンモニウム", f:"NH4Cl"}], right: [{n:"塩化バリウム", f:"BaCl2"}, {n:"アンモニア", f:"NH3"}, {n:"水", f:"H2O"}], exp: "水酸化バリウムと塩化アンモニウムを混ぜると、周囲の熱を奪いながら反応（吸熱反応）し、温度が急激に下がります。" },
-    { title: "アンモニアの酸化", eq: "4NH3 + 5O2 ➡ 4NO + 6H2O", left: [{n:"アンモニア", f:"NH3"}, {n:"酸素", f:"O2"}], right: [{n:"一酸化窒素", f:"NO"}, {n:"水", f:"H2O"}], exp: "アンモニアを白金触媒を使って酸化させる反応です。一酸化窒素と水ができます。" },
+const grade3Reactions = [
+    { title: "塩化銅の電気分解", eq: "CuCl2 ➡ Cu + Cl2", left: [{n:"塩化銅", f:"CuCl2"}], right: [{n:"銅", f:"Cu"}, {n:"塩素", f:"Cl2"}], exp: "青色の塩化銅水溶液を電気分解すると、陰極（－）に赤い銅が付着し、陽極（＋）からプールの消毒液のにおいがする塩素が発生します。" },
+    { title: "塩化マグネシウムの電気分解", eq: "MgCl2 ➡ Mg + Cl2", left: [{n:"塩化マグネシウム", f:"MgCl2"}], right: [{n:"マグネシウム", f:"Mg"}, {n:"塩素", f:"Cl2"}], exp: "塩化マグネシウム水溶液を電気分解すると、陰極から金属マグネシウム、陽極から塩素ガスが発生します。" },
+    { title: "硫化鉄と塩酸", eq: "FeS + 2HCl ➡ FeCl2 + H2S", left: [{n:"硫化鉄", f:"FeS"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化鉄", f:"FeCl2"}, {n:"硫化水素", f:"H2S"}], exp: "鉄と硫黄が化合した硫化鉄に塩酸を加えると、腐卵臭（温泉のにおい）のする有毒な硫化水素が発生します。" },
+    { title: "塩酸と水酸化ナトリウム", eq: "HCl + NaOH ➡ NaCl + H2O", left: [{n:"塩酸", f:"HCl"}, {n:"水酸化ナトリウム", f:"NaOH"}], right: [{n:"塩化ナトリウム", f:"NaCl"}, {n:"水", f:"H2O"}], exp: "塩酸（酸）と水酸化ナトリウム水溶液（アルカリ）の中和反応です。塩化ナトリウム（食塩）と水ができます。" },
+    { title: "硫酸と水酸化バリウム", eq: "H2SO4 + Ba(OH)2 ➡ BaSO4 + 2H2O", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化バリウム", f:"Ba(OH)2"}], right: [{n:"硫酸バリウム", f:"BaSO4"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化バリウムの中和反応です。白い沈殿物である硫酸バリウムと水ができます。" },
     { title: "アルミニウムと塩酸", eq: "2Al + 6HCl ➡ 2AlCl3 + 3H2", left: [{n:"アルミニウム", f:"Al"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水素", f:"H2"}], exp: "アルミニウムなどの金属に塩酸を加えると、水素が発生して溶け、塩化アルミニウムになります。" },
-    { title: "銅と濃硝酸", eq: "Cu + 4HNO3 ➡ Cu(NO3)2 + 2H2O + 2NO2", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"二酸化窒素", f:"NO2"}], exp: "銅に濃硝酸を加えると、激しく反応して赤褐色の有毒ガス（二酸化窒素）が発生します。" },
-    { title: "銅と希硝酸", eq: "3Cu + 8HNO3 ➡ 3Cu(NO3)2 + 4H2O + 2NO", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"一酸化窒素", f:"NO"}], exp: "銅に薄い硝酸を加えると、無色の一酸化窒素が発生します。空気に触れるとすぐに赤褐色の二酸化窒素に変わります。" },
-    { title: "黄鉄鉱の燃焼", eq: "4FeS2 + 11O2 ➡ 2Fe2O3 + 8SO2", left: [{n:"二硫化鉄", f:"FeS2"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"二酸化硫黄", f:"SO2"}], exp: "黄鉄鉱（二硫化鉄）を燃焼させる反応です。有害な二酸化硫黄が発生します。" },
-    { title: "硫化水素の燃焼", eq: "2H2S + 3O2 ➡ 2H2O + 2SO2", left: [{n:"硫化水素", f:"H2S"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}, {n:"二酸化硫黄", f:"SO2"}], exp: "温泉のにおいの元である有毒な硫化水素を燃やすと、水と二酸化硫黄になります。" },
-    { title: "メタノールの燃焼", eq: "2CH4O + 3O2 ➡ 2CO2 + 4H2O", left: [{n:"メタノール", f:"CH4O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタノール（アルコールの一種）の燃焼です。エタノールと同様に二酸化炭素と水ができます。" },
     { title: "酸化アルミニウムと塩酸", eq: "Al2O3 + 6HCl ➡ 2AlCl3 + 3H2O", left: [{n:"酸化アルミニウム", f:"Al2O3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水", f:"H2O"}], exp: "酸化アルミニウムは、酸（塩酸）とも反応して塩化アルミニウムと水を作ります。" },
     { title: "炭酸カルシウムと塩酸", eq: "CaCO3 + 2HCl ➡ CaCl2 + H2O + CO2", left: [{n:"炭酸カルシウム", f:"CaCO3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "石灰石やチョークに塩酸をかけると、二酸化炭素が発生します。実験室で二酸化炭素を作る定番の方法です。" },
     { title: "硫酸と水酸化アルミニウム", eq: "3H2SO4 + 2Al(OH)3 ➡ Al2(SO4)3 + 6H2O", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化アルミニウム", f:"Al(OH)3"}], right: [{n:"硫酸アルミニウム", f:"Al2(SO4)3"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化アルミニウムの中和反応です。イオンの価数が違うため、係数合わせが複雑になります。" },
+    { title: "銅と濃硝酸", eq: "Cu + 4HNO3 ➡ Cu(NO3)2 + 2H2O + 2NO2", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"二酸化窒素", f:"NO2"}], exp: "銅に濃硝酸を加えると、激しく反応して赤褐色の有毒ガス（二酸化窒素）が発生します。" },
+    { title: "銅と希硝酸", eq: "3Cu + 8HNO3 ➡ 3Cu(NO3)2 + 4H2O + 2NO", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"一酸化窒素", f:"NO"}], exp: "銅に薄い硝酸を加えると、無色の一酸化窒素が発生します。空気に触れるとすぐに赤褐色の二酸化窒素に変わります。" },
+    { title: "アンモニアの酸化", eq: "4NH3 + 5O2 ➡ 4NO + 6H2O", left: [{n:"アンモニア", f:"NH3"}, {n:"酸素", f:"O2"}], right: [{n:"一酸化窒素", f:"NO"}, {n:"水", f:"H2O"}], exp: "アンモニアを白金触媒を使って酸化させる反応です。一酸化窒素と水ができます。" },
+    { title: "黄鉄鉱の燃焼", eq: "4FeS2 + 11O2 ➡ 2Fe2O3 + 8SO2", left: [{n:"二硫化鉄", f:"FeS2"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"二酸化硫黄", f:"SO2"}], exp: "黄鉄鉱（二硫化鉄）を燃焼させる反応です。有害な二酸化硫黄が発生します。" },
+    { title: "硫化水素の燃焼", eq: "2H2S + 3O2 ➡ 2H2O + 2SO2", left: [{n:"硫化水素", f:"H2S"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}, {n:"二酸化硫黄", f:"SO2"}], exp: "温泉のにおいの元である有毒な硫化水素を燃やすと、水と二酸化硫黄になります。" },
     { title: "テルミット反応", eq: "Fe2O3 + 2Al ➡ 2Fe + Al2O3", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"アルミニウム", f:"Al"}], right: [{n:"鉄", f:"Fe"}, {n:"酸化アルミニウム", f:"Al2O3"}], exp: "酸化鉄とアルミニウムの粉末に点火すると、激しい熱を出してアルミニウムが酸素を奪い、液状の鉄が得られます。" },
     { title: "酸化鉄(III)の一酸化炭素による還元", eq: "Fe2O3 + 3CO ➡ 2Fe + 3CO2", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"一酸化炭素", f:"CO"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}], exp: "製鉄所で鉄鉱石（酸化鉄）から鉄を取り出す（還元する）際に起きる重要な反応です。" },
-    { title: "酸化鉄(III)の炭素による還元", eq: "2Fe2O3 + 3C ➡ 4Fe + 3CO2", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"炭素", f:"C"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}], exp: "酸化鉄を炭素の粉末と一緒に加熱して還元する反応です。銅の還元と同じ原理です。" }
+    { title: "酸化鉄(III)の炭素による還元", eq: "2Fe2O3 + 3C ➡ 4Fe + 3CO2", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"炭素", f:"C"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}], exp: "酸化鉄を炭素の粉末と一緒に加熱して還元する反応です。銅の還元と同じ原理です。" },
+    { title: "プロパンの燃焼", eq: "C3H8 + 5O2 ➡ 3CO2 + 4H2O", left: [{n:"プロパン", f:"C3H8"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "プロパン（LPガスの主成分）の燃焼です。炭素と水素の数が多いので、必要な酸素分子の数も多くなります。" },
+    { title: "ブタンの燃焼", eq: "2C4H10 + 13O2 ➡ 8CO2 + 10H2O", left: [{n:"ブタン", f:"C4H10"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "ブタン（カセットコンロのガスの主成分）の燃焼です。係数がすべて大きくなる高校入試の難問です。" },
+    { title: "酸化銅のエタノールによる還元", eq: "CuO + C2H5OH ➡ Cu + CH3CHO + H2O", left: [{n:"酸化銅", f:"CuO"}, {n:"エタノール", f:"C2H5OH"}], right: [{n:"銅", f:"Cu"}, {n:"アセトアルデヒド", f:"CH3CHO"}, {n:"水", f:"H2O"}], exp: "加熱した酸化銅をエタノールに入れると、酸化銅は還元されて赤色の銅になり、エタノールは酸化されて特有のにおいがするアセトアルデヒドに変化します。" }
 ];
 
-const allStandardFormulas = [...new Set(standardReactions.flatMap(r => [...r.left, ...r.right].map(i => i.f)))];
-const allHardFormulas = [...new Set(hardReactions.flatMap(r => [...r.left, ...r.right].map(i => i.f)))];
+const allStandardFormulas = [...new Set(grade2Reactions.flatMap(r => [...r.left, ...r.right].map(i => i.f)))];
+const allHardFormulas = [...new Set(grade3Reactions.flatMap(r => [...r.left, ...r.right].map(i => i.f)))];
 
-const allReactions = [...standardReactions, ...hardReactions];
+const allReactions = [...grade2Reactions, ...grade3Reactions];
 const allFormulasPool = [...allStandardFormulas, ...allHardFormulas];
 
 // --- セッション管理 ---
@@ -825,7 +822,7 @@ let isSuddenDeath = false;
 let suddenDeathScore = 0;
 let timerInterval = null;
 let timeLeft = 0;
-let timerEndTime = 0; // ★チート対策：絶対時間記録用
+let timerEndTime = 0; 
 const TIME_LIMIT = 30;
 
 function getGCD(a, b) { return b === 0 ? a : getGCD(b, a % b); }
@@ -901,6 +898,11 @@ function triggerCelebration() {
         
         container.appendChild(particle);
     }
+    
+    // ★ メモリリーク対策：DOMゴミ自動お掃除
+    setTimeout(() => {
+        container.innerHTML = '';
+    }, 4000);
 }
 
 let resizeTimer;
@@ -938,7 +940,7 @@ function buildMenu() {
     allReactions.forEach((r, i) => {
         const li = document.createElement('li');
         li.className = 'menu-item free-item';
-        const icon = i < standardReactions.length ? "" : "🔥 ";
+        const icon = i < grade2Reactions.length ? "" : "🔥 ";
         li.innerText = icon + r.title;
         li.onclick = () => selectFreeReaction(i);
         list.appendChild(li);
@@ -958,7 +960,6 @@ function selectFreeReaction(index) {
     setupReaction(allReactions[index], allFormulasPool);
 }
 
-// ★ チート対策：裏画面にいっても正確に時間を削るように改修
 function startTimer() {
     clearInterval(timerInterval);
     document.getElementById('timer-container').style.display = 'block';
@@ -1001,22 +1002,20 @@ function startPractice(type) {
     stopTimer();
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
     
-    let sourcePool = [...standardReactions, ...hardReactions];
-    
     sessionMistakes = [];
     isSuddenDeath = (type === 'sudden_death');
     suddenDeathScore = 0;
     
     if (type === 'easy') {
-        practiceQuestions = [...standardReactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allStandardFormulas }));
+        practiceQuestions = [...grade2Reactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allStandardFormulas }));
     } else if (type === 'normal') {
-        practiceQuestions = [...standardReactions].sort(() => 0.5 - Math.random()).slice(0, 10).map(r => ({ reaction: r, pool: allStandardFormulas }));
+        practiceQuestions = [...grade2Reactions].sort(() => 0.5 - Math.random()).slice(0, 10).map(r => ({ reaction: r, pool: allStandardFormulas }));
     } else if (type === 'hard') {
-        practiceQuestions = [...hardReactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allFormulasPool }));
+        practiceQuestions = [...grade3Reactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allFormulasPool }));
     } else if (type === 'sudden_death') {
-        practiceQuestions = [...sourcePool].sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
+        practiceQuestions = [...allReactions].sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
     } else if (type === 'review') {
-        let reviewReactions = sourcePool.filter(r => userMistakes.includes(r.title));
+        let reviewReactions = allReactions.filter(r => userMistakes.includes(r.title));
         practiceQuestions = reviewReactions.sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
     }
     
@@ -1306,7 +1305,6 @@ function checkStage2() {
         if (!isCleared) {
             addPoints(10);
             isCleared = true; 
-            // ★ 教育的欠陥対策：今回のプレイでミスをしていなければクリア（リストから消去）
             let madeMistakeThisTime = sessionMistakes.some(m => m.title === currentReactionData.title);
             if (appMode === 'practice_review' && !madeMistakeThisTime) {
                 clearMistake(currentReactionData.title);
@@ -1361,9 +1359,15 @@ function checkStage2() {
 
 function nextPracticeQuestion() {
     if (isSuddenDeath) {
-        let sourcePool = [...standardReactions, ...hardReactions];
+        let sourcePool = [...allReactions];
         let nextReaction = sourcePool[Math.floor(Math.random() * sourcePool.length)];
         practiceQuestions.push({ reaction: nextReaction, pool: allFormulasPool });
+        
+        // ★ メモリリーク対策：過去の配列問題を破棄
+        if (practiceQuestions.length > 5) {
+            practiceQuestions.shift();
+            currentQIndex--;
+        }
     }
 
     currentQIndex++;
@@ -1387,7 +1391,7 @@ function showResult(isGameOver, reason) {
         if (isGameOver && currentReactionData && currentReactionData.eq) {
             html += `<div style="background: rgba(255, 61, 0, 0.15); border: 2px solid var(--accent-red); border-radius: 10px; padding: 15px; margin: 20px auto; max-width: 90%;">`;
             html += `<div style="color: #ff8a80; font-size: 0.9rem; font-weight:bold; margin-bottom: 8px;">💡 今回の正解はコレだ！</div>`;
-            html += `<div style="font-size: 1.4rem; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px;">${formatDictEquation(currentReactionData.eq)}</div>`;
+            html += `<div style="font-size: 1.4rem; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; white-space: nowrap; overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch;">${formatDictEquation(currentReactionData.eq)}</div>`;
             html += `</div>`;
         }
 
@@ -1434,8 +1438,6 @@ function showResult(isGameOver, reason) {
     
     if (isSuddenDeath && isGameOver) updateKen('error');
     else { updateKen('success'); triggerCelebration(); }
-    
-    document.getElementById('ken-speech').innerText = isGameOver ? "悔しい！次こそ限界を超えよう！" : "素晴らしい！君は本物の天才だ！";
     
     if (appMode === 'practice_review') updateReviewMenu(); 
 }
