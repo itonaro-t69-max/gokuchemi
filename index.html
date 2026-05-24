@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI) v3.1.3</title>
+<title>極・化学反応式 (GOKU-CHEMI) v3.1.5</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -39,7 +39,7 @@
     .delete-btn { background: var(--accent-red); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s;}
     .delete-btn:active { transform: scale(0.9); }
 
-    /* ★ 図鑑専用デザイン ★ */
+    /* 図鑑専用デザイン */
     .dict-item { background: #1a1d2d; border-left: 4px solid var(--accent-cyan); border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: left;}
     .dict-item.hard { border-left-color: var(--accent-gold); }
     .dict-title { font-size: 1.1rem; font-weight: bold; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;}
@@ -84,7 +84,7 @@
     .mobile-title { font-size: 1.2rem; font-weight: 900; color: var(--accent-cyan); letter-spacing: 2px; cursor: pointer;}
     #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
-    /* ★ ホーム画面 ★ */
+    /* ホーム画面 */
     #home-screen { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 15; background: radial-gradient(circle at 50% 40%, #1a1d2d 0%, #08090d 80%); padding-top: 15vh; }
     .home-status-badge { position: absolute; top: 20px; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 30px; border: 1px solid var(--accent-gold); display: flex; gap: 15px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 20;}
     .home-title { font-size: 3rem; font-weight: 900; color: #fff; text-shadow: 0 0 20px var(--accent-cyan), 0 4px 10px #000; margin-bottom: 5px; text-align: center; letter-spacing: 4px; z-index: 20;}
@@ -181,7 +181,7 @@
         100% { transform: translateY(110vh) rotate(var(--rot)) translateX(var(--tx)) scale(1.2); opacity: 0; } 
     }
 
-    /* 人体模型ケン - 固定レイアウト */
+    /* 人体模型ケン */
     #ken-character { position: fixed; bottom: 10px; right: 10px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; transform: scale(0.75); transform-origin: bottom right; pointer-events: none;}
     .ken-bounce { animation: kenJump 0.4s ease; }
     @keyframes kenJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
@@ -290,7 +290,6 @@
 
 <div id="particle-container"></div>
 
-<!-- チュートリアルモーダル -->
 <div id="tutorial-modal" class="modal-overlay">
     <div class="modal-content">
         <h2>🧪 GOKU-CHEMI へようこそ！</h2>
@@ -304,7 +303,6 @@
     </div>
 </div>
 
-<!-- 難易度選択モーダル -->
 <div id="difficulty-modal" class="modal-overlay">
     <div class="modal-content">
         <h2>🧪 難易度を選択</h2>
@@ -319,7 +317,6 @@
     </div>
 </div>
 
-<!-- 苦手ノートモーダル -->
 <div id="note-modal" class="modal-overlay">
     <div class="modal-content">
         <h2>📖 苦手ノート</h2>
@@ -329,24 +326,20 @@
     </div>
 </div>
 
-<!-- 反応式図鑑（答え一覧）モーダル -->
 <div id="dictionary-modal" class="modal-overlay">
     <div class="modal-content" style="width: 95%; max-width: 800px; height: 90vh;">
         <h2 style="font-size:1.8rem;">📚 反応式 答え合わせ図鑑</h2>
         <p style="margin-bottom: 10px; color:var(--accent-gold); font-weight:bold;">すべての化学反応式の答えと解説だ！</p>
         <div id="dictionary-list" style="flex: 1; overflow-y: auto; text-align: left; padding: 15px; background: #0f111a; border-radius: 10px; border: 2px solid #2a2e45;">
-            <!-- JavaScriptで自動生成されます -->
-        </div>
+            </div>
         <button class="primary-btn" style="margin-top:20px; padding:12px 30px; width:100%;" onclick="closeDictionaryModal()">閉じる</button>
     </div>
 </div>
 
-<!-- 引き継ぎモーダル -->
 <div id="transfer-modal" class="modal-overlay">
     <div class="modal-content">
         <h2>⚙️ データ引き継ぎ</h2>
         <p>今のポイントを別の端末に引き継げるぞ！</p>
-        <!-- ★クレーム対策：注意書きの追加 -->
         <p style="color:var(--accent-red); font-size:0.85rem; font-weight:bold; margin-top:-15px;">※ポイントと称号のみ引き継がれます。<br>苦手ノートは各端末に保存されます。</p>
         
         <div class="transfer-box">
@@ -366,7 +359,7 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.1.3</div></div>
+    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.1.5</div></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
@@ -398,7 +391,6 @@
         <button id="menu-toggle-btn" onclick="toggleMenu()">☰ メニュー</button>
     </div>
     
-    <!-- ★ ホーム画面 ★ -->
     <div id="home-screen">
         <div class="home-status-badge">
             <span id="home-rank-title" style="color:var(--accent-gold); font-size:0.9rem; font-weight:bold;">見習い錬金術師</span>
@@ -420,7 +412,6 @@
         </div>
     </div>
 
-    <!-- ★ 実験・練習画面 ★ -->
     <div id="reaction-header">
         <div>
             <h2 id="reaction-title">反応を選択してください</h2>
@@ -641,13 +632,15 @@ function generateDictItem(r, isHard) {
 
 function openDictionaryModal() {
     const listDiv = document.getElementById('dictionary-list');
-    if (listDiv.innerHTML.trim() === '') {
+    
+    if (listDiv.children.length === 0) {
         let html = `<h3 style="color:var(--accent-cyan); margin-top:0;">🟢 中2レベル (化学変化・燃焼)</h3>`;
         grade2Reactions.forEach(r => html += generateDictItem(r, false));
         html += `<h3 style="color:var(--accent-gold); margin-top:20px;">🔥 中3・発展レベル (イオン・中和・発展)</h3>`;
         grade3Reactions.forEach(r => html += generateDictItem(r, true));
         listDiv.innerHTML = html;
     }
+    
     listDiv.scrollTop = 0; 
     document.getElementById('dictionary-modal').style.display = 'flex';
     document.body.classList.add('modal-open');
@@ -1041,7 +1034,9 @@ function startPractice(type) {
     } else if (type === 'hard') {
         practiceQuestions = [...grade3Reactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allFormulasPool }));
     } else if (type === 'sudden_death') {
-        practiceQuestions = [...allReactions].sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
+        // ★ サドンデスの初期化論理を修正（無駄な39問ロードを廃止し、最初の1問だけセット）
+        let firstReaction = allReactions[Math.floor(Math.random() * allReactions.length)];
+        practiceQuestions = [{ reaction: firstReaction, pool: allFormulasPool }];
     } else if (type === 'review') {
         let reviewReactions = allReactions.filter(r => userMistakes.some(m => m.title === r.title));
         practiceQuestions = reviewReactions.sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
@@ -1333,7 +1328,7 @@ function checkStage2() {
         if (!isCleared) {
             addPoints(10);
             isCleared = true; 
-            // ★ 教育的欠陥対策：今回のプレイでミスをしていなければクリア（リストから消去）
+            
             let madeMistakeThisTime = sessionMistakes.some(m => m.title === currentReactionData.title);
             if (appMode === 'practice_review' && !madeMistakeThisTime) {
                 clearMistake(currentReactionData.title);
@@ -1387,6 +1382,13 @@ function checkStage2() {
 }
 
 function nextPracticeQuestion() {
+    // ★ 連打スキップ対策：関数が呼ばれた瞬間にボタンを無効化・非表示にする
+    const checkBtn = document.getElementById('check-btn');
+    if(checkBtn) {
+        checkBtn.disabled = true;
+        checkBtn.style.display = 'none';
+    }
+
     if (isSuddenDeath) {
         let sourcePool = [...allReactions];
         let nextReaction = sourcePool[Math.floor(Math.random() * sourcePool.length)];
