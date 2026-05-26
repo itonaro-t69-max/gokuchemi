@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI) v3.1.6</title>
+<title>極・化学反応式 (GOKU-CHEMI) v3.1.7</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -18,6 +18,10 @@
         font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
         display: flex; height: 100vh; height: 100dvh; overflow: hidden; touch-action: manipulation;
         -webkit-user-select: none; user-select: none; -webkit-user-drag: none;
+        
+        /* ★ 最終防御策：ブラウザの余計な挙動をブロック ★ */
+        overscroll-behavior-y: none; /* 引っ張って更新を禁止 */
+        -webkit-touch-callout: none; /* 長押しポップアップメニューを禁止 */
     }
     body.modal-open { overflow: hidden; }
     
@@ -359,7 +363,7 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.1.6</div></div>
+    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.1.7</div></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
@@ -772,7 +776,6 @@ const atomStyles = {
 };
 const metals = ['Na', 'Mg', 'Al', 'Fe', 'Cu', 'Ag', 'Ba', 'Ca'];
 
-// ★ データ定義（1回のみ記述！） ★
 const grade2Reactions = [
     { title: "炭酸水素ナトリウムの熱分解", eq: "2NaHCO3 ➡ Na2CO3 + H2O + CO2", left: [{n:"炭酸水素ナトリウム", f:"NaHCO3"}], right: [{n:"炭酸ナトリウム", f:"Na2CO3"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "炭酸水素ナトリウム（ベーキングパウダーの主成分）を加熱すると、炭酸ナトリウム、水、二酸化炭素に分解されます。カルメ焼きがふくらむ理由です。" },
     { title: "酸化銀の熱分解", eq: "2Ag2O ➡ 4Ag + O2", left: [{n:"酸化銀", f:"Ag2O"}], right: [{n:"銀", f:"Ag"}, {n:"酸素", f:"O2"}], exp: "黒色の酸化銀を加熱すると、還元されて白色の銀と酸素に分かれます。銀は磨くと特有の光沢が出ます。" },
@@ -1272,6 +1275,10 @@ function checkStage1() {
         feedback.innerHTML = `<div style="color:var(--accent-cyan); font-size:1.2rem; text-shadow:0 2px 4px #000;">✨化学式クリア！次は原子の数を合わせよう！</div>`;
         setTimeout(() => { if(stage===2) document.getElementById('feedback').innerHTML = ''; }, 3000);
         renderWorkspace();
+
+        if (isSuddenDeath) {
+            startTimer();
+        }
     }
 }
 
