@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI) v3.1.5</title>
+<title>極・化学反応式 (GOKU-CHEMI) v3.1.6</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -181,7 +181,7 @@
         100% { transform: translateY(110vh) rotate(var(--rot)) translateX(var(--tx)) scale(1.2); opacity: 0; } 
     }
 
-    /* 人体模型ケン */
+    /* 人体模型ケン - 固定レイアウト */
     #ken-character { position: fixed; bottom: 10px; right: 10px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; transform: scale(0.75); transform-origin: bottom right; pointer-events: none;}
     .ken-bounce { animation: kenJump 0.4s ease; }
     @keyframes kenJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
@@ -359,7 +359,7 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.1.5</div></div>
+    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.1.6</div></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
@@ -522,7 +522,6 @@ function updateReviewMenu() {
     }
 }
 
-// --- 画面切り替え ---
 function showHome() {
     appMode = "home";
     closeMenu();
@@ -558,7 +557,6 @@ function closeDifficultyModal() {
     document.body.classList.remove('modal-open');
 }
 
-// --- モーダル関連 ---
 function openNoteModal() {
     const listDiv = document.getElementById('note-list');
     listDiv.innerHTML = '';
@@ -774,13 +772,14 @@ const atomStyles = {
 };
 const metals = ['Na', 'Mg', 'Al', 'Fe', 'Cu', 'Ag', 'Ba', 'Ca'];
 
+// ★ データ定義（1回のみ記述！） ★
 const grade2Reactions = [
     { title: "炭酸水素ナトリウムの熱分解", eq: "2NaHCO3 ➡ Na2CO3 + H2O + CO2", left: [{n:"炭酸水素ナトリウム", f:"NaHCO3"}], right: [{n:"炭酸ナトリウム", f:"Na2CO3"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "炭酸水素ナトリウム（ベーキングパウダーの主成分）を加熱すると、炭酸ナトリウム、水、二酸化炭素に分解されます。カルメ焼きがふくらむ理由です。" },
     { title: "酸化銀の熱分解", eq: "2Ag2O ➡ 4Ag + O2", left: [{n:"酸化銀", f:"Ag2O"}], right: [{n:"銀", f:"Ag"}, {n:"酸素", f:"O2"}], exp: "黒色の酸化銀を加熱すると、還元されて白色の銀と酸素に分かれます。銀は磨くと特有の光沢が出ます。" },
     { title: "水の電気分解", eq: "2H2O ➡ 2H2 + O2", left: [{n:"水", f:"H2O"}], right: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], exp: "水に少量の水酸化ナトリウムなどを溶かして電圧をかけると、陽極（＋）から酸素、陰極（－）から水素が発生します。" },
     { title: "過酸化水素の分解", eq: "2H2O2 ➡ 2H2O + O2", left: [{n:"過酸化水素", f:"H2O2"}], right: [{n:"水", f:"H2O"}, {n:"酸素", f:"O2"}], exp: "オキシドール（過酸化水素水）に二酸化マンガン（触媒）を加えると、分解されて酸素が発生します。二酸化マンガン自身は変化しません。" },
     { title: "鉄と硫黄の化合", eq: "Fe + S ➡ FeS", left: [{n:"鉄", f:"Fe"}, {n:"硫黄", f:"S"}], right: [{n:"硫化鉄", f:"FeS"}], exp: "鉄と硫黄の粉末を混ぜて加熱すると、黒色の硫化鉄になります。反応する時に熱を出すため途中で加熱を止めても反応が進みます。" },
-    { title: "銅と硫黄の化合", eq: "2Cu + S ➡ Cu2S", left: [{n:"銅", f:"Cu"}, {n:"硫黄", f:"S"}], right: [{n:"硫化銅", f:"Cu2S"}], exp: "銅と硫黄を混ぜて加熱すると、激しく熱と光を出して反応し、黒色の硫化銅ができます。" },
+    { title: "銅と硫黄の化合", eq: "Cu + S ➡ CuS", left: [{n:"銅", f:"Cu"}, {n:"硫黄", f:"S"}], right: [{n:"硫化銅", f:"CuS"}], exp: "銅と硫黄を混ぜて加熱すると、激しく熱と光を出して反応し、黒色の硫化銅ができます。" },
     { title: "水素と酸素の化合", eq: "2H2 + O2 ➡ 2H2O", left: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}], exp: "水素と酸素の混合気体に点火すると、音を立てて爆発的に反応し水ができます。この仕組みを利用したのが燃料電池です。" },
     { title: "銅の酸化", eq: "2Cu + O2 ➡ 2CuO", left: [{n:"銅", f:"Cu"}, {n:"酸素", f:"O2"}], right: [{n:"酸化銅", f:"CuO"}], exp: "赤色の銅を空気中で加熱すると、酸素と結びついて黒色の酸化銅になります。" },
     { title: "マグネシウムの燃焼", eq: "2Mg + O2 ➡ 2MgO", left: [{n:"マグネシウム", f:"Mg"}, {n:"酸素", f:"O2"}], right: [{n:"酸化マグネシウム", f:"MgO"}], exp: "マグネシウムは強い光と熱を出して激しく燃え、白色の酸化マグネシウムになります。昔のカメラのフラッシュにも使われました。" },
@@ -989,7 +988,6 @@ function startTimer() {
             clearInterval(timerInterval);
             updateTimerUI();
             
-            // ★ 時間切れ時のミス記録漏れ対策
             if (currentReactionData) {
                 recordSessionMistake(currentReactionData.title, stage);
             }
@@ -1034,7 +1032,6 @@ function startPractice(type) {
     } else if (type === 'hard') {
         practiceQuestions = [...grade3Reactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allFormulasPool }));
     } else if (type === 'sudden_death') {
-        // ★ サドンデスの初期化論理を修正（無駄な39問ロードを廃止し、最初の1問だけセット）
         let firstReaction = allReactions[Math.floor(Math.random() * allReactions.length)];
         practiceQuestions = [{ reaction: firstReaction, pool: allFormulasPool }];
     } else if (type === 'review') {
@@ -1080,7 +1077,8 @@ function generateDistractors(correct, pool) {
         'NO2': ['NO', 'N2O', 'NO3'], 'Ba(OH)2': ['BaOH', 'Ba2(OH)', 'Ba(OH)3'], 'BaSO4': ['Ba2SO4', 'BaSO3', 'Ba(SO4)2'],
         'NaOH': ['Na2OH', 'Na(OH)2', 'NaO'], 'NaCl': ['Na2Cl', 'NaCl2', 'Na'], 'HCl': ['H2Cl', 'HCl2', 'Cl2'], 'FeCl2': ['FeCl', 'FeCl3', 'Fe2Cl'],
         'Mg': ['Mg2', 'Mn', 'Mo'], 'Fe': ['Fe2', 'F', 'Fl'], 'C': ['C2', 'O', 'H'],
-        'Ag': ['Ag2', 'A', 'Ar'], 'Al': ['Al2', 'A', 'Am'], 'S': ['S2', 'Si', 'Se']
+        'Ag': ['Ag2', 'A', 'Ar'], 'Al': ['Al2', 'A', 'Am'], 'S': ['S2', 'Si', 'Se'],
+        'CuS': ['Cu2S', 'CuS2', 'Cu2S3', 'Cu']
     };
     if (commonErrors[correct]) commonErrors[correct].forEach(d => options.add(d));
 
@@ -1233,14 +1231,6 @@ function generateSubstanceHTML(sub) {
     return html;
 }
 
-function recordSessionMistake(title, step) {
-    recordMistake(title); 
-    let existing = sessionMistakes.find(m => m.title === title);
-    if (!existing) {
-        sessionMistakes.push({ title: title, step: step });
-    }
-}
-
 function checkAnswer() {
     if (stage === 1) checkStage1();
     else checkStage2();
@@ -1382,7 +1372,6 @@ function checkStage2() {
 }
 
 function nextPracticeQuestion() {
-    // ★ 連打スキップ対策：関数が呼ばれた瞬間にボタンを無効化・非表示にする
     const checkBtn = document.getElementById('check-btn');
     if(checkBtn) {
         checkBtn.disabled = true;
