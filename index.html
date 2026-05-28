@@ -199,4 +199,1310 @@
 
     /* リザルト画面用 */
     .result-container { width: 100%; max-width: 600px; text-align: center; animation: popUp 0.5s ease-out; margin: 0 auto; padding-bottom: 60px;}
-    .result-box { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; margin-top: 15px; text-align: left; border: 1
+    .result-box { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; margin-top: 15px; text-align: left; border: 1px solid #4a4e69; }
+    .result-list { margin: 10px 0 0 0; padding-left: 20px; line-height: 1.6; }
+    .result-list li { color: #d0d4e5; font-size: 1.05rem;}
+    .tag-f { color: var(--accent-red); font-size: 0.8rem; border: 1px solid var(--accent-red); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight:bold;}
+    .tag-c { color: var(--accent-gold); font-size: 0.8rem; border: 1px solid var(--accent-gold); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight:bold;}
+
+    /* レスポンシブ分岐 */
+    @media (max-width: 1024px) and (orientation: landscape) {
+        #sidebar { position: fixed; left: -280px; height: 100%; }
+        #sidebar.open { transform: translateX(280px); }
+        #sidebar-overlay { display: block; pointer-events: none; }
+        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
+        #mobile-header { display: flex; }
+        #main-content { padding: 15px; padding-bottom: 20px; }
+        #explanation-box { padding-right: 120px; } 
+        .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 100px; }
+        .home-title { font-size: 2.5rem; margin-top: 30px;}
+        .magic-start-btn { width: 180px; height: 180px; font-size: 1.5rem; }
+    }
+    @media (max-width: 834px) and (orientation: portrait) {
+        #sidebar { position: fixed; left: -280px; height: 100%; }
+        #sidebar.open { transform: translateX(280px); }
+        #sidebar-overlay { display: block; pointer-events: none; }
+        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
+        #mobile-header { display: flex; }
+        #main-content { padding: 15px; padding-bottom: 20px; }
+        #explanation-box { padding-right: 15px; } 
+        #reaction-title { font-size: 1.6rem; }
+        .ws-col { padding: 15px 10px; min-width: 100px; }
+        .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 90px; }
+        .home-title { font-size: 2.2rem; margin-top: 40px;}
+        .magic-start-btn { width: 160px; height: 160px; font-size: 1.4rem; }
+        .home-bottom-menu { margin-top: 40px; margin-bottom: 150px; } 
+    }
+    @media (max-width: 600px) and (orientation: portrait) {
+        #sidebar { position: fixed; left: -280px; height: 100%; }
+        #sidebar.open { transform: translateX(280px); }
+        #sidebar-overlay { display: block; pointer-events: none; }
+        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
+        #mobile-header { display: flex; }
+        #main-content { padding: 10px; padding-bottom: 80px; }
+        #explanation-box { padding: 12px; font-size: 0.95rem; }
+        #reaction-title { font-size: 1.3rem; }
+        .instruction { font-size: 0.9rem; padding: 3px 10px; }
+        #practice-status { font-size: 1rem; }
+        #workspace { gap: 4px; }
+        .ws-col { padding: 10px 5px; min-width: 70px; }
+        .substance-name { font-size: 0.75rem; padding: 4px 6px; }
+        select.formula-select { font-size: 1.1rem; padding: 5px 22px 5px 6px; background-size: 12px;}
+        .coeff-btn { width: 34px; height: 34px; font-size: 1.4rem; }
+        .big-coeff { font-size: 2rem; }
+        .chem-formula { font-size: 1.4rem; }
+        .ws-formula-op { font-size: 1.8rem; margin-top:28px;}
+        .ws-model-op { font-size: 1.4rem; }
+        .primary-btn { padding: 12px 30px; font-size: 1.2rem; }
+        .home-title { font-size: 2rem; margin-top: 30px;}
+        .home-subtitle { font-size: 0.9rem; letter-spacing: 5px;}
+        .magic-start-btn { width: 140px; height: 140px; font-size: 1.2rem; }
+        .magic-start-btn span { font-size: 0.9rem; margin-top: 2px;}
+        .home-action-btn { font-size: 0.95rem; padding: 10px 15px;}
+        .home-bottom-menu { margin-top: 30px; gap: 10px; margin-bottom: 120px; } 
+        .home-status-badge { top: 10px; padding: 5px 12px;}
+        #home-rank-title { font-size: 0.8rem;}
+        #home-point-display { font-size: 1rem;}
+        #workspace-wrapper { padding: 25px 5px; } 
+    }
+    @media (max-height: 500px) and (orientation: landscape) {
+        #sidebar { position: fixed; left: -280px; height: 100%; }
+        #sidebar.open { transform: translateX(280px); }
+        #sidebar-overlay { display: block; pointer-events: none; }
+        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
+        #mobile-header { display: flex; padding: 5px 15px; }
+        .mobile-title { font-size: 1rem; }
+        #main-content { padding: 10px; padding-bottom: 10px; }
+        #reaction-header { margin-bottom: 5px; flex-direction: row; align-items: center; }
+        #reaction-title { font-size: 1.2rem; margin: 0; margin-right: 10px; }
+        .instruction { font-size: 0.8rem; padding: 2px 8px; }
+        #practice-status { font-size: 0.9rem; }
+        #workspace-wrapper { padding: 15px 5px; border-width: 1px; min-height: auto;}
+        .ws-col { padding: 5px; }
+        #action-area { margin-top: 5px; min-height: auto; gap: 5px; }
+        .primary-btn { padding: 8px 25px; font-size: 1.1rem; box-shadow: 0 4px 0 #009eb3; }
+        .primary-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #009eb3; }
+        #feedback { font-size: 0.95rem; min-height: 25px; }
+        #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; padding-right: 80px;} 
+        .home-title { font-size: 1.8rem; margin-top: 10px;}
+        .home-subtitle { margin-bottom: 15px;}
+        .magic-start-btn { width: 100px; height: 100px; font-size: 1rem; border-width: 2px;}
+        .magic-start-btn span { font-size: 0.7rem; margin-top: 2px;}
+        .home-bottom-menu { margin-top: 15px; gap: 10px; margin-bottom: 20px;}
+        .home-action-btn { padding: 8px 12px; font-size: 0.85rem;}
+        #ken-character { transform: scale(0.5); }
+    }
+</style>
+</head>
+<body>
+
+<div id="particle-container"></div>
+
+<div id="tutorial-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>🧪 GOKU-CHEMI へようこそ！</h2>
+        <p>このアプリは、化学反応式を「極める」ためのシミュレーターだ！</p>
+        <ul class="tutorial-steps">
+            <li><b>STEP 1:</b> 正しい化学式を選ぼう！引っ掛け問題に注意だ。</li>
+            <li><b>STEP 2:</b> ＋/－ボタンで係数を変えて、左右の原子数を合わせよう！</li>
+            <li><b>CLEAR:</b> 最も簡単な整数比にできたらポイントGET！</li>
+        </ul>
+        <button class="primary-btn" style="width:100%; margin-top:10px;" onclick="closeTutorial()">実験室へ入る！</button>
+    </div>
+</div>
+
+<div id="difficulty-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>🧪 難易度を選択</h2>
+        <p>自分のレベルに合わせて挑戦しよう！</p>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <button class="primary-btn" style="width:100%; background:var(--accent-green); box-shadow: 0 6px 0 #00b359;" onclick="startPractice('easy')">🌱 初級 (中2基本 5問)</button>
+            <button class="primary-btn" style="width:100%; background:var(--accent-cyan); box-shadow: 0 6px 0 #009eb3;" onclick="startPractice('normal')">🌿 中級 (中2レベル 10問)</button>
+            <button class="primary-btn" style="width:100%; background:var(--accent-gold); box-shadow: 0 6px 0 #cc9d00;" onclick="startPractice('hard')">🔥 上級 (中3・発展 5問)</button>
+            <button class="primary-btn" style="width:100%; background:var(--accent-red); box-shadow: 0 6px 0 #cc0000;" onclick="startPractice('sudden_death')">💀 超上級サドンデス</button>
+        </div>
+        <button style="margin-top:25px; background:transparent; border:none; color:var(--text-sub); text-decoration:underline; font-size:1rem; cursor:pointer;" onclick="closeDifficultyModal()">戻る</button>
+    </div>
+</div>
+
+<div id="note-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>📖 苦手ノート</h2>
+        <p style="margin-bottom: 10px;">記録を消して弱点を克服しよう！</p>
+        <div id="note-list" style="max-height: 300px; overflow-y: auto; text-align: left; padding-right: 5px;"></div>
+        <button class="primary-btn" style="margin-top:20px; padding:10px 30px; width:100%;" onclick="closeNoteModal()">閉じる</button>
+    </div>
+</div>
+
+<div id="dictionary-modal" class="modal-overlay">
+    <div class="modal-content" style="width: 95%; max-width: 800px; height: 90vh;">
+        <h2 style="font-size:1.8rem;">📚 反応式 答え合わせ図鑑</h2>
+        <p style="margin-bottom: 10px; color:var(--accent-gold); font-weight:bold;">すべての化学反応式の答えと解説だ！</p>
+        <div id="dictionary-list" style="flex: 1; overflow-y: auto; text-align: left; padding: 15px; background: #0f111a; border-radius: 10px; border: 2px solid #2a2e45;">
+            </div>
+        <button class="primary-btn" style="margin-top:20px; padding:12px 30px; width:100%;" onclick="closeDictionaryModal()">閉じる</button>
+    </div>
+</div>
+
+<div id="transfer-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>⚙️ データ引き継ぎ</h2>
+        <p>今のポイントを別の端末に引き継げるぞ！</p>
+        <p style="color:var(--accent-red); font-size:0.85rem; font-weight:bold; margin-top:-15px;">※ポイントと称号のみ引き継がれます。<br>苦手ノートは各端末に保存されます。</p>
+        
+        <div class="transfer-box">
+            <div style="font-size: 0.9rem; margin-bottom: 5px;">あなたの引き継ぎパスワード</div>
+            <div class="transfer-code" id="my-transfer-code">------</div>
+            <div style="font-size: 0.8rem; color: #ccc; margin-top: 5px;">※このコードをメモしてね！</div>
+        </div>
+        <div style="margin-top: 20px;">
+            <div style="font-size: 0.9rem; margin-bottom: 5px;">別の端末から引き継ぐ場合</div>
+            <input type="text" id="transfer-input" class="transfer-input" placeholder="パスワードを入力" maxlength="6">
+            <button class="primary-btn" style="width:100%; font-size: 1.1rem; padding: 10px;" onclick="executeTransfer()">復元する</button>
+        </div>
+        <button style="margin-top:20px; background:transparent; border:none; color:var(--text-sub); text-decoration:underline; cursor:pointer;" onclick="closeTransferModal()">閉じる</button>
+    </div>
+</div>
+
+<div id="sidebar-overlay" onclick="toggleMenu()"></div>
+
+<nav id="sidebar">
+    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.2.1</div></div>
+    <div id="status-area">
+        <div id="rank-title">見習い錬金術師</div>
+        <div id="point-display">0 <span class="pt-unit">Pt</span></div>
+    </div>
+    
+    <div class="section-title">🎮 練習・復習モード</div>
+    <ul class="menu-list">
+        <li class="menu-item home-btn" onclick="showHome()">🏠 ホーム画面へ戻る</li>
+        <li class="menu-item practice-btn" onclick="startPractice('easy')">🌱 初級 (中2基本 5問)</li>
+        <li class="menu-item practice-btn" onclick="startPractice('normal')">🌿 中級 (中2レベル 10問)</li>
+        <li class="menu-item practice-btn" onclick="startPractice('hard')">🔥 上級 (中3・発展 5問)</li>
+        <li class="menu-item sudden-death-btn" onclick="startPractice('sudden_death')">💀 超上級サドンデス</li>
+        <li class="menu-item review-btn" id="review-btn" onclick="startPractice('review')" style="display:none;">📖 弱点克服モード (0問)</li>
+        <li class="menu-item note-btn" id="note-btn" onclick="openNoteModal()">📓 苦手ノートを確認</li>
+    </ul>
+
+    <div class="section-title">📚 化学反応式リスト</div>
+    <ul class="menu-list" id="menu-list"></ul>
+    
+    <div class="section-title">⚙️ 設定</div>
+    <ul class="menu-list">
+        <li class="menu-item transfer-btn" onclick="openTransferModal()">🔄 データ引き継ぎ</li>
+    </ul>
+</nav>
+
+<main id="main-content">
+    <div id="mobile-header">
+        <div class="mobile-title" onclick="showHome()">GOKU-CHEMI</div>
+        <button id="menu-toggle-btn" onclick="toggleMenu()">☰ メニュー</button>
+    </div>
+    
+    <div id="home-screen">
+        <div class="home-status-badge">
+            <span id="home-rank-title" style="color:var(--accent-gold); font-size:0.9rem; font-weight:bold;">見習い錬金術師</span>
+            <span id="home-point-display" style="color:#fff; font-size:1.2rem; font-weight:900;">0 Pt</span>
+        </div>
+        
+        <div class="home-title">GOKU-CHEMI</div>
+        <div class="home-subtitle">極・化学反応式</div>
+        
+        <div class="magic-start-btn" onclick="openDifficultyModal()">
+            実験開始
+            <span>START</span>
+        </div>
+        
+        <div class="home-bottom-menu">
+            <div class="home-action-btn sudden-death" onclick="startPractice('sudden_death')">💀 サドンデス</div>
+            <div class="home-action-btn" onclick="openNoteModal()">📖 苦手ノート</div>
+            <div class="home-action-btn" onclick="openDictionaryModal()">📚 反応式図鑑 (答え)</div>
+        </div>
+    </div>
+
+    <div id="reaction-header">
+        <div>
+            <h2 id="reaction-title">反応を選択してください</h2>
+            <p class="instruction" id="instruction-text">メニューから選んでね。</p>
+        </div>
+        <div id="practice-status"></div>
+    </div>
+    <div id="timer-container"><div id="timer-bar"></div></div>
+    
+    <div id="workspace-wrapper"><div id="workspace"></div></div>
+    
+    <div id="action-area">
+        <div id="feedback"></div>
+        <button id="check-btn" class="primary-btn" onclick="checkAnswer()">これで確認！</button>
+        <div id="explanation-box"></div>
+    </div>
+
+    <div id="ken-character">
+        <div id="ken-speech">さあ、実験を始めようか！</div>
+        <div id="ken-image-container"></div>
+    </div>
+</main>
+
+<script>
+// --- グローバルステートとデータ ---
+let userPoints = 0;
+let userMistakes = []; 
+
+const ranks = [
+    { pt: 0,    title: "🔰 見習い錬金術師" }, { pt: 100,  title: "🧪 駆け出しケミスト" }, { pt: 300,  title: "👨‍🔬 実験室のホープ" },
+    { pt: 600,  title: "🔬 一人前の研究者" }, { pt: 1000, title: "🎓 優秀な科学者" }, { pt: 1500, title: "🧬 真理の探求者" },
+    { pt: 2500, title: "⚡ 錬金術の達人" }, { pt: 4000, title: "👑 GOKU-CHEMI マスター" }, { pt: 6000, title: "🌟 伝説の錬金術師" },
+    { pt: 9999, title: "🌌 究極の創造神" }
+];
+
+function initData() {
+    let savedPt = localStorage.getItem('gokuChemiPoints');
+    if (savedPt !== null) { 
+        let parsed = parseInt(savedPt, 10);
+        if (!isNaN(parsed) && parsed >= 0) userPoints = parsed; 
+    }
+    let savedMis = localStorage.getItem('gokuChemiMistakes');
+    if (savedMis !== null) {
+        try { 
+            let parsedMis = JSON.parse(savedMis); 
+            if (Array.isArray(parsedMis)) { 
+                let isMigrated = false;
+                userMistakes = parsedMis.map(item => {
+                    if (typeof item === 'string') {
+                        isMigrated = true;
+                        return { title: item, count: 1 };
+                    }
+                    return item;
+                });
+                if(isMigrated) {
+                    try { localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes)); } catch(e) {}
+                }
+            } else { 
+                userMistakes = []; 
+            }
+        } catch(e) { userMistakes = []; }
+    }
+    updatePointUI();
+    updateReviewMenu();
+}
+
+function addPoints(pts) {
+    userPoints += pts; 
+    try { localStorage.setItem('gokuChemiPoints', userPoints); } catch(e) { console.warn("Save failed"); }
+    updatePointUI();
+}
+
+function updatePointUI() {
+    let ptText = `${userPoints} Pt`;
+    let currentRank = ranks[0].title;
+    for (let i = 0; i < ranks.length; i++) {
+        if (userPoints >= ranks[i].pt) currentRank = ranks[i].title;
+    }
+    
+    document.getElementById('point-display').innerHTML = `${userPoints} <span class="pt-unit">Pt</span>`;
+    document.getElementById('rank-title').innerText = currentRank;
+    
+    document.getElementById('home-point-display').innerText = ptText;
+    document.getElementById('home-rank-title').innerText = currentRank;
+}
+
+function recordMistake(title) {
+    userMistakes = userMistakes.map(m => typeof m === 'string' ? {title: m, count: 1} : m);
+    let existing = userMistakes.find(m => m.title === title);
+    if (existing) {
+        existing.count = (existing.count || 1) + 1;
+    } else {
+        userMistakes.push({ title: title, count: 1 });
+    }
+    try { localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes)); } catch(e) { console.warn("Save failed"); }
+    updateReviewMenu();
+}
+
+function clearMistake(title) {
+    userMistakes = userMistakes.filter(m => m.title !== title);
+    try { localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes)); } catch(e) { console.warn("Save failed"); }
+    updateReviewMenu();
+}
+
+function updateReviewMenu() {
+    const reviewBtn = document.getElementById('review-btn');
+    const noteBtn = document.getElementById('note-btn');
+    
+    if (userMistakes.length > 0) {
+        reviewBtn.style.display = 'block';
+        reviewBtn.innerText = `📖 弱点克服モード (${userMistakes.length}問)`;
+        noteBtn.innerText = `📓 苦手ノートを確認 (${userMistakes.length}問)`;
+    } else {
+        reviewBtn.style.display = 'none';
+        noteBtn.innerText = `📓 苦手ノートを確認 (0問)`;
+    }
+}
+
+function showHome() {
+    appMode = "home";
+    closeMenu();
+    stopTimer();
+    document.getElementById('home-screen').style.display = 'flex';
+    
+    document.getElementById('reaction-header').style.display = 'none';
+    document.getElementById('workspace-wrapper').style.display = 'none';
+    document.getElementById('action-area').style.display = 'none';
+    document.getElementById('timer-container').style.display = 'none';
+    
+    updateKen('normal');
+    document.getElementById('ken-speech').innerText = '今日はどの実験を極める？';
+    
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+}
+
+function hideHome() {
+    document.getElementById('home-screen').style.display = 'none';
+    
+    document.getElementById('reaction-header').style.display = 'flex';
+    document.getElementById('workspace-wrapper').style.display = 'flex';
+    document.getElementById('action-area').style.display = 'flex';
+}
+
+function openDifficultyModal() {
+    document.getElementById('difficulty-modal').style.display = 'flex';
+    document.body.classList.add('modal-open');
+}
+
+function closeDifficultyModal() {
+    document.getElementById('difficulty-modal').style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+function openNoteModal() {
+    const listDiv = document.getElementById('note-list');
+    listDiv.innerHTML = '';
+    
+    if (userMistakes.length === 0) {
+        listDiv.innerHTML = "<p style='text-align:center; color:var(--accent-gold); font-weight:bold; font-size:1.2rem; margin-top:20px;'>🎉 苦手な問題はないよ！すごい！</p>";
+    } else {
+        let sortedMistakes = [...userMistakes].sort((a, b) => b.count - a.count);
+        sortedMistakes.forEach(m => {
+            const div = document.createElement('div');
+            div.className = 'note-item';
+            div.innerHTML = `
+                <div style="flex:1; padding-right:10px;">
+                    <div style="font-size:0.95rem; line-height:1.3;">${m.title}</div>
+                    <div style="font-size:0.75rem; color:var(--accent-red); margin-top:4px; font-weight:bold;">⚠️ ミス: ${m.count}回</div>
+                </div>
+                <button class="delete-btn" onclick="deleteNoteItem('${m.title}')">✕ 削除</button>
+            `;
+            listDiv.appendChild(div);
+        });
+    }
+    
+    document.getElementById('note-modal').style.display = 'flex';
+    document.body.classList.add('modal-open');
+    closeMenu(); 
+}
+
+function closeNoteModal() {
+    document.getElementById('note-modal').style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+function deleteNoteItem(title) {
+    clearMistake(title);
+    openNoteModal(); 
+}
+
+function formatDictEquation(eqStr) {
+    let parts = eqStr.split(' ');
+    let html = '';
+    parts.forEach(part => {
+        if (part === '→') {
+            html += ` <span style="color:var(--accent-cyan); margin: 0 10px;">→</span> `;
+        } else if (part === '+') {
+            html += ` <span style="color:#5a5e7a; margin: 0 10px;">+</span> `;
+        } else {
+            let match = part.match(/^(\d*)(.+)$/);
+            if (match) {
+                let coeff = match[1];
+                let formula = match[2];
+                if (coeff) {
+                    html += `<span style="font-size:1.2em; color:var(--accent-gold); margin-right:2px;">${coeff}</span>`;
+                }
+                html += `<span>${toSubscript(formula)}</span>`;
+            }
+        }
+    });
+    return html;
+}
+
+function generateDictItem(r, isHard) {
+    let eqFormatted = formatDictEquation(r.eq);
+    return `
+    <div class="dict-item ${isHard ? 'hard' : ''}">
+        <div class="dict-title">${isHard ? '🔥' : '🟢'} ${r.title}</div>
+        <div class="dict-eq">${eqFormatted}</div>
+        <div class="dict-exp">${r.exp}</div>
+    </div>
+    `;
+}
+
+function openDictionaryModal() {
+    const listDiv = document.getElementById('dictionary-list');
+    
+    if (listDiv.children.length === 0) {
+        let html = `<h3 style="color:var(--accent-cyan); margin-top:0;">🟢 中2レベル (化学変化・燃焼)</h3>`;
+        grade2Reactions.forEach(r => html += generateDictItem(r, false));
+        html += `<h3 style="color:var(--accent-gold); margin-top:20px;">🔥 中3・発展レベル (イオン・中和・発展)</h3>`;
+        grade3Reactions.forEach(r => html += generateDictItem(r, true));
+        listDiv.innerHTML = html;
+    }
+    
+    listDiv.scrollTop = 0; 
+    document.getElementById('dictionary-modal').style.display = 'flex';
+    document.body.classList.add('modal-open');
+    closeMenu();
+}
+
+function closeDictionaryModal() {
+    document.getElementById('dictionary-modal').style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+function generateTransferCode() { return "GK" + ((userPoints * 7) + 1234).toString(36).toUpperCase(); }
+function executeTransfer() {
+    let input = document.getElementById('transfer-input').value.trim().toUpperCase();
+    if (input === "") return; 
+    if (!input.startsWith("GK") || input.length < 3) { alert("パスワードが正しくありません！"); return; }
+    let num = parseInt(input.substring(2), 36);
+    let rawPt = (num - 1234) / 7;
+    if (!Number.isInteger(rawPt) || rawPt < 0 || isNaN(rawPt)) { alert("パスワードが正しくありません！"); return; }
+    userPoints = rawPt; 
+    try { localStorage.setItem('gokuChemiPoints', userPoints); } catch(e) { console.warn("Save failed"); }
+    updatePointUI(); alert(`復元成功！ ${userPoints} Pt から再開します！`); closeTransferModal();
+}
+function openTransferModal() { document.getElementById('my-transfer-code').innerText = generateTransferCode(); document.getElementById('transfer-input').value = ""; document.getElementById('transfer-modal').style.display = 'flex'; document.body.classList.add('modal-open'); closeMenu(); }
+function closeTransferModal() { document.getElementById('transfer-modal').style.display = 'none'; document.body.classList.remove('modal-open'); }
+function checkTutorial() { if (!localStorage.getItem('gokuChemiTutorialDone')) { document.getElementById('tutorial-modal').style.display = 'flex'; document.body.classList.add('modal-open'); } }
+function closeTutorial() { document.getElementById('tutorial-modal').style.display = 'none'; document.body.classList.remove('modal-open'); try { localStorage.setItem('gokuChemiTutorialDone', 'true'); } catch(e) {} }
+function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
+function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
+
+// --- 人体模型ケン SVG ---
+const kenBaseOpen = `
+<svg viewBox="0 0 100 120" style="width:100%; height:100%; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.3));" xmlns="http://www.w3.org/2000/svg">
+    <path d="M 50 65 C 20 65 20 115 50 115 Z" fill="#b71c1c" />
+    <path d="M 50 65 C 80 65 80 115 50 115 Z" fill="#ffe0b2" />
+    <path d="M 50 15 C 10 15 15 65 50 65 Z" fill="#e8f5e9" /> 
+    <path d="M 50 15 C 90 15 85 65 50 65 Z" fill="#ffe0b2" /> 
+    <path d="M 49 70 C 35 70 25 75 28 88 C 35 92 45 88 49 85 Z" fill="#a0522d" />
+    <path d="M 46 82 C 40 82 40 88 46 90 C 49 88 50 85 50 82 Z" fill="#ef5350" />
+    <path d="M 49 86 C 35 86 28 92 32 96 C 40 99 48 97 49 95 Z" fill="#3e2723" />
+    <path d="M 49 93 C 45 93 35 96 38 99 C 43 101 48 99 49 97 Z" fill="#f1f8e9" />
+    <path d="M 48 98 C 30 98 28 110 48 110" fill="none" stroke="#ffccbc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 33 104 C 40 107 45 104 48 106" fill="none" stroke="#ffab91" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 27 75 Q 38 72 48 74" stroke="#f5f5f5" stroke-width="1.5" fill="none" />
+    <path d="M 26 80 Q 38 77 48 79" stroke="#f5f5f5" stroke-width="1.5" fill="none" />
+    <path d="M 26 85 Q 38 82 48 84" stroke="#f5f5f5" stroke-width="1.5" fill="none" />
+    <circle cx="26" cy="75" r="1.5" fill="#cddc39" />
+    <circle cx="25" cy="80" r="1.5" fill="#cddc39" />
+    <circle cx="25" cy="85" r="1.5" fill="#cddc39" />
+    <circle cx="26" cy="90" r="1.5" fill="#cddc39" />
+    <line x1="50" y1="15" x2="50" y2="115" stroke="#424242" stroke-width="1" />
+`;
+const kenBaseClose = `</svg>`;
+
+const faceNormal = `
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <circle cx="32" cy="40" r="2.5" fill="#000" />
+    <circle cx="68" cy="40" r="5" fill="#4e342e" />
+    <circle cx="69" cy="38" r="1.5" fill="#fff" />
+    <path d="M 44 52 Q 50 56 56 52" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+`;
+const faceThink = `
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <path d="M 29 40 Q 32 36 35 40" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="68" cy="40" r="5" fill="#4e342e" />
+    <path d="M 65 40 Q 68 36 71 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 44 54 Q 48 51 50 54 T 56 54" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="75" y="25" font-size="22" fill="#fff" font-weight="bold" stroke="#000" stroke-width="1.5" paint-order="stroke">?</text>
+`;
+const faceError = `
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <path d="M 28 37 L 36 43 M 36 37 L 28 43" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 72 37 L 64 43 L 72 47" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="50" cy="54" rx="4" ry="5" fill="#4e342e" />
+    <text x="75" y="25" font-size="22" fill="#ff3d00" font-weight="bold" stroke="#fff" stroke-width="1.5" paint-order="stroke">!</text>
+`;
+const faceHint = `
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <circle cx="32" cy="40" r="3" fill="#ffeb3b" />
+    <circle cx="68" cy="40" r="5" fill="#4e342e" />
+    <circle cx="68" cy="40" r="2.5" fill="#ffeb3b" />
+    <path d="M 44 52 Q 50 55 56 52" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="75" y="25" font-size="18">💡</text>
+`;
+const faceSuccess = `
+    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
+    <path d="M 28 42 Q 32 36 36 42" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 64 42 Q 68 36 72 42" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 44 50 Q 50 62 56 50 Z" fill="#ff8a80" stroke="#4e342e" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="68" cy="48" r="4" fill="#ff8a80" opacity="0.6" />
+    <circle cx="32" cy="48" r="4" fill="#ff8a80" opacity="0.6" />
+    <text x="8" y="25" font-size="16">✨</text>
+    <text x="78" y="45" font-size="16">✨</text>
+`;
+
+const kenEmotions = {
+    normal:  { emoji: kenBaseOpen + faceNormal + kenBaseClose,   text: 'さあ、実験を始めようか！' },
+    think:   { emoji: kenBaseOpen + faceThink + kenBaseClose,    text: '化学式を正しく選べるかな…？' },
+    error:   { emoji: kenBaseOpen + faceError + kenBaseClose,    text: 'おや？どこか計算が合わないようだぞ。' },
+    hint:    { emoji: kenBaseOpen + faceHint + kenBaseClose,     text: '左右の原子の数をよく見比べてみよう！' },
+    stage1:  { emoji: kenBaseOpen + faceSuccess + kenBaseClose,  text: 'よし！化学式は完璧だ。次は係数合わせだ！' },
+    success: { emoji: kenBaseOpen + faceSuccess + kenBaseClose,  text: 'GOKU-CLEAR！君は本物の天才か！？' }
+};
+
+function updateKen(emotion) {
+    const data = kenEmotions[emotion];
+    document.getElementById('ken-speech').innerText = data.text;
+    document.getElementById('ken-image-container').innerHTML = data.emoji;
+    const kenChar = document.getElementById('ken-character');
+    kenChar.classList.remove('ken-bounce');
+    void kenChar.offsetWidth;
+    kenChar.classList.add('ken-bounce');
+}
+
+// --- 原子カラー定義 ---
+const atomStyles = {
+    H: { color: '#ffffff', text: '#000', border: '2px solid #bdbdbd' }, 
+    O: { color: '#d32f2f', text: '#fff', border: '2px solid #b71c1c' }, 
+    C: { color: '#212121', text: '#fff', border: '2px solid #000000' }, 
+    N: { color: '#1976d2', text: '#fff', border: '2px solid #0d47a1' }, 
+    Cl:{ color: '#1de9b6', text: '#000', border: '2px solid #00bfa5' }, 
+    S: { color: '#ffeb3b', text: '#000', border: '2px solid #fbc02d' }, 
+    Na:{ color: '#9c27b0', text: '#fff', border: '2px solid #6a1b9a' }, 
+    Mg:{ color: '#2e7d32', text: '#fff', border: '2px solid #1b5e20' }, 
+    Al:{ color: '#b0bec5', text: '#000', border: '2px solid #78909c' }, 
+    Fe:{ color: '#795548', text: '#fff', border: '2px solid #4e342e' }, 
+    Cu:{ color: '#ffb74d', text: '#000', border: '2px solid #f57c00' }, 
+    Ag:{ color: '#e0e0e0', text: '#000', border: '2px solid #9e9e9e' }, 
+    Ba:{ color: '#cddc39', text: '#000', border: '2px solid #afb42b' }, 
+    Ca:{ color: '#757575', text: '#fff', border: '2px solid #424242' }  
+};
+const metals = ['Na', 'Mg', 'Al', 'Fe', 'Cu', 'Ag', 'Ba', 'Ca'];
+
+const grade2Reactions = [
+    { title: "炭酸水素ナトリウムの熱分解", eq: "2NaHCO3 → Na2CO3 + H2O + CO2", left: [{n:"炭酸水素ナトリウム", f:"NaHCO3"}], right: [{n:"炭酸ナトリウム", f:"Na2CO3"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "炭酸水素ナトリウム（ベーキングパウダーの主成分）を加熱すると、炭酸ナトリウム、水、二酸化炭素に分解されます。カルメ焼きがふくらむ理由です。" },
+    { title: "酸化銀の熱分解", eq: "2Ag2O → 4Ag + O2", left: [{n:"酸化銀", f:"Ag2O"}], right: [{n:"銀", f:"Ag"}, {n:"酸素", f:"O2"}], exp: "黒色の酸化銀を加熱すると、還元されて白色の銀と酸素に分かれます。銀は磨くと特有の光沢が出ます。" },
+    { title: "水の電気分解", eq: "2H2O → 2H2 + O2", left: [{n:"水", f:"H2O"}], right: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], exp: "水に少量の水酸化ナトリウムなどを溶かして電圧をかけると、陽極（＋）から酸素、陰極（－）から水素が発生します。" },
+    { title: "過酸化水素の分解", eq: "2H2O2 → 2H2O + O2", left: [{n:"過酸化水素", f:"H2O2"}], right: [{n:"水", f:"H2O"}, {n:"酸素", f:"O2"}], exp: "オキシドール（過酸化水素水）に二酸化マンガン（触媒）を加えると、分解されて酸素が発生します。二酸化マンガン自身は変化しません。" },
+    { title: "鉄と硫黄の化合", eq: "Fe + S → FeS", left: [{n:"鉄", f:"Fe"}, {n:"硫黄", f:"S"}], right: [{n:"硫化鉄", f:"FeS"}], exp: "鉄と硫黄の粉末を混ぜて加熱すると、黒色の硫化鉄になります。反応する時に熱を出すため途中で加熱を止めても反応が進みます。" },
+    { title: "銅と硫黄の化合", eq: "Cu + S → CuS", left: [{n:"銅", f:"Cu"}, {n:"硫黄", f:"S"}], right: [{n:"硫化銅", f:"CuS"}], exp: "銅と硫黄を混ぜて加熱すると、激しく熱と光を出して反応し、黒色の硫化銅ができます。" },
+    { title: "水素と酸素の化合", eq: "2H2 + O2 → 2H2O", left: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}], exp: "水素と酸素の混合気体に点火すると、音を立てて爆発的に反応し水ができます。この仕組みを利用したのが燃料電池です。" },
+    { title: "銅の酸化", eq: "2Cu + O2 → 2CuO", left: [{n:"銅", f:"Cu"}, {n:"酸素", f:"O2"}], right: [{n:"酸化銅", f:"CuO"}], exp: "赤色の銅を空気中で加熱すると、酸素と結びついて黒色の酸化銅になります。" },
+    { title: "マグネシウムの燃焼", eq: "2Mg + O2 → 2MgO", left: [{n:"マグネシウム", f:"Mg"}, {n:"酸素", f:"O2"}], right: [{n:"酸化マグネシウム", f:"MgO"}], exp: "マグネシウムは強い光と熱を出して激しく燃え、白色の酸化マグネシウムになります。昔のカメラのフラッシュにも使われました。" },
+    { title: "炭素の燃焼", eq: "C + O2 → CO2", left: [{n:"炭素", f:"C"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}], exp: "炭素（木炭など）が完全燃焼すると、二酸化炭素が発生します。" },
+    { title: "鉄の燃焼", eq: "2Fe + O2 → 2FeO", left: [{n:"鉄", f:"Fe"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄", f:"FeO"}], exp: "スチールウール（鉄）を空気中で燃やすと、黒っぽい酸化鉄になります。質量は結びついた酸素の分だけ増えます。" },
+    { title: "酸化銅の炭素による還元", eq: "2CuO + C → 2Cu + CO2", left: [{n:"酸化銅", f:"CuO"}, {n:"炭素", f:"C"}], right: [{n:"銅", f:"Cu"}, {n:"二酸化炭素", f:"CO2"}], exp: "酸化銅と炭素の粉末を混ぜて加熱すると、酸素と結びつきやすい炭素が酸素を奪い（還元）、赤色の銅ができます。" },
+    { title: "酸化銅の水素による還元", eq: "CuO + H2 → Cu + H2O", left: [{n:"酸化銅", f:"CuO"}, {n:"水素", f:"H2"}], right: [{n:"銅", f:"Cu"}, {n:"水", f:"H2O"}], exp: "加熱した黒色の酸化銅に水素ガスを触れさせると、水素が酸素を奪って水になり、赤色の銅が現れます。" },
+    { title: "二酸化炭素のマグネシウムによる還元", eq: "2Mg + CO2 → 2MgO + C", left: [{n:"マグネシウム", f:"Mg"}, {n:"二酸化炭素", f:"CO2"}], right: [{n:"酸化マグネシウム", f:"MgO"}, {n:"炭素", f:"C"}], exp: "ドライアイス（二酸化炭素）の中でマグネシウムを燃やすと、マグネシウムが二酸化炭素から酸素を奪い（還元）、酸化マグネシウムと黒い炭素ができます。" },
+    { title: "メタンの燃焼", eq: "CH4 + 2O2 → CO2 + 2H2O", left: [{n:"メタン", f:"CH4"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタン（都市ガスの主成分）などの有機物が燃焼すると、必ず二酸化炭素と水が発生します。" },
+    { title: "エタノールの燃焼", eq: "C2H5OH + 3O2 → 2CO2 + 3H2O", left: [{n:"エタノール", f:"C2H5OH"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "エタノールが燃焼すると、二酸化炭素と水が発生します。エタノール分子の中に酸素(O)が含まれているため、係数合わせに注意が必要です。" },
+    { title: "メタノールの燃焼", eq: "2CH4O + 3O2 → 2CO2 + 4H2O", left: [{n:"メタノール", f:"CH4O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタノール（アルコールの一種）の燃焼です。エタノールと同様に二酸化炭素と水ができます。" },
+    { title: "アンモニア生成反応", eq: "2NH4Cl + Ca(OH)2 → CaCl2 + 2H2O + 2NH3", left: [{n:"塩化アンモニウム", f:"NH4Cl"}, {n:"水酸化カルシウム", f:"Ca(OH)2"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"アンモニア", f:"NH3"}], exp: "塩化アンモニウムと水酸化カルシウムを混ぜて加熱すると、刺激臭のあるアンモニアが発生します。水に溶けやすいため上方置換法で集めます。" },
+    { title: "吸熱反応", eq: "Ba(OH)2 + 2NH4Cl → BaCl2 + 2NH3 + 2H2O", left: [{n:"水酸化バリウム", f:"Ba(OH)2"}, {n:"塩化アンモニウム", f:"NH4Cl"}], right: [{n:"塩化バリウム", f:"BaCl2"}, {n:"アンモニア", f:"NH3"}, {n:"水", f:"H2O"}], exp: "水酸化バリウムと塩化アンモニウムを混ぜると、周囲の熱を奪いながら反応（吸熱反応）し、温度が急激に下がります。" }
+];
+
+const grade3Reactions = [
+    { title: "塩化銅の電気分解", eq: "CuCl2 → Cu + Cl2", left: [{n:"塩化銅", f:"CuCl2"}], right: [{n:"銅", f:"Cu"}, {n:"塩素", f:"Cl2"}], exp: "青色の塩化銅水溶液を電気分解すると、陰極（－）に赤い銅が付着し、陽極（＋）からプールの消毒液のにおいがする塩素が発生します。" },
+    { title: "塩化マグネシウムの電気分解", eq: "MgCl2 → Mg + Cl2", left: [{n:"塩化マグネシウム", f:"MgCl2"}], right: [{n:"マグネシウム", f:"Mg"}, {n:"塩素", f:"Cl2"}], exp: "塩化マグネシウム水溶液を電気分解すると、陰極から金属マグネシウム、陽極から塩素ガスが発生します。" },
+    { title: "硫化鉄と塩酸", eq: "FeS + 2HCl → FeCl2 + H2S", left: [{n:"硫化鉄", f:"FeS"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化鉄", f:"FeCl2"}, {n:"硫化水素", f:"H2S"}], exp: "鉄と硫黄が化合した硫化鉄に塩酸を加えると、腐卵臭（温泉のにおい）のする有毒な硫化水素が発生します。" },
+    { title: "塩酸と水酸化ナトリウム", eq: "HCl + NaOH → NaCl + H2O", left: [{n:"塩酸", f:"HCl"}, {n:"水酸化ナトリウム", f:"NaOH"}], right: [{n:"塩化ナトリウム", f:"NaCl"}, {n:"水", f:"H2O"}], exp: "塩酸（酸）と水酸化ナトリウム水溶液（アルカリ）の中和反応です。塩化ナトリウム（食塩）と水ができます。" },
+    { title: "硫酸と水酸化バリウム", eq: "H2SO4 + Ba(OH)2 → BaSO4 + 2H2O", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化バリウム", f:"Ba(OH)2"}], right: [{n:"硫酸バリウム", f:"BaSO4"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化バリウムの中和反応です。白い沈殿物である硫酸バリウムと水ができます。" },
+    { title: "アルミニウムと塩酸", eq: "2Al + 6HCl → 2AlCl3 + 3H2", left: [{n:"アルミニウム", f:"Al"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水素", f:"H2"}], exp: "アルミニウムなどの金属に塩酸を加えると、水素が発生して溶け、塩化アルミニウムになります。" },
+    { title: "酸化アルミニウムと塩酸", eq: "Al2O3 + 6HCl → 2AlCl3 + 3H2O", left: [{n:"酸化アルミニウム", f:"Al2O3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水", f:"H2O"}], exp: "酸化アルミニウムは、酸（塩酸）とも反応して塩化アルミニウムと水を作ります。" },
+    { title: "炭酸カルシウムと塩酸", eq: "CaCO3 + 2HCl → CaCl2 + H2O + CO2", left: [{n:"炭酸カルシウム", f:"CaCO3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "石灰石やチョークに塩酸をかけると、二酸化炭素が発生します。実験室で二酸化炭素を作る定番の方法です。" },
+    { title: "硫酸と水酸化アルミニウム", eq: "3H2SO4 + 2Al(OH)3 → Al2(SO4)3 + 6H2O", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化アルミニウム", f:"Al(OH)3"}], right: [{n:"硫酸アルミニウム", f:"Al2(SO4)3"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化アルミニウムの中和反応です。イオンの価数が違うため、係数合わせが複雑になります。" },
+    { title: "銅と濃硝酸", eq: "Cu + 4HNO3 → Cu(NO3)2 + 2H2O + 2NO2", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"二酸化窒素", f:"NO2"}], exp: "銅に濃硝酸を加えると、激しく反応して赤褐色の有毒ガス（二酸化窒素）が発生します。" },
+    { title: "銅と希硝酸", eq: "3Cu + 8HNO3 → 3Cu(NO3)2 + 4H2O + 2NO", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"一酸化窒素", f:"NO"}], exp: "銅に薄い硝酸を加えると、無色の一酸化窒素が発生します。空気に触れるとすぐに赤褐色の二酸化窒素に変わります。" },
+    { title: "アンモニアの酸化", eq: "4NH3 + 5O2 → 4NO + 6H2O", left: [{n:"アンモニア", f:"NH3"}, {n:"酸素", f:"O2"}], right: [{n:"一酸化窒素", f:"NO"}, {n:"水", f:"H2O"}], exp: "アンモニアを白金触媒を使って酸化させる反応です。一酸化窒素と水ができます。" },
+    { title: "黄鉄鉱の燃焼", eq: "4FeS2 + 11O2 → 2Fe2O3 + 8SO2", left: [{n:"二硫化鉄", f:"FeS2"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"二酸化硫黄", f:"SO2"}], exp: "黄鉄鉱（二硫化鉄）を燃焼させる反応です。有害な二酸化硫黄が発生します。" },
+    { title: "硫化水素の燃焼", eq: "2H2S + 3O2 → 2H2O + 2SO2", left: [{n:"硫化水素", f:"H2S"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}, {n:"二酸化硫黄", f:"SO2"}], exp: "温泉のにおいの元である有毒な硫化水素を燃やすと、水と二酸化硫黄になります。" },
+    { title: "テルミット反応", eq: "Fe2O3 + 2Al → 2Fe + Al2O3", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"アルミニウム", f:"Al"}], right: [{n:"鉄", f:"Fe"}, {n:"酸化アルミニウム", f:"Al2O3"}], exp: "酸化鉄とアルミニウムの粉末に点火すると、激しい熱を出してアルミニウムが酸素を奪い、液状の鉄が得られます。" },
+    { title: "酸化鉄(III)の一酸化炭素による還元", eq: "Fe2O3 + 3CO → 2Fe + 3CO2", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"一酸化炭素", f:"CO"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}], exp: "製鉄所で鉄鉱石（酸化鉄）から鉄を取り出す（還元する）際に起きる重要な反応です。" },
+    { title: "酸化鉄(III)の炭素による還元", eq: "2Fe2O3 + 3C → 4Fe + 3CO2", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"炭素", f:"C"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}], exp: "酸化鉄を炭素の粉末と一緒に加熱して還元する反応です。銅の還元と同じ原理です。" },
+    { title: "プロパンの燃焼", eq: "C3H8 + 5O2 → 3CO2 + 4H2O", left: [{n:"プロパン", f:"C3H8"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "プロパン（LPガスの主成分）の燃焼です。炭素と水素の数が多いので、必要な酸素分子の数も多くなります。" },
+    { title: "ブタンの燃焼", eq: "2C4H10 + 13O2 → 8CO2 + 10H2O", left: [{n:"ブタン", f:"C4H10"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "ブタン（カセットコンロのガスの主成分）の燃焼です。係数がすべて大きくなる高校入試の難問です。" },
+    { title: "酸化銅のエタノールによる還元", eq: "CuO + C2H5OH → Cu + CH3CHO + H2O", left: [{n:"酸化銅", f:"CuO"}, {n:"エタノール", f:"C2H5OH"}], right: [{n:"銅", f:"Cu"}, {n:"アセトアルデヒド", f:"CH3CHO"}, {n:"水", f:"H2O"}], exp: "加熱した酸化銅をエタノールに入れると、酸化銅は還元されて赤色の銅になり、エタノールは酸化されて特有のにおいがするアセトアルデヒドに変化します。" }
+];
+
+const allStandardFormulas = [...new Set(grade2Reactions.flatMap(r => [...r.left, ...r.right].map(i => i.f)))];
+const allHardFormulas = [...new Set(grade3Reactions.flatMap(r => [...r.left, ...r.right].map(i => i.f)))];
+
+const allReactions = [...grade2Reactions, ...grade3Reactions];
+const allFormulasPool = [...allStandardFormulas, ...allHardFormulas];
+
+// --- セッション管理 ---
+let appMode = "home";
+let practiceQuestions = [];
+let currentQIndex = 0;
+let substances = []; 
+let stage = 1;
+let currentReactionData = null;
+let isCleared = false; 
+
+let sessionMistakes = []; 
+let isSuddenDeath = false;
+let suddenDeathScore = 0;
+let timerInterval = null;
+let timeLeft = 0;
+let timerEndTime = 0; 
+const TIME_LIMIT = 30;
+
+function getGCD(a, b) { return b === 0 ? a : getGCD(b, a % b); }
+function toSubscript(str) {
+    if (str === '?') return '?';
+    const subMap = { '0':'₀', '1':'₁', '2':'₂', '3':'₃', '4':'₄', '5':'₅', '6':'₆', '7':'₇', '8':'₈', '9':'₉' };
+    return str.replace(/\d/g, m => subMap[m]);
+}
+function expandFormula(formula) {
+    let f = formula.replace(/\((.*?)\)(\d+)/g, (match, p1, p2) => p1.repeat(parseInt(p2)));
+    let atoms = [];
+    let re = /([A-Z][a-z]*)(\d*)/g;
+    let match;
+    while ((match = re.exec(f)) !== null) {
+        let elem = match[1];
+        let count = match[2] ? parseInt(match[2]) : 1;
+        for(let i=0; i<count; i++) atoms.push(elem);
+    }
+    return atoms;
+}
+
+function getMoleculeHtml(formula) {
+    const atoms = expandFormula(formula);
+    const hasMetal = atoms.some(a => metals.includes(a));
+    const layoutType = hasMetal ? 'ionic' : 'covalent';
+    
+    let cols = atoms.length <= 3 ? atoms.length : Math.ceil(Math.sqrt(atoms.length));
+    if(!hasMetal && atoms.length <= 4) cols = atoms.length; 
+    let maxWidth = cols * 32 + 15; 
+    
+    let html = `<div class="molecule-auto ${layoutType}" style="max-width:${maxWidth}px;">`;
+    atoms.forEach(type => {
+        const style = atomStyles[type] || { color: '#FFF', text: '#000', border: '2px solid #bdbdbd' };
+        const tShadow = style.text === '#000' 
+            ? '1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 0 2px 3px rgba(0,0,0,0.5)' 
+            : '1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 3px rgba(0,0,0,0.8)';
+        html += `<div class="atom" style="background-color:${style.color}; color:${style.text}; border:${style.border}; text-shadow:${tShadow};">${type}</div>`;
+    });
+    html += `</div>`;
+    return html;
+}
+
+function triggerCelebration() {
+    const emojis = ['✨', '🌟', '💎', '🔥', '🧪', '🎉'];
+    const colors = ['#00e5ff', '#ffc400', '#00e676', '#ff3d00', '#ffffff', '#e040fb'];
+    const container = document.getElementById('particle-container');
+    container.innerHTML = ''; 
+    
+    for (let i = 0; i < 80; i++) {
+        let particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = (Math.random() * 100) + '%';
+        
+        if (Math.random() > 0.3) {
+            particle.style.width = (Math.random() * 10 + 5) + 'px';
+            particle.style.height = (Math.random() * 10 + 5) + 'px';
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            if(Math.random() > 0.5) particle.style.borderRadius = '50%';
+        } else {
+            particle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            particle.style.fontSize = (Math.random() * 15 + 15) + 'px';
+        }
+
+        let duration = (Math.random() * 2 + 1.5);
+        particle.style.animation = `fallRotate ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
+        
+        let tx = (Math.random() * 300 - 150) + 'px';
+        let rot = (Math.random() * 720 - 360) + 'deg';
+        particle.style.setProperty('--tx', tx);
+        particle.style.setProperty('--rot', rot);
+        
+        particle.style.animationDelay = (Math.random() * 0.5) + 's';
+        
+        container.appendChild(particle);
+    }
+    
+    setTimeout(() => {
+        container.innerHTML = '';
+    }, 4000);
+}
+
+let resizeTimer;
+function fitWorkspace() {
+    const wrapper = document.getElementById('workspace-wrapper');
+    const workspace = document.getElementById('workspace');
+    if(!wrapper || !workspace) return;
+    workspace.style.transform = 'scale(1)';
+    requestAnimationFrame(() => {
+        const marginX = window.innerWidth <= 600 ? 5 : (window.innerWidth <= 1024 ? 10 : 30);
+        const marginY = 10;
+        const wrapperWidth = wrapper.clientWidth - marginX;
+        const wrapperHeight = wrapper.clientHeight - marginY;
+        const workspaceWidth = workspace.scrollWidth;
+        const workspaceHeight = workspace.scrollHeight;
+        let scale = 1;
+        if (workspaceWidth > wrapperWidth && wrapperWidth > 0) scale = Math.min(scale, wrapperWidth / workspaceWidth);
+        if (workspaceHeight > wrapperHeight && wrapperHeight > 0) scale = Math.min(scale, wrapperHeight / workspaceHeight);
+        workspace.style.transform = `scale(${scale})`;
+    });
+}
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitWorkspace, 100); });
+window.addEventListener('orientationchange', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitWorkspace, 300); });
+
+window.onload = () => {
+    initData();
+    checkTutorial();
+    buildMenu();
+    showHome(); 
+};
+
+function buildMenu() {
+    const list = document.getElementById('menu-list');
+    list.innerHTML = '';
+    allReactions.forEach((r, i) => {
+        const li = document.createElement('li');
+        li.className = 'menu-item free-item';
+        const icon = i < grade2Reactions.length ? "" : "🔥 ";
+        li.innerText = icon + r.title;
+        li.onclick = () => selectFreeReaction(i);
+        list.appendChild(li);
+    });
+    updateReviewMenu();
+}
+
+function selectFreeReaction(index) {
+    appMode = "free";
+    isSuddenDeath = false;
+    stopTimer();
+    hideHome();
+    closeMenu();
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.free-item')[index].classList.add('active');
+    document.getElementById('practice-status').innerText = "";
+    setupReaction(allReactions[index], allFormulasPool);
+}
+
+function startTimer() {
+    clearInterval(timerInterval);
+    document.getElementById('timer-container').style.display = 'block';
+    timeLeft = TIME_LIMIT;
+    // ★ チート対策：ブラウザの絶対時間（performance.now）を使用 ★
+    timerEndTime = performance.now() + TIME_LIMIT * 1000;
+    updateTimerUI();
+    timerInterval = setInterval(() => {
+        timeLeft = (timerEndTime - performance.now()) / 1000;
+        if (timeLeft <= 0) {
+            timeLeft = 0;
+            clearInterval(timerInterval);
+            updateTimerUI();
+            
+            if (currentReactionData) {
+                recordSessionMistake(currentReactionData.title, stage);
+            }
+            showResult(true, "⌛ 時間切れ！爆発だ！");
+        } else {
+            updateTimerUI();
+        }
+    }, 100);
+}
+
+function updateTimerUI() {
+    let bar = document.getElementById('timer-bar');
+    let pct = Math.max(0, (timeLeft / TIME_LIMIT) * 100);
+    bar.style.width = pct + '%';
+    if (pct < 25) bar.style.backgroundColor = 'var(--accent-red)';
+    else if (pct < 50) bar.style.backgroundColor = 'var(--accent-gold)';
+    else bar.style.backgroundColor = 'var(--accent-green)';
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    document.getElementById('timer-container').style.display = 'none';
+}
+
+function startPractice(type) {
+    if (type === 'review' && userMistakes.length === 0) return;
+    appMode = `practice_${type}`;
+    closeDifficultyModal();
+    hideHome();
+    closeMenu();
+    stopTimer();
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+    
+    sessionMistakes = [];
+    isSuddenDeath = (type === 'sudden_death');
+    suddenDeathScore = 0;
+    
+    if (type === 'easy') {
+        practiceQuestions = [...grade2Reactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allStandardFormulas }));
+    } else if (type === 'normal') {
+        practiceQuestions = [...grade2Reactions].sort(() => 0.5 - Math.random()).slice(0, 10).map(r => ({ reaction: r, pool: allStandardFormulas }));
+    } else if (type === 'hard') {
+        practiceQuestions = [...grade3Reactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allFormulasPool }));
+    } else if (type === 'sudden_death') {
+        let firstReaction = allReactions[Math.floor(Math.random() * allReactions.length)];
+        practiceQuestions = [{ reaction: firstReaction, pool: allFormulasPool }];
+    } else if (type === 'review') {
+        let reviewReactions = allReactions.filter(r => userMistakes.some(m => m.title === r.title));
+        practiceQuestions = reviewReactions.sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
+    }
+    
+    currentQIndex = 0;
+    loadPracticeQuestion();
+}
+
+function loadPracticeQuestion() {
+    const q = practiceQuestions[currentQIndex];
+    let modeName = "";
+    if (appMode === 'practice_easy') modeName = '🌱 初級';
+    else if (appMode === 'practice_normal') modeName = '🌿 中級';
+    else if (appMode === 'practice_hard') modeName = '🔥 上級';
+    else if (appMode === 'practice_sudden_death') modeName = '💀 サドンデス';
+    else modeName = '📖 弱点克服';
+
+    let qText = isSuddenDeath ? `(連続: ${suddenDeathScore})` : `(${currentQIndex + 1} / ${practiceQuestions.length})`;
+    document.getElementById('practice-status').innerText = `${modeName} ${qText}`;
+    
+    setupReaction(q.reaction, q.pool);
+}
+
+function generateDistractors(correct, pool) {
+    let options = new Set([correct]);
+    const commonErrors = {
+        'CO2': ['CO', 'CO3', 'C2O', 'O2'], 'H2O': ['HO', 'H2O2', 'OH', 'O2'], 'O2': ['O', 'O3', 'O4'],
+        'H2': ['H', 'H3', 'OH'], 'Cu': ['Cu2', 'CuO', 'C'], 'CuO': ['Cu2O', 'Cu', 'CO2'],
+        'Ag2O': ['AgO', 'Ag', 'AgO2'], 'Na2CO3': ['NaCO3', 'Na3CO3', 'NaHCO3'], 'NaHCO3': ['Na2CO3', 'NaH2CO3', 'NaCO3'],
+        'FeS': ['Fe2S', 'FeS2', 'Fe'], 'CuCl2': ['CuCl', 'Cu2Cl', 'Cl2'], 'MgCl2': ['MgCl', 'Mg2Cl', 'Mg'],
+        'H2O2': ['HO', 'H2O', 'HO2', 'O2'], 'C2H5OH': ['C2H6O', 'C2H4O', 'CH3OH', 'CH3CHO'], 'CH3CHO': ['C2H6O', 'C2H5OH', 'CH3OH', 'C2H4'],
+        'NH4Cl': ['NH3Cl', 'NH4Cl2', 'NCl3'], 'Ca(OH)2': ['CaOH', 'Ca2(OH)', 'Ca(OH)3'], 'BaCl2': ['BaCl', 'Ba2Cl', 'Ba(Cl)2'],
+        'AlCl3': ['AlCl2', 'Al2Cl3', 'AlCl'], 'NH3': ['NH2', 'NH4', 'N2H3'],
+        'HNO3': ['HNO2', 'H2NO3', 'NO3'], 'Cu(NO3)2': ['CuNO3', 'Cu2(NO3)', 'Cu(NO2)2'], 'FeS2': ['FeS', 'Fe2S', 'Fe2S3'],
+        'SO2': ['SO', 'SO3', 'S2O'], 'H2S': ['HS', 'H2S2', 'S2'], 'CH4O': ['CH3O', 'C2H6O', 'CH4'],
+        'Al2O3': ['AlO', 'AlO2', 'Al3O2'], 'CaCO3': ['Ca2CO3', 'CaCO2', 'Ca(CO3)2'], 'CaCl2': ['CaCl', 'Ca2Cl', 'Ca'],
+        'HSO4': ['H2SO4', 'H2SO3', 'H3SO4'], 'Al(OH)3': ['AlOH', 'Al(OH)2', 'Al2(OH)3'], 'Al2(SO4)3': ['AlSO4', 'Al3(SO4)2', 'Al2SO4'],
+        'Fe2O3': ['FeO', 'FeO2', 'Fe3O4'], 'CO': ['C2O', 'CO2', 'C'], 'CH4': ['CH3', 'C2H4', 'CH5'],
+        'C3H8': ['C3H6', 'C4H8', 'C2H8'], 'C4H10': ['C4H8', 'C3H10', 'C5H10'], 'NO': ['N2O', 'NO2', 'N'],
+        'NO2': ['NO', 'N2O', 'NO3'], 'Ba(OH)2': ['BaOH', 'Ba2(OH)', 'Ba(OH)3'], 'BaSO4': ['Ba2SO4', 'BaSO3', 'Ba(SO4)2'],
+        'NaOH': ['Na2OH', 'Na(OH)2', 'NaO'], 'NaCl': ['Na2Cl', 'NaCl2', 'Na'], 'HCl': ['H2Cl', 'HCl2', 'Cl2'], 'FeCl2': ['FeCl', 'FeCl3', 'Fe2Cl'],
+        'Mg': ['Mg2', 'Mn', 'Mo'], 'Fe': ['Fe2', 'F', 'Fl'], 'C': ['C2', 'O', 'H'],
+        'Ag': ['Ag2', 'A', 'Ar'], 'Al': ['Al2', 'A', 'Am'], 'S': ['S2', 'Si', 'Se'],
+        'CuS': ['Cu2S', 'CuS2', 'Cu2S3', 'Cu']
+    };
+    if (commonErrors[correct]) commonErrors[correct].forEach(d => options.add(d));
+
+    if (options.size < 5) {
+        let fakeBase = correct.replace(/[\(\)]/g, ''); 
+        let re = /([A-Z][a-z]*)(\d*)/g;
+        let match; let parts = [];
+        while ((match = re.exec(fakeBase)) !== null) parts.push({ elem: match[1], num: match[2] ? parseInt(match[2]) : 1 });
+        if (parts.length > 0) {
+            for (let i = 0; i < 15 && options.size < 5; i++) {
+                let fake = "";
+                parts.forEach(p => {
+                    let n = p.num; let r = Math.random();
+                    if (r < 0.3) n += 1; else if (r < 0.6 && n > 1) n -= 1; else if (r < 0.8) n += 2;
+                    fake += p.elem + (n > 1 ? n : "");
+                });
+                if (fake !== correct && fake !== "") options.add(fake);
+            }
+        }
+    }
+    
+    if (options.size < 5) {
+        let shuffledPool = [...pool].sort(() => 0.5 - Math.random());
+        for (let f of shuffledPool) {
+            if (options.size >= 5) break;
+            options.add(f);
+        }
+    }
+
+    let arr = Array.from(options).filter(o => o !== correct);
+    arr = arr.sort(() => 0.5 - Math.random()).slice(0, 4);
+    arr.push(correct);
+    return ['?', ...arr.sort(() => 0.5 - Math.random())];
+}
+
+function setupReaction(reaction, pool) {
+    stage = 1; substances = []; let idCounter = 0;
+    currentReactionData = reaction;
+    isCleared = false; 
+
+    const addSub = (item, side) => {
+        substances.push({ id: `sub-${idCounter++}`, side: side, name: item.n, correct: item.f, selected: '?', coeff: 1, options: generateDistractors(item.f, pool) });
+    };
+    reaction.left.forEach(item => addSub(item, 'left'));
+    reaction.right.forEach(item => addSub(item, 'right'));
+
+    document.getElementById('reaction-title').innerText = reaction.title;
+    document.getElementById('instruction-text').innerText = "STEP1: 物質名から正しい化学式を選ぼう。";
+    document.getElementById('feedback').innerHTML = '';
+    document.getElementById('explanation-box').style.display = 'none';
+    document.getElementById('workspace-wrapper').classList.remove('glow-effect');
+    document.getElementById('workspace-wrapper').className = ''; 
+    
+    const checkBtn = document.getElementById('check-btn');
+    checkBtn.innerText = "これで確認！";
+    checkBtn.className = "primary-btn";
+    checkBtn.style.display = 'block';
+    checkBtn.onclick = checkAnswer; 
+    
+    checkBtn.disabled = true;
+    setTimeout(() => { checkBtn.disabled = false; }, 500);
+    
+    updateKen('think');
+    renderWorkspace();
+
+    if (isSuddenDeath) startTimer();
+}
+
+function handleFormulaSelect(id, value) {
+    const sub = substances.find(s => s.id === id);
+    if(sub) sub.selected = value;
+    document.querySelectorAll('.ws-col').forEach(el => el.classList.remove('error'));
+    document.getElementById('feedback').innerHTML = '';
+}
+
+function changeCoeff(id, delta) {
+    const sub = substances.find(s => s.id === id);
+    if(sub) {
+        sub.coeff += delta;
+        if(sub.coeff < 1) sub.coeff = 1;
+        if(sub.coeff > 15) sub.coeff = 15;
+        
+        const checkBtn = document.getElementById('check-btn');
+        if (checkBtn.style.display === 'none' || checkBtn.innerText !== 'これで確認！') {
+            checkBtn.style.display = 'block';
+            checkBtn.innerText = "これで確認！";
+            checkBtn.className = "primary-btn";
+            checkBtn.onclick = checkAnswer;
+            updateKen('hint');
+            document.getElementById('explanation-box').style.display = 'none';
+        }
+
+        document.getElementById('feedback').innerHTML = '';
+        renderWorkspace();
+    }
+}
+
+function renderWorkspace() {
+    const workspace = document.getElementById('workspace');
+    workspace.innerHTML = '';
+    const opClass = stage === 1 ? 'operator-st1' : 'operator-st2';
+
+    const renderSide = (side) => {
+        const subs = substances.filter(s => s.side === side);
+        subs.forEach((sub, i) => {
+            if(i > 0) workspace.innerHTML += `
+            <div class="ws-op">
+                <div class="ws-formula-op">+</div>
+                ${stage === 2 ? `<div class="ws-model-op">+</div>` : ''}
+            </div>`;
+            workspace.innerHTML += generateSubstanceHTML(sub);
+        });
+    };
+
+    renderSide('left');
+    workspace.innerHTML += `
+    <div class="ws-op arrow">
+        <div class="ws-divider"></div>
+        <div class="ws-formula-op">→</div>
+        ${stage === 2 ? `<div class="ws-model-op">→</div>` : ''}
+    </div>`;
+    renderSide('right');
+}
+
+function generateSubstanceHTML(sub) {
+    let html = `<div class="ws-col" id="group-${sub.id}">`;
+    html += `<div style="margin-bottom:8px;"><div class="substance-name">${sub.name}</div></div>`;
+    
+    html += `<div class="ws-formula">`;
+    if (stage === 1) {
+        html += `<select class="formula-select" onchange="handleFormulaSelect('${sub.id}', this.value)">`;
+        sub.options.forEach(opt => {
+            const selected = sub.selected === opt ? 'selected' : '';
+            html += `<option value="${opt}" ${selected}>${toSubscript(opt)}</option>`;
+        });
+        html += `</select>`;
+    } else {
+        html += `
+        <div class="stage2-ui">
+            <div class="coeff-controls">
+                <button class="coeff-btn" onclick="changeCoeff('${sub.id}', -1)" aria-label="減らす">-</button>
+                <button class="coeff-btn" onclick="changeCoeff('${sub.id}', 1)" aria-label="増やす">+</button>
+            </div>
+            <div class="formula-display">
+                <span class="big-coeff ${sub.coeff === 1 ? 'hidden-coeff' : ''}">${sub.coeff}</span>
+                <span class="chem-formula">${toSubscript(sub.correct)}</span>
+            </div>
+        </div>`;
+    }
+    html += `</div>`;
+
+    html += `<div class="ws-model">`;
+    if (stage === 2) {
+        for(let i=0; i<sub.coeff; i++) html += getMoleculeHtml(sub.correct);
+    }
+    html += `</div>`;
+
+    html += `</div>`;
+    return html;
+}
+
+function recordSessionMistake(title, step) {
+    recordMistake(title); 
+    let existing = sessionMistakes.find(m => m.title === title);
+    if (!existing) {
+        sessionMistakes.push({ title: title, step: step });
+    }
+}
+
+function checkAnswer() {
+    if (stage === 1) checkStage1();
+    else checkStage2();
+}
+
+function checkStage1() {
+    let hasError = false, anyUnanswered = false;
+    substances.forEach(sub => {
+        const el = document.getElementById(`group-${sub.id}`);
+        if (sub.selected === '?') { anyUnanswered = true; el.classList.add('error'); }
+        else if (sub.selected !== sub.correct) { hasError = true; el.classList.add('error'); }
+        else el.classList.remove('error');
+    });
+
+    const feedback = document.getElementById('feedback');
+    if (hasError || anyUnanswered) {
+        recordSessionMistake(currentReactionData.title, 1);
+        
+        if (isSuddenDeath) {
+            showResult(true, "💀 化学式の選択を間違えたぞ！即終了だ！");
+            return;
+        }
+        
+        if (anyUnanswered) {
+            feedback.innerHTML = `<span class="feedback-error">⚠️ 「?」のままの化学式があるよ！</span>`;
+        } else {
+            feedback.innerHTML = `<span class="feedback-error">⚠️ 赤くなっている化学式が間違っているよ。選び直そう！</span>`;
+        }
+        updateKen('error');
+    } else {
+        stage = 2;
+        
+        const checkBtn = document.getElementById('check-btn');
+        checkBtn.disabled = true;
+        setTimeout(() => { checkBtn.disabled = false; }, 500);
+        
+        updateKen('stage1');
+        document.getElementById('instruction-text').innerText = "STEP2: ＋/－ボタンで係数を調整し、左右の原子数を合わせよう！";
+        feedback.innerHTML = `<div style="color:var(--accent-cyan); font-size:1.2rem; text-shadow:0 2px 4px #000;">✨化学式クリア！次は原子の数を合わせよう！</div>`;
+        setTimeout(() => { if(stage===2) document.getElementById('feedback').innerHTML = ''; }, 3000);
+        renderWorkspace();
+
+        if (isSuddenDeath) {
+            startTimer();
+        }
+    }
+}
+
+function checkStage2() {
+    const countAtoms = (side) => {
+        const counts = {};
+        substances.filter(s => s.side === side).forEach(sub => {
+            const atoms = expandFormula(sub.correct);
+            atoms.forEach(atom => { counts[atom] = (counts[atom] || 0) + sub.coeff; });
+        });
+        return counts;
+    };
+
+    const leftCounts = countAtoms('left');
+    const rightCounts = countAtoms('right');
+    const allAtoms = new Set([...Object.keys(leftCounts), ...Object.keys(rightCounts)]);
+    
+    let isCorrect = true;
+    let errorMessages = [];
+
+    allAtoms.forEach(atom => {
+        const l = leftCounts[atom] || 0;
+        const r = rightCounts[atom] || 0;
+        if (l < r) { isCorrect = false; errorMessages.push(`左辺の ${atom} が ${r - l} 個足りないよ。`); }
+        else if (l > r) { isCorrect = false; errorMessages.push(`右辺の ${atom} が ${l - r} 個足りないよ。`); }
+    });
+
+    if (isCorrect) {
+        const coeffs = substances.map(s => s.coeff);
+        let gcd = coeffs[0];
+        for (let i = 1; i < coeffs.length; i++) { gcd = getGCD(gcd, coeffs[i]); }
+        if (gcd > 1) {
+            isCorrect = false;
+            errorMessages.push(`最も簡単な整数比にできるよ！（すべて${gcd}で割れる）`);
+        }
+    }
+
+    const feedback = document.getElementById('feedback');
+    const wrapper = document.getElementById('workspace-wrapper');
+    const checkBtn = document.getElementById('check-btn');
+    const expBox = document.getElementById('explanation-box');
+    
+    if (isCorrect) {
+        document.querySelectorAll('.coeff-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.3';
+            btn.style.pointerEvents = 'none';
+        });
+
+        if (!isCleared) {
+            addPoints(10);
+            isCleared = true; 
+            
+            let madeMistakeThisTime = sessionMistakes.some(m => m.title === currentReactionData.title);
+            if (appMode === 'practice_review' && !madeMistakeThisTime) {
+                clearMistake(currentReactionData.title);
+            }
+            
+            if (isSuddenDeath) {
+                suddenDeathScore++;
+                stopTimer(); 
+            }
+        }
+
+        triggerCelebration(); 
+        updateKen('success');
+        wrapper.classList.remove('glow-effect');
+        void wrapper.offsetWidth; 
+        wrapper.classList.add('glow-effect');
+        
+        feedback.innerHTML = `<div class="goku-clear-text">🔥 GOKU-CLEAR! 完璧だ！ 🔥</div>`;
+        
+        if(currentReactionData && currentReactionData.exp) {
+            expBox.innerHTML = `<div class="exp-title">📖 反応の解説</div><div>${currentReactionData.exp}</div>`;
+            expBox.style.display = 'block';
+            setTimeout(() => expBox.scrollIntoView({behavior: "smooth", block: "center"}), 100);
+        }
+
+        if (appMode.startsWith('practice')) {
+            checkBtn.innerText = "次のクエストへ →";
+            checkBtn.className = "primary-btn next-btn";
+            checkBtn.onclick = nextPracticeQuestion;
+            checkBtn.disabled = true;
+            setTimeout(() => { checkBtn.disabled = false; }, 500);
+        } else {
+            checkBtn.style.display = 'none'; 
+        }
+    } else {
+        recordSessionMistake(currentReactionData.title, 2);
+        
+        if (isSuddenDeath) {
+            showResult(true, "💀 係数（原子の数）が合っていないぞ！即終了だ！");
+            return;
+        }
+
+        updateKen('error');
+        wrapper.classList.remove('glow-effect');
+        let html = `<div class="feedback-error">`;
+        errorMessages.forEach(msg => { html += `<div>⚠️ ${msg}</div>`; });
+        html += `</div>`;
+        feedback.innerHTML = html;
+        expBox.style.display = 'none';
+    }
+}
+
+function nextPracticeQuestion() {
+    const checkBtn = document.getElementById('check-btn');
+    if(checkBtn) {
+        checkBtn.disabled = true;
+        checkBtn.style.display = 'none';
+    }
+
+    if (isSuddenDeath) {
+        let sourcePool = [...allReactions];
+        let nextReaction = sourcePool[Math.floor(Math.random() * sourcePool.length)];
+        practiceQuestions.push({ reaction: nextReaction, pool: allFormulasPool });
+        
+        if (practiceQuestions.length > 5) {
+            practiceQuestions.shift();
+            currentQIndex--;
+        }
+    }
+
+    currentQIndex++;
+    if (currentQIndex < practiceQuestions.length) {
+        loadPracticeQuestion();
+    } else {
+        showResult(false, "");
+    }
+}
+
+function showResult(isGameOver, reason) {
+    stopTimer();
+    let bonus = 0;
+    let html = `<div class="result-container">`;
+    
+    if (isSuddenDeath) {
+        bonus = suddenDeathScore * 20;
+        html += `<h2 style="color:var(--accent-red); margin:0; font-size:2.5rem; text-shadow:0 2px 5px #000;">GAME OVER</h2>`;
+        html += `<p style="font-size:1.2rem; font-weight:bold;">${reason}</p>`;
+        
+        if (isGameOver && currentReactionData && currentReactionData.eq) {
+            html += `<div style="background: rgba(255, 61, 0, 0.15); border: 2px solid var(--accent-red); border-radius: 10px; padding: 15px; margin: 20px auto; max-width: 90%;">`;
+            html += `<div style="color: #ff8a80; font-size: 0.9rem; font-weight:bold; margin-bottom: 8px;">💡 今回の正解はコレだ！</div>`;
+            html += `<div style="font-size: 1.4rem; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; white-space: nowrap; overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch;">${formatDictEquation(currentReactionData.eq)}</div>`;
+            html += `</div>`;
+        }
+
+        html += `<h3 style="color:var(--text-main); font-size:1.5rem;">🔥 連続正解: ${suddenDeathScore} 問</h3>`;
+    } else {
+        if (appMode === 'practice_easy') bonus = 50;
+        else if (appMode === 'practice_normal') bonus = 120;
+        else if (appMode === 'practice_hard') bonus = 300;
+        else if (appMode === 'practice_review') bonus = 100;
+        
+        html += `<h2 style="color:var(--accent-gold); margin:0; font-size:2.5rem; text-shadow:0 2px 5px #000;">MISSION COMPLETE!</h2>`;
+        html += `<p style="font-size:1.2rem; font-weight:bold;">すべてのクエストを制覇した！</p>`;
+    }
+    
+    addPoints(bonus);
+    if (bonus > 0) html += `<div style="font-size:1.4rem; color:var(--accent-cyan); font-weight:900;">✨ ボーナス ${bonus} Pt 獲得！ ✨</div>`;
+    
+    html += `<div class="result-box">`;
+    html += `<h3 style="margin-top:0; color:var(--accent-green); border-bottom:1px solid #4a4e69; padding-bottom:5px;">📊 プレイレポート (メタ認知)</h3>`;
+    
+    if (sessionMistakes.length === 0 && !isGameOver) {
+        html += `<p style="color:var(--accent-gold); font-size:1.2rem; font-weight:bold; text-align:center; padding:10px 0;">👑 PERFECT!! 一度もミスなし！神レベルだ！</p>`;
+    } else if (sessionMistakes.length > 0) {
+        html += `<p style="font-size:0.9rem; color:var(--text-sub);">【間違えた問題と原因】復習モードで苦手を潰そう！</p>`;
+        html += `<ul class="result-list">`;
+        sessionMistakes.forEach(m => {
+            let tag = m.step === 1 ? `<span class="tag-f">化学式ミス</span>` : `<span class="tag-c">係数ミス</span>`;
+            html += `<li>${m.title} ${tag}</li>`;
+        });
+        html += `</ul>`;
+    }
+    html += `</div>`;
+    
+    html += `<button class="primary-btn" style="margin-top: 20px; font-size: 1.1rem; padding: 12px 30px;" onclick="showHome()">🏠 ホームへ戻る</button>`;
+    html += `</div>`;
+    
+    document.getElementById('workspace').innerHTML = html;
+    document.getElementById('reaction-title').innerText = isSuddenDeath ? "挑戦終了！" : "🎉 クエスト完了！";
+    document.getElementById('instruction-text').innerText = "プレイレポートを確認しよう！";
+    document.getElementById('feedback').innerHTML = '';
+    document.getElementById('explanation-box').style.display = 'none';
+    document.getElementById('check-btn').style.display = 'none';
+    document.getElementById('workspace-wrapper').style.transform = 'none';
+    
+    if (isSuddenDeath && isGameOver) updateKen('error');
+    else { updateKen('success'); triggerCelebration(); }
+    
+    if (appMode === 'practice_review') updateReviewMenu(); 
+}
+</script>
+</body>
+</html>
