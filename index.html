@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI) v3.2.2</title>
+<title>極・化学反応式 (GOKU-CHEMI) v3.2.4</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -132,12 +132,11 @@
     .ws-formula { height: 90px; display: flex; align-items: center; justify-content: center; width: 100%; }
     .ws-model { flex: 1; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; min-height: 50px; padding-top: 15px; gap: 4px; max-width: 140px; }
 
-    .ws-op { display: flex; flex-direction: column; align-items: center; position: relative; padding: 10px 5px; }
-    .ws-formula-op { height: 90px; display: flex; align-items: center; font-size: 2.8rem; font-weight: normal; color: #5a5e7a; text-shadow: 0 2px 5px #000; margin-top: 32px;}
-    .ws-model-op { flex: 1; display: flex; align-items: flex-start; padding-top: 15px; font-size: 2.2rem; font-weight: normal; color: #5a5e7a; text-shadow: 0 2px 5px #000; }
+    .ws-op { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; position: relative; padding: 10px 5px; }
+    .ws-formula-op { height: 90px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; font-weight: normal; color: #5a5e7a; text-shadow: 0 2px 5px #000; margin-top: 32px; background-color: #141724; z-index: 5; padding: 5px 0;}
     
-    .ws-op.arrow .ws-formula-op, .ws-op.arrow .ws-model-op { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4), 0 2px 5px #000; }
-    .ws-divider { position: absolute; top: -10px; bottom: -10px; left: 50%; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, var(--accent-cyan) 0, var(--accent-cyan) 8px, transparent 8px, transparent 16px); opacity: 0.6; z-index: -1; }
+    .ws-op.arrow .ws-formula-op { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4), 0 2px 5px #000; padding: 10px 0;}
+    .ws-divider { position: absolute; top: -10px; bottom: -10px; left: 50%; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, var(--accent-cyan) 0, var(--accent-cyan) 8px, transparent 8px, transparent 16px); opacity: 0.6; z-index: 1; }
 
     .stage2-ui { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .coeff-controls { display: flex; gap: 15px; }
@@ -214,7 +213,7 @@
         #mobile-header { display: flex; }
         #main-content { padding: 15px; padding-bottom: 20px; }
         #explanation-box { padding-right: 120px; } 
-        .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 100px; }
+        .ws-formula-op { margin-top: 50px; } 
         .home-title { font-size: 2.5rem; margin-top: 30px;}
         .magic-start-btn { width: 180px; height: 180px; font-size: 1.5rem; }
     }
@@ -228,7 +227,7 @@
         #explanation-box { padding-right: 15px; } 
         #reaction-title { font-size: 1.6rem; }
         .ws-col { padding: 15px 10px; min-width: 100px; }
-        .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 90px; }
+        .ws-formula-op { margin-top: 50px; } 
         .home-title { font-size: 2.2rem; margin-top: 40px;}
         .magic-start-btn { width: 160px; height: 160px; font-size: 1.4rem; }
         .home-bottom-menu { margin-top: 40px; margin-bottom: 150px; } 
@@ -252,7 +251,6 @@
         .big-coeff { font-size: 2rem; }
         .chem-formula { font-size: 1.4rem; }
         .ws-formula-op { font-size: 1.8rem; margin-top:28px;}
-        .ws-model-op { font-size: 1.4rem; }
         .primary-btn { padding: 12px 30px; font-size: 1.2rem; }
         .home-title { font-size: 2rem; margin-top: 30px;}
         .home-subtitle { font-size: 0.9rem; letter-spacing: 5px;}
@@ -367,7 +365,7 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.2.1</div></div>
+    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.2.4</div></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
@@ -994,7 +992,6 @@ function startTimer() {
     clearInterval(timerInterval);
     document.getElementById('timer-container').style.display = 'block';
     timeLeft = TIME_LIMIT;
-    // ★ チート対策：ブラウザの絶対時間（performance.now）を使用 ★
     timerEndTime = performance.now() + TIME_LIMIT * 1000;
     updateTimerUI();
     timerInterval = setInterval(() => {
@@ -1200,10 +1197,10 @@ function renderWorkspace() {
     const renderSide = (side) => {
         const subs = substances.filter(s => s.side === side);
         subs.forEach((sub, i) => {
+            // ★ メモリ対策のついでに、+を1つに統合
             if(i > 0) workspace.innerHTML += `
             <div class="ws-op">
                 <div class="ws-formula-op">+</div>
-                ${stage === 2 ? `<div class="ws-model-op">+</div>` : ''}
             </div>`;
             workspace.innerHTML += generateSubstanceHTML(sub);
         });
@@ -1214,7 +1211,6 @@ function renderWorkspace() {
     <div class="ws-op arrow">
         <div class="ws-divider"></div>
         <div class="ws-formula-op">→</div>
-        ${stage === 2 ? `<div class="ws-model-op">→</div>` : ''}
     </div>`;
     renderSide('right');
 }
