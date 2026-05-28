@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI) v3.1.7</title>
+<title>極・化学反応式 (GOKU-CHEMI) v3.1.8</title>
 <style>
     /* 共通・ベース設定 */
     :root {
@@ -18,10 +18,8 @@
         font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
         display: flex; height: 100vh; height: 100dvh; overflow: hidden; touch-action: manipulation;
         -webkit-user-select: none; user-select: none; -webkit-user-drag: none;
-        
-        /* ★ 最終防御策：ブラウザの余計な挙動をブロック ★ */
-        overscroll-behavior-y: none; /* 引っ張って更新を禁止 */
-        -webkit-touch-callout: none; /* 長押しポップアップメニューを禁止 */
+        overscroll-behavior-y: none;
+        -webkit-touch-callout: none;
     }
     body.modal-open { overflow: hidden; }
     
@@ -120,21 +118,39 @@
 
     /* 学習エリア（横スクロール対応） */
     #workspace-wrapper { display: none; width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px; justify-content: flex-start; align-items: center; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; padding: 25px 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.5); flex-shrink: 0; min-height: 250px; position: relative; z-index: 20; box-sizing: border-box;}
-    
     #workspace-wrapper::-webkit-scrollbar { height: 8px; }
     #workspace-wrapper::-webkit-scrollbar-track { background: #1a1d2d; border-radius: 4px; }
     #workspace-wrapper::-webkit-scrollbar-thumb { background: #4a4e69; border-radius: 4px; }
     #workspace-wrapper::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
 
-    #workspace { display: flex; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 12px; min-width: max-content; margin: 0 auto;}
+    /* 全体を横並びにし、高さを揃える */
+    #workspace { display: flex; align-items: stretch; justify-content: center; flex-wrap: nowrap; gap: 5px; min-width: max-content; margin: 0 auto;}
     
-    .substance-group { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); padding: 18px 15px; border-radius: 12px; border: 2px solid transparent; gap: 15px; min-width: 120px; transition: 0.3s; }
-    .substance-group.error { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08); }
-    .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
+    /* 各物質のカラム */
+    .ws-col { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 10px; border: 2px solid transparent; transition: 0.3s; }
+    .ws-col.error { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08); }
+    .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.5); margin-bottom: 10px;}
+    
+    /* 上段（数式エリア）と下段（モデルエリア）を分ける */
+    .ws-formula { height: 90px; display: flex; align-items: center; justify-content: center; width: 100%; }
+    .ws-model { flex: 1; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; min-height: 50px; padding-top: 15px; gap: 4px; max-width: 140px; }
+
+    /* 演算子のカラム（+ や ➡） */
+    .ws-op { display: flex; flex-direction: column; align-items: center; position: relative; padding: 10px 5px; }
+    .ws-formula-op { height: 90px; display: flex; align-items: center; font-size: 2.8rem; font-weight: 900; color: #5a5e7a; text-shadow: 0 2px 5px #000; margin-top: 32px;}
+    .ws-model-op { flex: 1; display: flex; align-items: flex-start; padding-top: 15px; font-size: 2.2rem; font-weight: 900; color: #5a5e7a; text-shadow: 0 2px 5px #000; }
+    
+    /* 矢印（➡）の強調と、中央の縦線 */
+    .ws-op.arrow .ws-formula-op, .ws-op.arrow .ws-model-op { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4), 0 2px 5px #000; }
+    .ws-divider { position: absolute; top: -10px; bottom: -10px; left: 50%; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, var(--accent-cyan) 0, var(--accent-cyan) 8px, transparent 8px, transparent 16px); opacity: 0.6; z-index: -1; }
+
+    /* 各種UIパーツ */
     .stage2-ui { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .coeff-controls { display: flex; gap: 15px; }
     .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);}
     .coeff-btn:active { background: var(--accent-cyan); color: #000; transform: scale(0.95); }
+    .coeff-btn:disabled { opacity: 0.3 !important; cursor: not-allowed; border-color: #4a4e69; color: #4a4e69; pointer-events: none; }
+    
     .formula-display { display: flex; align-items: baseline; position: relative; z-index: 100; } 
     .big-coeff { font-size: 3rem; font-weight: 900; color: var(--accent-gold); margin-right: 2px; line-height: 1; text-shadow: 0 2px 5px #000; }
     .hidden-coeff { color: rgba(255,255,255,0.1); text-shadow: none;}
@@ -144,7 +160,6 @@
     select.formula-select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
 
     /* 粒子モデル */
-    .models-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 140px; min-height: 50px; }
     .molecule-auto { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; background: rgba(0,0,0,0.4); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); gap: 2px; }
     .molecule-auto.covalent { gap: 0; }
     .molecule-auto.covalent .atom { margin: -2px; } 
@@ -152,11 +167,6 @@
     .molecule-auto.covalent .atom { z-index: 2; }
     .molecule-auto.covalent .atom:nth-child(2) { z-index: 1; }
     .molecule-auto.covalent .atom:nth-child(3) { z-index: 0; }
-
-    .operator { font-size: 2.8rem; font-weight: 900; color: #5a5e7a; align-self: flex-start; text-shadow: 0 2px 5px #000; position: relative; z-index: 100;}
-    .operator-st1 { margin-top: 60px; }
-    .operator-st2 { margin-top: 110px; }
-    .arrow { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4), 0 2px 5px #000; }
 
     /* アクションエリア */
     #action-area { display: none; margin-top: 15px; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; position: relative; z-index: 100;}
@@ -223,7 +233,7 @@
         #main-content { padding: 15px; padding-bottom: 20px; }
         #explanation-box { padding-right: 15px; } 
         #reaction-title { font-size: 1.6rem; }
-        .substance-group { padding: 15px 10px; min-width: 100px; }
+        .ws-col { padding: 15px 10px; min-width: 100px; }
         .operator-st1 { margin-top: 50px; } .operator-st2 { margin-top: 90px; }
         .home-title { font-size: 2.2rem; margin-top: 40px;}
         .magic-start-btn { width: 160px; height: 160px; font-size: 1.4rem; }
@@ -241,14 +251,14 @@
         .instruction { font-size: 0.9rem; padding: 3px 10px; }
         #practice-status { font-size: 1rem; }
         #workspace { gap: 4px; }
-        .substance-group { padding: 10px 5px; gap: 8px; min-width: 70px; }
+        .ws-col { padding: 10px 5px; min-width: 70px; }
         .substance-name { font-size: 0.75rem; padding: 4px 6px; }
         select.formula-select { font-size: 1.1rem; padding: 5px 22px 5px 6px; background-size: 12px;}
         .coeff-btn { width: 34px; height: 34px; font-size: 1.4rem; }
         .big-coeff { font-size: 2rem; }
         .chem-formula { font-size: 1.4rem; }
-        .operator { font-size: 1.6rem; }
-        .operator-st1 { margin-top: 40px; } .operator-st2 { margin-top: 80px; }
+        .ws-formula-op { font-size: 1.8rem; margin-top:28px;}
+        .ws-model-op { font-size: 1.4rem; }
         .primary-btn { padding: 12px 30px; font-size: 1.2rem; }
         .home-title { font-size: 2rem; margin-top: 30px;}
         .home-subtitle { font-size: 0.9rem; letter-spacing: 5px;}
@@ -274,7 +284,7 @@
         .instruction { font-size: 0.8rem; padding: 2px 8px; }
         #practice-status { font-size: 0.9rem; }
         #workspace-wrapper { padding: 15px 5px; border-width: 1px; min-height: auto;}
-        .substance-group { padding: 8px 5px; gap: 5px; }
+        .ws-col { padding: 5px; }
         #action-area { margin-top: 5px; min-height: auto; gap: 5px; }
         .primary-btn { padding: 8px 25px; font-size: 1.1rem; box-shadow: 0 4px 0 #009eb3; }
         .primary-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #009eb3; }
@@ -363,7 +373,7 @@
 <div id="sidebar-overlay" onclick="toggleMenu()"></div>
 
 <nav id="sidebar">
-    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.1.7</div></div>
+    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.1.8</div></div>
     <div id="status-area">
         <div id="rank-title">見習い錬金術師</div>
         <div id="point-display">0 <span class="pt-unit">Pt</span></div>
@@ -462,10 +472,17 @@ function initData() {
         try { 
             let parsedMis = JSON.parse(savedMis); 
             if (Array.isArray(parsedMis)) { 
+                let isMigrated = false;
                 userMistakes = parsedMis.map(item => {
-                    if (typeof item === 'string') return { title: item, count: 1 };
+                    if (typeof item === 'string') {
+                        isMigrated = true;
+                        return { title: item, count: 1 };
+                    }
                     return item;
                 });
+                if(isMigrated) {
+                    try { localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes)); } catch(e) {}
+                }
             } else { 
                 userMistakes = []; 
             }
@@ -496,6 +513,7 @@ function updatePointUI() {
 }
 
 function recordMistake(title) {
+    userMistakes = userMistakes.map(m => typeof m === 'string' ? {title: m, count: 1} : m);
     let existing = userMistakes.find(m => m.title === title);
     if (existing) {
         existing.count = (existing.count || 1) + 1;
@@ -991,6 +1009,7 @@ function startTimer() {
             clearInterval(timerInterval);
             updateTimerUI();
             
+            // ★ 時間切れ時にエラー記録する処理
             if (currentReactionData) {
                 recordSessionMistake(currentReactionData.title, stage);
             }
@@ -1153,7 +1172,7 @@ function setupReaction(reaction, pool) {
 function handleFormulaSelect(id, value) {
     const sub = substances.find(s => s.id === id);
     if(sub) sub.selected = value;
-    document.querySelectorAll('.substance-group').forEach(el => el.classList.remove('error'));
+    document.querySelectorAll('.ws-col').forEach(el => el.classList.remove('error'));
     document.getElementById('feedback').innerHTML = '';
 }
 
@@ -1187,20 +1206,30 @@ function renderWorkspace() {
     const renderSide = (side) => {
         const subs = substances.filter(s => s.side === side);
         subs.forEach((sub, i) => {
-            if(i > 0) workspace.innerHTML += `<div class="operator ${opClass}">+</div>`;
+            if(i > 0) workspace.innerHTML += `
+            <div class="ws-op">
+                <div class="ws-formula-op">+</div>
+                ${stage === 2 ? `<div class="ws-model-op">+</div>` : ''}
+            </div>`;
             workspace.innerHTML += generateSubstanceHTML(sub);
         });
     };
 
     renderSide('left');
-    workspace.innerHTML += `<div class="operator arrow ${opClass}">➡</div>`;
+    workspace.innerHTML += `
+    <div class="ws-op arrow">
+        <div class="ws-divider"></div>
+        <div class="ws-formula-op">➡</div>
+        ${stage === 2 ? `<div class="ws-model-op">➡</div>` : ''}
+    </div>`;
     renderSide('right');
 }
 
 function generateSubstanceHTML(sub) {
-    let html = `<div class="substance-group" id="group-${sub.id}">`;
-    html += `<div class="substance-name">${sub.name}</div>`;
+    let html = `<div class="ws-col" id="group-${sub.id}">`;
+    html += `<div style="margin-bottom:8px;"><div class="substance-name">${sub.name}</div></div>`;
     
+    html += `<div class="ws-formula">`;
     if (stage === 1) {
         html += `<select class="formula-select" onchange="handleFormulaSelect('${sub.id}', this.value)">`;
         sub.options.forEach(opt => {
@@ -1221,17 +1250,24 @@ function generateSubstanceHTML(sub) {
             </div>
         </div>`;
     }
+    html += `</div>`;
 
+    html += `<div class="ws-model">`;
     if (stage === 2) {
-        html += `<div class="models-container">`;
         for(let i=0; i<sub.coeff; i++) html += getMoleculeHtml(sub.correct);
-        html += `</div>`;
-    } else {
-        html += `<div class="models-container" style="min-height:0;"></div>`;
     }
+    html += `</div>`;
 
     html += `</div>`;
     return html;
+}
+
+function recordSessionMistake(title, step) {
+    recordMistake(title); 
+    let existing = sessionMistakes.find(m => m.title === title);
+    if (!existing) {
+        sessionMistakes.push({ title: title, step: step });
+    }
 }
 
 function checkAnswer() {
@@ -1322,6 +1358,13 @@ function checkStage2() {
     const expBox = document.getElementById('explanation-box');
     
     if (isCorrect) {
+        // ★ チート対策：クリア後は係数ボタンを完全にロック
+        document.querySelectorAll('.coeff-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.3';
+            btn.style.pointerEvents = 'none';
+        });
+
         if (!isCleared) {
             addPoints(10);
             isCleared = true; 
@@ -1330,11 +1373,12 @@ function checkStage2() {
             if (appMode === 'practice_review' && !madeMistakeThisTime) {
                 clearMistake(currentReactionData.title);
             }
-        }
-
-        if (isSuddenDeath) {
-            suddenDeathScore++;
-            stopTimer(); 
+            
+            // ★ 無限スコア増殖チート対策：isClearedの中へ移動
+            if (isSuddenDeath) {
+                suddenDeathScore++;
+                stopTimer(); 
+            }
         }
 
         triggerCelebration(); 
@@ -1379,6 +1423,7 @@ function checkStage2() {
 }
 
 function nextPracticeQuestion() {
+    // ★ 連打スキップ対策：関数が呼ばれた瞬間にボタンを無効化・非表示にする
     const checkBtn = document.getElementById('check-btn');
     if(checkBtn) {
         checkBtn.disabled = true;
