@@ -1,1504 +1,2071 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>極・化学反応式 (GOKU-CHEMI) v3.2.4</title>
-<style>
-    /* 共通・ベース設定 */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>電流計・電圧計 免許センター Ver 5.3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* CUD (カラーユニバーサルデザイン) 配色 & UDフォント */
     :root {
-        --bg-dark: #0f111a; --bg-panel: #1a1d2d;
-        --accent-cyan: #00e5ff; --accent-green: #00e676;
-        --accent-red: #ff3d00; --accent-gold: #ffc400;
-        --text-main: #f0f0f5; --text-sub: #a0a4b8;
+      --cud-red: #FF4B00;
+      --cud-blue: #005AFF;
+      --cud-green: #03AF7A;
+      --cud-orange: #F6AA00;
+      --cud-dark: #1e293b;
     }
     body {
-        margin: 0; padding: 0; padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);
-        background-color: var(--bg-dark); color: var(--text-main);
-        font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-        display: flex; height: 100vh; height: 100dvh; overflow: hidden; touch-action: manipulation;
-        -webkit-user-select: none; user-select: none; -webkit-user-drag: none;
-        overscroll-behavior-y: none;
-        -webkit-touch-callout: none;
+      font-family: 'BIZ UDGothic', sans-serif;
+      background-color: #e2e8f0;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    body.modal-open { overflow: hidden; }
-    
-    /* モーダル共通 */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
-    .modal-content { background: var(--bg-panel); border: 2px solid var(--accent-cyan); border-radius: 15px; padding: 25px 20px; max-width: 90%; width: 420px; box-shadow: 0 0 40px rgba(0,229,255,0.4); text-align: center; animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column;}
-    .modal-content h2 { color: var(--accent-cyan); margin-top: 0; font-size: 1.5rem; }
-    .modal-content p { font-size: 1rem; line-height: 1.5; margin-bottom: 20px; }
-    .tutorial-steps { text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-    .tutorial-steps li { margin-bottom: 10px; font-size: 0.95rem; line-height: 1.5; list-style-type: none; }
-    .tutorial-steps li::before { content: '🧪'; margin-right: 8px; }
-    .transfer-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-    .transfer-code { font-size: 2rem; font-weight: 900; color: var(--accent-gold); letter-spacing: 3px; user-select: all; -webkit-user-select: text;}
-    .transfer-input { width: 80%; padding: 10px; font-size: 1.2rem; font-weight: bold; text-align: center; border-radius: 8px; border: 2px solid #4a4e69; background: #0f111a; color: #fff; text-transform: uppercase; margin-bottom: 10px; -webkit-user-select: text; user-select: text;}
-    .transfer-input:focus { outline: none; border-color: var(--accent-cyan); }
-    
-    /* 苦手ノート専用デザイン */
-    .note-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #2a2e45; border-radius: 8px; margin-bottom: 8px; font-weight: bold;}
-    .delete-btn { background: var(--accent-red); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s;}
-    .delete-btn:active { transform: scale(0.9); }
-
-    /* 図鑑専用デザイン */
-    .dict-item { background: #1a1d2d; border-left: 4px solid var(--accent-cyan); border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: left;}
-    .dict-item.hard { border-left-color: var(--accent-gold); }
-    .dict-title { font-size: 1.1rem; font-weight: bold; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;}
-    .dict-eq { font-size: 1.3rem; font-weight: 900; color: #fff; margin-bottom: 10px; letter-spacing: 1px; background: rgba(0,0,0,0.4); padding: 12px 10px; border-radius: 6px; text-align: center; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;}
-    .dict-exp { font-size: 0.95rem; color: #d0d4e5; line-height: 1.6; }
-    #dictionary-list::-webkit-scrollbar { width: 8px; }
-    #dictionary-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
-    #dictionary-list::-webkit-scrollbar-thumb { background: #4a4e69; border-radius: 4px; }
-
-    /* サイドバー */
-    #sidebar { width: 280px; background-color: var(--bg-panel); border-right: 1px solid #2a2e45; display: flex; flex-direction: column; overflow-y: auto; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 1000; flex-shrink: 0; transition: transform 0.3s ease; }
-    .app-title { padding: 20px 15px 15px; font-size: 1.4rem; font-weight: 900; color: #fff; text-align: center; background: linear-gradient(135deg, #1a1d2d 0%, #0f111a 100%); letter-spacing: 2px; cursor: pointer;}
-    .app-title span { display: block; font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 4px; margin-top: 5px; font-weight: bold; }
-    .app-version { font-size: 0.7rem; color: #6a6f87; font-weight: normal; margin-top: 8px; letter-spacing: 1px; } 
-    #status-area { background: rgba(0, 0, 0, 0.4); padding: 15px; text-align: center; border-bottom: 1px solid #2a2e45; }
-    #rank-title { font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 5px; }
-    #point-display { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
-    .pt-unit { font-size: 0.9rem; color: var(--text-sub); }
-    .section-title { padding: 12px 15px; font-size: 0.85rem; color: var(--text-sub); background-color: #141724; border-top: 1px solid #2a2e45; border-bottom: 1px solid #2a2e45; font-weight: bold; }
-    .section-title:first-of-type { border-top: none; }
-    .menu-list { list-style: none; padding: 0; margin: 0; }
-    .menu-item { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.04); cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: #d0d4e5; display: flex; align-items: center; gap: 8px;}
-    @media (hover: hover) {
-        .menu-item:hover { background-color: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); }
-        .menu-item.practice-btn:hover { background-color: rgba(255, 196, 0, 0.15); }
-        .coeff-btn:hover { background: var(--accent-cyan); color: #000; transform: scale(1.05); }
+    body[data-phase="reading"] #zeroAdjustPanel {
+      pointer-events: none !important;
+      opacity: 0.4;
+      filter: grayscale(100%);
     }
-    .menu-item:active { background-color: rgba(0, 229, 255, 0.2); }
-    .menu-item.active { background-color: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border-left: 4px solid var(--accent-cyan); font-weight: bold; }
-    .menu-item.home-btn { color: var(--accent-cyan); font-weight: bold; background: rgba(0, 229, 255, 0.05); }
-    .menu-item.practice-btn { color: var(--accent-gold); }
-    .menu-item.sudden-death-btn { color: var(--accent-red); font-weight: bold;}
-    .menu-item.sudden-death-btn:hover { background-color: rgba(255, 61, 0, 0.15); }
-    .menu-item.review-btn { color: #ff5252; font-weight: bold; }
-    .menu-item.review-btn:hover { background-color: rgba(255, 82, 82, 0.15); }
-    .menu-item.note-btn { color: var(--text-main); background: rgba(255,255,255,0.02); }
-    .menu-item.transfer-btn { color: var(--text-main); font-weight: bold; background: rgba(255,255,255,0.05); }
-
-    /* モバイルヘッダー */
-    #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 900; opacity: 0; transition: opacity 0.3s; }
-    #mobile-header { display: none; justify-content: space-between; align-items: center; padding: 10px 20px; background: #1a1d2d; border-bottom: 1px solid #2a2e45; z-index: 50; position: relative;}
-    .mobile-title { font-size: 1.2rem; font-weight: 900; color: var(--accent-cyan); letter-spacing: 2px; cursor: pointer;}
-    #menu-toggle-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-
-    /* ホーム画面 */
-    #home-screen { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 15; background: radial-gradient(circle at 50% 40%, #1a1d2d 0%, #08090d 80%); padding-top: 15vh; }
-    .home-status-badge { position: absolute; top: 20px; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 30px; border: 1px solid var(--accent-gold); display: flex; gap: 15px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 20;}
-    .home-title { font-size: 3rem; font-weight: 900; color: #fff; text-shadow: 0 0 20px var(--accent-cyan), 0 4px 10px #000; margin-bottom: 5px; text-align: center; letter-spacing: 4px; z-index: 20;}
-    .home-subtitle { font-size: 1.2rem; color: var(--accent-cyan); letter-spacing: 8px; margin-bottom: 40px; font-weight: bold; z-index: 20;}
-    
-    .magic-start-btn { width: 220px; height: 220px; border-radius: 50%; background: rgba(0, 229, 255, 0.05); border: 4px solid var(--accent-cyan); color: #fff; font-size: 2rem; font-weight: 900; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 40px rgba(0, 229, 255, 0.4), inset 0 0 30px rgba(0, 229, 255, 0.2); transition: 0.2s; animation: pulseGlow 2.5s infinite alternate; z-index: 20; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);}
-    .magic-start-btn span { font-size: 1.2rem; color: var(--accent-cyan); margin-top: 8px; letter-spacing: 3px;}
-    .magic-start-btn:active { transform: scale(0.95); box-shadow: 0 0 20px rgba(0, 229, 255, 0.8); }
-    @keyframes pulseGlow { 0% { box-shadow: 0 0 30px rgba(0, 229, 255, 0.3), inset 0 0 20px rgba(0, 229, 255, 0.2); border-color: rgba(0, 229, 255, 0.5);} 100% { box-shadow: 0 0 60px rgba(0, 229, 255, 0.8), inset 0 0 50px rgba(0, 229, 255, 0.5); border-color: rgba(0, 229, 255, 1); } }
-
-    .home-bottom-menu { display: flex; gap: 15px; margin-top: 40px; z-index: 20; flex-wrap: wrap; justify-content: center; margin-bottom: 120px; padding: 0 20px; width: 100%; box-sizing: border-box;}
-    .home-action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid #4a4e69; color: #d0d4e5; padding: 14px 24px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); flex: 1 1 auto; max-width: 250px;}
-    .home-action-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--accent-gold); color: #fff; transform: translateY(-3px);}
-    .home-action-btn.sudden-death { border-color: rgba(255, 61, 0, 0.5); color: #ff8a80;}
-    .home-action-btn.sudden-death:hover { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.15);}
-
-    /* メインエリア・パーティクルコンテナ */
-    #particle-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
-    #main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; overflow-x: hidden; position: relative; z-index: 5; padding-bottom: 180px; }
-    
-    #reaction-header { display: none; margin-bottom: 10px; justify-content: space-between; align-items: flex-end; flex-shrink: 0; position: relative; z-index: 20;}
-    #reaction-title { font-size: 1.8rem; margin: 0 0 5px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-    .instruction { color: var(--accent-cyan); font-size: 1.1rem; margin: 0; font-weight: bold; background: rgba(0, 229, 255, 0.15); display: inline-block; padding: 5px 15px; border-radius: 20px; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
-    #practice-status { color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 8px rgba(255, 196, 0, 0.3), 0 2px 4px #000; }
-
-    /* タイマーバー */
-    #timer-container { display: none; width: 100%; max-width: 800px; height: 12px; background: #1a1d2d; border-radius: 6px; margin: 0 auto 15px auto; overflow: hidden; position: relative; z-index: 25; box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); border: 2px solid #4a4e69;}
-    #timer-bar { height: 100%; width: 100%; background: var(--accent-green); transition: width 0.1s linear, background-color 0.3s ease; }
-
-    /* 学習エリア */
-    #workspace-wrapper { display: none; width: 100%; background: #141724; border: 2px solid #2a2e45; border-radius: 12px; justify-content: flex-start; align-items: center; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; padding: 25px 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.5); flex-shrink: 0; min-height: 250px; position: relative; z-index: 20; box-sizing: border-box;}
-    #workspace-wrapper::-webkit-scrollbar { height: 8px; }
-    #workspace-wrapper::-webkit-scrollbar-track { background: #1a1d2d; border-radius: 4px; }
-    #workspace-wrapper::-webkit-scrollbar-thumb { background: #4a4e69; border-radius: 4px; }
-    #workspace-wrapper::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
-
-    #workspace { display: flex; align-items: stretch; justify-content: center; flex-wrap: nowrap; gap: 5px; min-width: max-content; margin: 0 auto;}
-    
-    .ws-col { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 10px; border: 2px solid transparent; transition: 0.3s; }
-    .ws-col.error { border-color: var(--accent-red); background: rgba(255, 61, 0, 0.08); }
-    .substance-name { font-size: 0.9rem; font-weight: bold; color: var(--text-main); background: #2a2e45; padding: 6px 12px; border-radius: 6px; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.5); margin-bottom: 10px;}
-    
-    .ws-formula { height: 90px; display: flex; align-items: center; justify-content: center; width: 100%; }
-    .ws-model { flex: 1; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; min-height: 50px; padding-top: 15px; gap: 4px; max-width: 140px; }
-
-    .ws-op { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; position: relative; padding: 10px 5px; }
-    .ws-formula-op { height: 90px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; font-weight: normal; color: #5a5e7a; text-shadow: 0 2px 5px #000; margin-top: 32px; background-color: #141724; z-index: 5; padding: 5px 0;}
-    
-    .ws-op.arrow .ws-formula-op { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4), 0 2px 5px #000; padding: 10px 0;}
-    .ws-divider { position: absolute; top: -10px; bottom: -10px; left: 50%; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, var(--accent-cyan) 0, var(--accent-cyan) 8px, transparent 8px, transparent 16px); opacity: 0.6; z-index: 1; }
-
-    .stage2-ui { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .coeff-controls { display: flex; gap: 15px; }
-    .coeff-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); font-size: 1.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);}
-    .coeff-btn:active { background: var(--accent-cyan); color: #000; transform: scale(0.95); }
-    .coeff-btn:disabled { opacity: 0.3 !important; cursor: not-allowed; border-color: #4a4e69; color: #4a4e69; pointer-events: none; }
-    
-    .formula-display { display: flex; align-items: baseline; position: relative; z-index: 100; } 
-    .big-coeff { font-size: 3rem; font-weight: 900; color: var(--accent-gold); margin-right: 2px; line-height: 1; text-shadow: 0 2px 5px #000; }
-    .hidden-coeff { color: rgba(255,255,255,0.1); text-shadow: none;}
-    .chem-formula { font-size: 2.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; text-shadow: 0 2px 5px #000; }
-
-    select.formula-select { font-size: 1.6rem; padding: 10px 35px 10px 15px; background-color: #0f111a; font-weight: bold; color: #fff; border: 2px solid #4a4e69; border-radius: 8px; outline: none; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300e5ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.6); position: relative; z-index: 100;}
-    select.formula-select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
-
-    /* 粒子モデル */
-    .molecule-auto { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; background: rgba(0,0,0,0.4); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); gap: 2px; }
-    .molecule-auto.covalent { gap: 0; }
-    .molecule-auto.covalent .atom { margin: -2px; } 
-    .atom { width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; flex-shrink: 0; box-shadow: inset -3px -3px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.4); position: relative; z-index: 1; }
-    .molecule-auto.covalent .atom { z-index: 2; }
-    .molecule-auto.covalent .atom:nth-child(2) { z-index: 1; }
-    .molecule-auto.covalent .atom:nth-child(3) { z-index: 0; }
-
-    /* アクションエリア */
-    #action-area { display: none; margin-top: 15px; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; position: relative; z-index: 100;}
-    .primary-btn { padding: 16px 60px; font-size: 1.4rem; font-weight: 900; color: #000; letter-spacing: 2px; background-color: var(--accent-cyan); border: none; border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #009eb3, 0 10px 20px rgba(0,0,0,0.6); transition: 0.1s; width: fit-content; }
-    .primary-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #009eb3, 0 2px 5px rgba(0,0,0,0.4); }
-    .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none !important; }
-    
-    .primary-btn.next-btn { background-color: var(--accent-gold); box-shadow: 0 6px 0 #cc9d00; }
-    .primary-btn.next-btn:active { box-shadow: 0 0 0 #cc9d00; }
-    #feedback { font-size: 1.1rem; text-align: center; line-height: 1.4; font-weight: bold; width: 100%; min-height: 30px; }
-    .feedback-error { color: var(--accent-red); background: rgba(255, 61, 0, 0.15); padding: 5px 20px; border-radius: 8px; display: inline-block; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
-    
-    #explanation-box { display: none; background: rgba(0, 230, 118, 0.15); border: 2px solid var(--accent-green); padding: 15px; padding-right: 140px; border-radius: 10px; margin-top: 10px; text-align: left; font-size: 1rem; line-height: 1.7; max-width: 800px; width: 100%; animation: popUp 0.5s ease-out forwards; box-sizing: border-box; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
-    .exp-title { color: var(--accent-green); font-weight: 900; font-size: 1.1rem; margin-bottom: 5px; }
-
-    .goku-clear-text { position: relative; z-index: 100; color: var(--accent-gold); font-size: 2rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 196, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5), 0 4px 10px #000; animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; background: rgba(0,0,0,0.6); padding: 10px 30px; border-radius: 20px; border: 2px solid var(--accent-gold);}
-    
-    @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
-    @keyframes successBorder { 0% { border-color: #2a2e45; box-shadow: inset 0 0 0 transparent; } 50% { border-color: var(--accent-gold); box-shadow: inset 0 0 50px rgba(255, 196, 0, 0.3); } 100% { border-color: #2a2e45; box-shadow: inset 0 0 10px rgba(255, 196, 0, 0.1); } }
-    .glow-effect { animation: successBorder 1.5s ease-out; }
-    
-    .particle { position: absolute; pointer-events: none; z-index: 10; opacity: 0; }
-    @keyframes fallRotate { 
-        0% { transform: translateY(-50px) rotate(0deg) scale(0.5); opacity: 1; } 
-        50% { opacity: 1; }
-        100% { transform: translateY(110vh) rotate(var(--rot)) translateX(var(--tx)) scale(1.2); opacity: 0; } 
+    body[data-phase="reading"] #wireSvg {
+      display: none !important;
+    }
+    body[data-phase="reading"] .terminal-knob {
+      pointer-events: none !important;
     }
 
-    /* 人体模型ケン - 固定レイアウト */
-    #ken-character { position: fixed; bottom: 10px; right: 10px; display: flex; flex-direction: column; align-items: center; z-index: 100; transition: transform 0.3s; transform: scale(0.75); transform-origin: bottom right; pointer-events: none;}
-    .ken-bounce { animation: kenJump 0.4s ease; }
-    @keyframes kenJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-    #ken-speech { background: #fff; color: #000; padding: 10px 15px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 250px; text-align: center; border: 2px solid #ccc; pointer-events: auto;}
-    #ken-speech::after { content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); border-width: 12px 12px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
-    #ken-image-container { width: 130px; height: 150px; background: transparent; border-radius: 20px 20px 0 0; border: 3px solid var(--accent-cyan); border-bottom: none; display: flex; justify-content: center; align-items: center; overflow: hidden; background: rgba(0,0,0,0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.5);} 
+    /* リアルな計器筐体 */
+    .meter-casing {
+      background: linear-gradient(145deg, #e6e6e6, #cccccc);
+      border: 3px solid #999999;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.9);
+    }
 
-    /* リザルト画面用 */
-    .result-container { width: 100%; max-width: 600px; text-align: center; animation: popUp 0.5s ease-out; margin: 0 auto; padding-bottom: 60px;}
-    .result-box { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; margin-top: 15px; text-align: left; border: 1px solid #4a4e69; }
-    .result-list { margin: 10px 0 0 0; padding-left: 20px; line-height: 1.6; }
-    .result-list li { color: #d0d4e5; font-size: 1.05rem;}
-    .tag-f { color: var(--accent-red); font-size: 0.8rem; border: 1px solid var(--accent-red); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight:bold;}
-    .tag-c { color: var(--accent-gold); font-size: 0.8rem; border: 1px solid var(--accent-gold); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight:bold;}
+    /* 青いターミナルデッキ */
+    .terminal-deck {
+      background: linear-gradient(to bottom, #6ec3f5, #4da8da);
+      border: 2px solid #2980b9;
+      border-radius: 10px;
+      box-shadow: inset 0 2px 5px rgba(255,255,255,0.6), 0 3px 6px rgba(0,0,0,0.15);
+    }
 
-    /* レスポンシブ分岐 */
-    @media (max-width: 1024px) and (orientation: landscape) {
-        #sidebar { position: fixed; left: -280px; height: 100%; }
-        #sidebar.open { transform: translateX(280px); }
-        #sidebar-overlay { display: block; pointer-events: none; }
-        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
-        #mobile-header { display: flex; }
-        #main-content { padding: 15px; padding-bottom: 20px; }
-        #explanation-box { padding-right: 120px; } 
-        .ws-formula-op { margin-top: 50px; } 
-        .home-title { font-size: 2.5rem; margin-top: 30px;}
-        .magic-start-btn { width: 180px; height: 180px; font-size: 1.5rem; }
+    /* 立体ターミナル端子 */
+    .terminal-knob {
+      width: 34px;
+      height: 52px;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 50;
+      transition: transform 0.15s ease, filter 0.15s ease;
     }
-    @media (max-width: 834px) and (orientation: portrait) {
-        #sidebar { position: fixed; left: -280px; height: 100%; }
-        #sidebar.open { transform: translateX(280px); }
-        #sidebar-overlay { display: block; pointer-events: none; }
-        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
-        #mobile-header { display: flex; }
-        #main-content { padding: 15px; padding-bottom: 20px; }
-        #explanation-box { padding-right: 15px; } 
-        #reaction-title { font-size: 1.6rem; }
-        .ws-col { padding: 15px 10px; min-width: 100px; }
-        .ws-formula-op { margin-top: 50px; } 
-        .home-title { font-size: 2.2rem; margin-top: 40px;}
-        .magic-start-btn { width: 160px; height: 160px; font-size: 1.4rem; }
-        .home-bottom-menu { margin-top: 40px; margin-bottom: 150px; } 
+    .terminal-knob:hover { transform: translateY(-3px); }
+    .terminal-knob:active { transform: translateY(1px) scale(0.96); }
+    .knob-cap {
+      width: 24px;
+      height: 10px;
+      border-radius: 6px 6px 0 0;
+      border: 1.5px solid #222;
+      border-bottom: none;
+      position: relative;
     }
-    @media (max-width: 600px) and (orientation: portrait) {
-        #sidebar { position: fixed; left: -280px; height: 100%; }
-        #sidebar.open { transform: translateX(280px); }
-        #sidebar-overlay { display: block; pointer-events: none; }
-        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
-        #mobile-header { display: flex; }
-        #main-content { padding: 10px; padding-bottom: 80px; }
-        #explanation-box { padding: 12px; font-size: 0.95rem; }
-        #reaction-title { font-size: 1.3rem; }
-        .instruction { font-size: 0.9rem; padding: 3px 10px; }
-        #practice-status { font-size: 1rem; }
-        #workspace { gap: 4px; }
-        .ws-col { padding: 10px 5px; min-width: 70px; }
-        .substance-name { font-size: 0.75rem; padding: 4px 6px; }
-        select.formula-select { font-size: 1.1rem; padding: 5px 22px 5px 6px; background-size: 12px;}
-        .coeff-btn { width: 34px; height: 34px; font-size: 1.4rem; }
-        .big-coeff { font-size: 2rem; }
-        .chem-formula { font-size: 1.4rem; }
-        .ws-formula-op { font-size: 1.8rem; margin-top:28px;}
-        .primary-btn { padding: 12px 30px; font-size: 1.2rem; }
-        .home-title { font-size: 2rem; margin-top: 30px;}
-        .home-subtitle { font-size: 0.9rem; letter-spacing: 5px;}
-        .magic-start-btn { width: 140px; height: 140px; font-size: 1.2rem; }
-        .magic-start-btn span { font-size: 0.9rem; margin-top: 2px;}
-        .home-action-btn { font-size: 0.95rem; padding: 10px 15px;}
-        .home-bottom-menu { margin-top: 30px; gap: 10px; margin-bottom: 120px; } 
-        .home-status-badge { top: 10px; padding: 5px 12px;}
-        #home-rank-title { font-size: 0.8rem;}
-        #home-point-display { font-size: 1rem;}
-        #workspace-wrapper { padding: 25px 5px; } 
+    .knob-cap::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 50%;
+      transform: translateX(-50%);
+      width: 10px; height: 4px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 50%;
     }
-    @media (max-height: 500px) and (orientation: landscape) {
-        #sidebar { position: fixed; left: -280px; height: 100%; }
-        #sidebar.open { transform: translateX(280px); }
-        #sidebar-overlay { display: block; pointer-events: none; }
-        #sidebar-overlay.active { pointer-events: auto; opacity: 1; }
-        #mobile-header { display: flex; padding: 5px 15px; }
-        .mobile-title { font-size: 1rem; }
-        #main-content { padding: 10px; padding-bottom: 10px; }
-        #reaction-header { margin-bottom: 5px; flex-direction: row; align-items: center; }
-        #reaction-title { font-size: 1.2rem; margin: 0; margin-right: 10px; }
-        .instruction { font-size: 0.8rem; padding: 2px 8px; }
-        #practice-status { font-size: 0.9rem; }
-        #workspace-wrapper { padding: 15px 5px; border-width: 1px; min-height: auto;}
-        .ws-col { padding: 5px; }
-        #action-area { margin-top: 5px; min-height: auto; gap: 5px; }
-        .primary-btn { padding: 8px 25px; font-size: 1.1rem; box-shadow: 0 4px 0 #009eb3; }
-        .primary-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #009eb3; }
-        #feedback { font-size: 0.95rem; min-height: 25px; }
-        #explanation-box { padding: 8px; font-size: 0.85rem; margin-top: 5px; padding-right: 80px;} 
-        .home-title { font-size: 1.8rem; margin-top: 10px;}
-        .home-subtitle { margin-bottom: 15px;}
-        .magic-start-btn { width: 100px; height: 100px; font-size: 1rem; border-width: 2px;}
-        .magic-start-btn span { font-size: 0.7rem; margin-top: 2px;}
-        .home-bottom-menu { margin-top: 15px; gap: 10px; margin-bottom: 20px;}
-        .home-action-btn { padding: 8px 12px; font-size: 0.85rem;}
-        #ken-character { transform: scale(0.5); }
+    .knob-pillar {
+      width: 28px;
+      height: 26px;
+      border: 1.5px solid #222;
+      border-radius: 3px;
+      background-image: repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.25) 3px, rgba(0,0,0,0.25) 6px);
     }
-</style>
+    .knob-base {
+      width: 34px;
+      height: 12px;
+      border-radius: 3px 3px 8px 8px;
+      border: 1.5px solid #222;
+      border-top: none;
+    }
+
+    .knob-black .knob-cap, .knob-black .knob-pillar, .knob-black .knob-base {
+      background-color: #7f8c8d;
+      background-image: linear-gradient(to right, #555 0%, #aaa 30%, #666 70%, #333 100%);
+    }
+    .knob-red .knob-cap, .knob-red .knob-pillar, .knob-red .knob-base {
+      background-color: #FF4B00;
+      background-image: linear-gradient(to right, #cc3c00 0%, #ff8552 30%, #ff4b00 70%, #992d00 100%);
+    }
+
+    /* 回路部品の丸端子 */
+    .circuit-node {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 13px;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.5);
+      transition: transform 0.15s;
+    }
+    .circuit-node:hover { transform: scale(1.1); }
+    .node-plus {
+      background: radial-gradient(circle at 30% 30%, #ff7640, #FF4B00, #a63100);
+      border: 2px solid #fff;
+    }
+    .node-minus {
+      background: radial-gradient(circle at 30% 30%, #666, #333, #111);
+      border: 2px solid #fff;
+    }
+
+    .selected-terminal {
+      filter: drop-shadow(0 0 12px #F6AA00) brightness(1.15);
+      animation: bounce-glow 0.8s infinite alternate;
+    }
+    @keyframes bounce-glow {
+      from { transform: translateY(0px); }
+      to { transform: translateY(-5px); }
+    }
+
+    .scale-window {
+      background: #ffffff;
+      border: 4px solid #777;
+      border-radius: 14px;
+      box-shadow: inset 0 6px 12px rgba(0,0,0,0.12);
+      position: relative;
+    }
+
+    .battery-body {
+      background: linear-gradient(to bottom, #2b2b2b 0%, #4a4a4a 25%, #1a1a1a 60%, #0d0d0d 100%);
+      border: 2px solid #333;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+    }
+    .battery-label {
+      background: linear-gradient(to bottom, #ff5e00 0%, #ff8800 30%, #d44000 100%);
+      width: 45%;
+      height: 100%;
+      position: absolute;
+      right: 0;
+      top: 0;
+      border-left: 3px solid #f1c40f;
+    }
+    .battery-cap {
+      width: 10px;
+      height: 24px;
+      background: linear-gradient(to bottom, #bbb, #fff, #777);
+      border: 1.5px solid #555;
+      border-left: none;
+      border-radius: 0 5px 5px 0;
+    }
+
+    #wireSvg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 60;
+      pointer-events: none;
+    }
+
+    .conn-anchor {
+      position: absolute;
+      width: 2px; height: 2px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .terminal-knob .conn-anchor { top: 10px; }
+  </style>
 </head>
-<body>
+<body data-phase="wiring" class="min-h-screen flex flex-col">
 
-<div id="particle-container"></div>
-
-<div id="tutorial-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h2>🧪 GOKU-CHEMI へようこそ！</h2>
-        <p>このアプリは、化学反応式を「極める」ためのシミュレーターだ！</p>
-        <ul class="tutorial-steps">
-            <li><b>STEP 1:</b> 正しい化学式を選ぼう！引っ掛け問題に注意だ。</li>
-            <li><b>STEP 2:</b> ＋/－ボタンで係数を変えて、左右の原子数を合わせよう！</li>
-            <li><b>CLEAR:</b> 最も簡単な整数比にできたらポイントGET！</li>
-        </ul>
-        <button class="primary-btn" style="width:100%; margin-top:10px;" onclick="closeTutorial()">実験室へ入る！</button>
+  <!-- ヘッダー -->
+  <header class="bg-[#03AF7A] text-white px-4 py-2.5 flex flex-wrap justify-between items-center shadow-md z-30 shrink-0 gap-2">
+    <div class="flex items-center gap-2 sm:gap-3">
+      <span class="bg-white text-[#03AF7A] font-bold px-2.5 py-0.5 rounded text-xs sm:text-sm shadow-sm">中学2年理科</span>
+      <h1 class="text-base sm:text-xl font-bold tracking-wider">電流計・電圧計 免許センター</h1>
+      <span class="bg-black/25 px-2 py-0.5 rounded text-xs font-bold">Ver 5.3</span>
     </div>
-</div>
-
-<div id="difficulty-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h2>🧪 難易度を選択</h2>
-        <p>自分のレベルに合わせて挑戦しよう！</p>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-            <button class="primary-btn" style="width:100%; background:var(--accent-green); box-shadow: 0 6px 0 #00b359;" onclick="startPractice('easy')">🌱 初級 (中2基本 5問)</button>
-            <button class="primary-btn" style="width:100%; background:var(--accent-cyan); box-shadow: 0 6px 0 #009eb3;" onclick="startPractice('normal')">🌿 中級 (中2レベル 10問)</button>
-            <button class="primary-btn" style="width:100%; background:var(--accent-gold); box-shadow: 0 6px 0 #cc9d00;" onclick="startPractice('hard')">🔥 上級 (中3・発展 5問)</button>
-            <button class="primary-btn" style="width:100%; background:var(--accent-red); box-shadow: 0 6px 0 #cc0000;" onclick="startPractice('sudden_death')">💀 超上級サドンデス</button>
-        </div>
-        <button style="margin-top:25px; background:transparent; border:none; color:var(--text-sub); text-decoration:underline; font-size:1rem; cursor:pointer;" onclick="closeDifficultyModal()">戻る</button>
+    
+    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+      <div class="bg-black/20 p-1 rounded-lg flex flex-wrap gap-1">
+        <button id="btnModeA" onclick="changeMode('A')" class="px-2.5 py-1 rounded font-bold text-xs bg-white text-[#005AFF] shadow">基本：電流計(A)</button>
+        <button id="btnModeV" onclick="changeMode('V')" class="px-2.5 py-1 rounded font-bold text-xs text-white hover:bg-white/20">基本：電圧計(V)</button>
+        <button id="btnModeTarget" onclick="changeMode('ADV_TARGET')" class="px-2.5 py-1 rounded font-bold text-xs text-amber-200 hover:bg-white/20 border border-amber-300/40">🌟発展①：2球指定測定</button>
+        <button id="btnModeDebug" onclick="changeMode('ADV_DEBUG')" class="px-2.5 py-1 rounded font-bold text-xs text-amber-200 hover:bg-white/20 border border-amber-300/40">🕵️発展②：配線ミス修正</button>
+      </div>
+      <button onclick="clearAllWires()" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">全消去</button>
+      <button onclick="showTutorial()" class="bg-white text-[#03AF7A] hover:bg-gray-100 px-2.5 py-1.5 rounded-lg text-xs font-bold shadow">使い方</button>
     </div>
-</div>
+  </header>
 
-<div id="note-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h2>📖 苦手ノート</h2>
-        <p style="margin-bottom: 10px;">記録を消して弱点を克服しよう！</p>
-        <div id="note-list" style="max-height: 300px; overflow-y: auto; text-align: left; padding-right: 5px;"></div>
-        <button class="primary-btn" style="margin-top:20px; padding:10px 30px; width:100%;" onclick="closeNoteModal()">閉じる</button>
+  <!-- ステータス＆ガイドバー -->
+  <div class="bg-white border-b-2 border-slate-300 px-4 py-2 flex flex-col sm:flex-row justify-between items-center gap-2 shadow-sm z-20 shrink-0">
+    <div id="guideMessage" class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
+      <span class="inline-block w-3 h-3 rounded-full bg-[#005AFF] animate-ping shrink-0"></span>
+      <span>手順1：まずは「0点調整ねじ」で針をピッタリ「0」に合わせてください。</span>
     </div>
-</div>
+    <div class="flex items-center gap-2 shrink-0">
+      <button id="goReadingBtn" onclick="goToReading()" class="bg-slate-400 text-white font-bold px-5 py-2 rounded-lg shadow text-sm sm:text-base opacity-60 cursor-not-allowed transition-all">
+        目盛りの読み取りへ進む ▶
+      </button>
+    </div>
+  </div>
 
-<div id="dictionary-modal" class="modal-overlay">
-    <div class="modal-content" style="width: 95%; max-width: 800px; height: 90vh;">
-        <h2 style="font-size:1.8rem;">📚 反応式 答え合わせ図鑑</h2>
-        <p style="margin-bottom: 10px; color:var(--accent-gold); font-weight:bold;">すべての化学反応式の答えと解説だ！</p>
-        <div id="dictionary-list" style="flex: 1; overflow-y: auto; text-align: left; padding: 15px; background: #0f111a; border-radius: 10px; border: 2px solid #2a2e45;">
+  <!-- メインワークスペース -->
+  <main id="workspace" class="flex-1 relative overflow-y-auto overflow-x-hidden p-3 sm:p-5 flex flex-col items-center justify-start">
+    
+    <svg id="wireSvg"></svg>
+
+    <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-5 items-start my-auto">
+      
+      <!-- 【左側 6列】リアル計器ユニット -->
+      <div class="lg:col-span-6 meter-casing p-4 sm:p-5 flex flex-col items-center w-full">
+        
+        <div class="terminal-deck w-full px-3 py-3 mb-4 flex justify-around items-end">
+          <div class="flex flex-col items-center">
+            <div id="t_m3" class="terminal-knob knob-black" onclick="handleTerminalClick('t_m3')">
+              <div class="knob-cap"></div>
+              <div class="knob-pillar"></div>
+              <div class="knob-base"></div>
+              <div class="conn-anchor"></div>
             </div>
-        <button class="primary-btn" style="margin-top:20px; padding:12px 30px; width:100%;" onclick="closeDictionaryModal()">閉じる</button>
-    </div>
-</div>
+            <span id="lbl_m3" class="mt-1.5 font-bold text-xs sm:text-sm text-slate-900 bg-white/80 px-2 py-0.5 rounded shadow-sm">50mA</span>
+            <span class="text-[10px] font-bold text-slate-800 mt-0.5">－端子(小)</span>
+          </div>
 
-<div id="transfer-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h2>⚙️ データ引き継ぎ</h2>
-        <p>今のポイントを別の端末に引き継げるぞ！</p>
-        <p style="color:var(--accent-red); font-size:0.85rem; font-weight:bold; margin-top:-15px;">※ポイントと称号のみ引き継がれます。<br>苦手ノートは各端末に保存されます。</p>
+          <div class="flex flex-col items-center">
+            <div id="t_m2" class="terminal-knob knob-black" onclick="handleTerminalClick('t_m2')">
+              <div class="knob-cap"></div>
+              <div class="knob-pillar"></div>
+              <div class="knob-base"></div>
+              <div class="conn-anchor"></div>
+            </div>
+            <span id="lbl_m2" class="mt-1.5 font-bold text-xs sm:text-sm text-slate-900 bg-white/80 px-2 py-0.5 rounded shadow-sm">500mA</span>
+            <span class="text-[10px] font-bold text-slate-800 mt-0.5">－端子(中)</span>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div id="t_m1" class="terminal-knob knob-black" onclick="handleTerminalClick('t_m1')">
+              <div class="knob-cap"></div>
+              <div class="knob-pillar"></div>
+              <div class="knob-base"></div>
+              <div class="conn-anchor"></div>
+            </div>
+            <span id="lbl_m1" class="mt-1.5 font-bold text-xs sm:text-sm text-slate-900 bg-yellow-300 border border-yellow-600 px-2 py-0.5 rounded shadow-sm">5A</span>
+            <span class="text-[10px] font-bold text-slate-900 mt-0.5">★最初はココ</span>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div id="t_p" class="terminal-knob knob-red" onclick="handleTerminalClick('t_p')">
+              <div class="knob-cap"></div>
+              <div class="knob-pillar"></div>
+              <div class="knob-base"></div>
+              <div class="conn-anchor"></div>
+            </div>
+            <span class="mt-1.5 font-bold text-xs sm:text-sm text-white bg-[#FF4B00] px-2 py-0.5 rounded shadow-sm">+D.C.</span>
+            <span class="text-[10px] font-bold text-red-900 mt-0.5">＋端子</span>
+          </div>
+        </div>
+
+        <div class="scale-window w-full aspect-[4/3] max-w-[460px] flex flex-col justify-between p-2">
+          <svg viewBox="0 0 340 230" class="w-full h-full overflow-visible">
+            <defs>
+              <linearGradient id="mirrorBand" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#cbd5e1"/>
+                <stop offset="50%" stop-color="#f8fafc"/>
+                <stop offset="100%" stop-color="#94a3b8"/>
+              </linearGradient>
+            </defs>
+
+            <path d="M 60 132 A 126 126 0 0 1 280 132" fill="none" stroke="url(#mirrorBand)" stroke-width="8" stroke-linecap="round"/>
+            <g id="scaleMarks"></g>
+
+            <text id="meterSymbol" x="170" y="160" font-size="30" font-weight="bold" text-anchor="middle" fill="#1e293b">A</text>
+            <line x1="154" y1="168" x2="186" y2="168" stroke="#1e293b" stroke-width="2.2"/>
+            <line x1="154" y1="174" x2="162" y2="174" stroke="#1e293b" stroke-width="2.2"/>
+            <line x1="166" y1="174" x2="174" y2="174" stroke="#1e293b" stroke-width="2.2"/>
+            <line x1="178" y1="174" x2="186" y2="174" stroke="#1e293b" stroke-width="2.2"/>
+
+            <g id="needleGroup" transform="translate(170, 202) rotate(-40)">
+              <line x1="2" y1="12" x2="2" y2="-168" stroke="rgba(0,0,0,0.16)" stroke-width="2.8" stroke-linecap="round"/>
+              <line x1="0" y1="12" x2="0" y2="-120" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+              <polygon points="-2,-120 2,-120 0,-172" fill="#FF4B00"/>
+              <circle cx="0" cy="0" r="11" fill="#334155" stroke="#0f172a" stroke-width="2"/>
+              <circle cx="0" cy="0" r="4" fill="#cbd5e1"/>
+            </g>
+          </svg>
+        </div>
+
+        <div id="zeroAdjustPanel" class="mt-3 w-full max-w-[460px] bg-slate-800 text-white px-4 py-2.5 rounded-xl flex items-center justify-between shadow-md">
+          <div class="flex flex-col">
+            <span class="text-xs sm:text-sm font-bold text-yellow-300">① 使用前のゼロ点調整ねじ</span>
+            <span id="zeroStatusText" class="text-xs text-slate-300 font-bold">電源を入れる前に針を「0」に合わせます</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="adjustZero(-0.5)" class="bg-slate-600 hover:bg-slate-500 active:translate-y-0.5 px-3 py-1.5 rounded-lg font-bold text-sm shadow border border-slate-400">◀ 左へ</button>
+            <div class="w-8 h-8 rounded-full bg-slate-400 border-2 border-slate-200 flex items-center justify-center shadow-inner">
+              <div id="screwSlot" class="w-5 h-1 bg-slate-800 rounded transition-transform"></div>
+            </div>
+            <button onclick="adjustZero(0.5)" class="bg-slate-600 hover:bg-slate-500 active:translate-y-0.5 px-3 py-1.5 rounded-lg font-bold text-sm shadow border border-slate-400">右へ ▶</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 【右側 6列】実験回路ボード または 読み取りテンキー -->
+      <div class="lg:col-span-6 w-full flex flex-col gap-4">
         
-        <div class="transfer-box">
-            <div style="font-size: 0.9rem; margin-bottom: 5px;">あなたの引き継ぎパスワード</div>
-            <div class="transfer-code" id="my-transfer-code">------</div>
-            <div style="font-size: 0.8rem; color: #ccc; margin-top: 5px;">※このコードをメモしてね！</div>
-        </div>
-        <div style="margin-top: 20px;">
-            <div style="font-size: 0.9rem; margin-bottom: 5px;">別の端末から引き継ぐ場合</div>
-            <input type="text" id="transfer-input" class="transfer-input" placeholder="パスワードを入力" maxlength="6">
-            <button class="primary-btn" style="width:100%; font-size: 1.1rem; padding: 10px;" onclick="executeTransfer()">復元する</button>
-        </div>
-        <button style="margin-top:20px; background:transparent; border:none; color:var(--text-sub); text-decoration:underline; cursor:pointer;" onclick="closeTransferModal()">閉じる</button>
-    </div>
-</div>
+        <!-- A. 配線フェーズ用：実験器具パネル（モード連動・最適配置レイアウト） -->
+        <div id="wiringArea" class="bg-white rounded-2xl border-4 border-slate-300 p-4 sm:p-6 shadow-lg flex flex-col justify-between gap-4">
+          
+          <div class="flex flex-wrap justify-between items-center border-b-2 border-slate-100 pb-2 gap-2">
+            <div class="flex items-center gap-2">
+              <h2 id="wiringHeaderTitle" class="font-bold text-base sm:text-lg text-slate-800">🔄 直列・輪っか配置</h2>
+            </div>
+            <span id="circuitTypeBadge" class="bg-blue-100 text-[#005AFF] text-xs font-bold px-3 py-1 rounded-full shadow-sm">電流計＝輪の中に一筆書きでつなぐ</span>
+          </div>
 
-<div id="sidebar-overlay" onclick="toggleMenu()"></div>
+          <!-- モード連動のガイド図解バナー -->
+          <div id="layoutFlowBanner" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 flex items-center justify-between gap-2">
+            <span id="layoutFlowText">💡 時計回りに「電池＋ ➔ スイッチ ➔ 豆電球 ➔ 電流計＋ ➔ 電流計－ ➔ 電池－」と1つの輪にしよう！</span>
+          </div>
 
-<nav id="sidebar">
-    <div class="app-title" onclick="showHome()">極・化学反応式<span>GOKU-CHEMI</span><div class="app-version">v3.2.4</div></div>
-    <div id="status-area">
-        <div id="rank-title">見習い錬金術師</div>
-        <div id="point-display">0 <span class="pt-unit">Pt</span></div>
-    </div>
-    
-    <div class="section-title">🎮 練習・復習モード</div>
-    <ul class="menu-list">
-        <li class="menu-item home-btn" onclick="showHome()">🏠 ホーム画面へ戻る</li>
-        <li class="menu-item practice-btn" onclick="startPractice('easy')">🌱 初級 (中2基本 5問)</li>
-        <li class="menu-item practice-btn" onclick="startPractice('normal')">🌿 中級 (中2レベル 10問)</li>
-        <li class="menu-item practice-btn" onclick="startPractice('hard')">🔥 上級 (中3・発展 5問)</li>
-        <li class="menu-item sudden-death-btn" onclick="startPractice('sudden_death')">💀 超上級サドンデス</li>
-        <li class="menu-item review-btn" id="review-btn" onclick="startPractice('review')" style="display:none;">📖 弱点克服モード (0問)</li>
-        <li class="menu-item note-btn" id="note-btn" onclick="openNoteModal()">📓 苦手ノートを確認</li>
-    </ul>
+          <!-- 発展モード専用ミッション指令ボックス -->
+          <div id="advMissionBanner" class="hidden bg-gradient-to-r from-indigo-900 to-slate-900 text-white rounded-xl p-3.5 shadow-md border-l-8 border-amber-400">
+            <div class="flex items-center justify-between mb-1">
+              <span id="advMissionTag" class="bg-amber-400 text-slate-900 text-[11px] font-bold px-2.5 py-0.5 rounded-full">🌟 プラチナ免許試験</span>
+              <button onclick="nextAdvChallenge()" class="text-xs bg-white/15 hover:bg-white/25 text-white px-2.5 py-0.5 rounded font-bold border border-white/30">別の課題に変える ↻</button>
+            </div>
+            <div id="advMissionTitle" class="text-sm sm:text-base font-bold text-amber-300 mt-1"></div>
+            <div id="advMissionDesc" class="text-xs text-slate-200 mt-0.5 font-bold"></div>
+          </div>
 
-    <div class="section-title">📚 化学反応式リスト</div>
-    <ul class="menu-list" id="menu-list"></ul>
-    
-    <div class="section-title">⚙️ 設定</div>
-    <ul class="menu-list">
-        <li class="menu-item transfer-btn" onclick="openTransferModal()">🔄 データ引き継ぎ</li>
-    </ul>
-</nav>
+          <!-- 可変コンテナ：電流計モードと電圧計モードで上下・左右の並びが最適に切り替わる -->
+          <div id="circuitBoardContainer" class="flex flex-col gap-4">
 
-<main id="main-content">
-    <div id="mobile-header">
-        <div class="mobile-title" onclick="showHome()">GOKU-CHEMI</div>
-        <button id="menu-toggle-btn" onclick="toggleMenu()">☰ メニュー</button>
-    </div>
-    
-    <div id="home-screen">
-        <div class="home-status-badge">
-            <span id="home-rank-title" style="color:var(--accent-gold); font-size:0.9rem; font-weight:bold;">見習い錬金術師</span>
-            <span id="home-point-display" style="color:#fff; font-size:1.2rem; font-weight:900;">0 Pt</span>
-        </div>
-        
-        <div class="home-title">GOKU-CHEMI</div>
-        <div class="home-subtitle">極・化学反応式</div>
-        
-        <div class="magic-start-btn" onclick="openDifficultyModal()">
-            実験開始
-            <span>START</span>
-        </div>
-        
-        <div class="home-bottom-menu">
-            <div class="home-action-btn sudden-death" onclick="startPractice('sudden_death')">💀 サドンデス</div>
-            <div class="home-action-btn" onclick="openNoteModal()">📖 苦手ノート</div>
-            <div class="home-action-btn" onclick="openDictionaryModal()">📚 反応式図鑑 (答え)</div>
-        </div>
-    </div>
-
-    <div id="reaction-header">
-        <div>
-            <h2 id="reaction-title">反応を選択してください</h2>
-            <p class="instruction" id="instruction-text">メニューから選んでね。</p>
-        </div>
-        <div id="practice-status"></div>
-    </div>
-    <div id="timer-container"><div id="timer-bar"></div></div>
-    
-    <div id="workspace-wrapper"><div id="workspace"></div></div>
-    
-    <div id="action-area">
-        <div id="feedback"></div>
-        <button id="check-btn" class="primary-btn" onclick="checkAnswer()">これで確認！</button>
-        <div id="explanation-box"></div>
-    </div>
-
-    <div id="ken-character">
-        <div id="ken-speech">さあ、実験を始めようか！</div>
-        <div id="ken-image-container"></div>
-    </div>
-</main>
-
-<script>
-// --- グローバルステートとデータ ---
-let userPoints = 0;
-let userMistakes = []; 
-
-const ranks = [
-    { pt: 0,    title: "🔰 見習い錬金術師" }, { pt: 100,  title: "🧪 駆け出しケミスト" }, { pt: 300,  title: "👨‍🔬 実験室のホープ" },
-    { pt: 600,  title: "🔬 一人前の研究者" }, { pt: 1000, title: "🎓 優秀な科学者" }, { pt: 1500, title: "🧬 真理の探求者" },
-    { pt: 2500, title: "⚡ 錬金術の達人" }, { pt: 4000, title: "👑 GOKU-CHEMI マスター" }, { pt: 6000, title: "🌟 伝説の錬金術師" },
-    { pt: 9999, title: "🌌 究極の創造神" }
-];
-
-function initData() {
-    let savedPt = localStorage.getItem('gokuChemiPoints');
-    if (savedPt !== null) { 
-        let parsed = parseInt(savedPt, 10);
-        if (!isNaN(parsed) && parsed >= 0) userPoints = parsed; 
-    }
-    let savedMis = localStorage.getItem('gokuChemiMistakes');
-    if (savedMis !== null) {
-        try { 
-            let parsedMis = JSON.parse(savedMis); 
-            if (Array.isArray(parsedMis)) { 
-                let isMigrated = false;
-                userMistakes = parsedMis.map(item => {
-                    if (typeof item === 'string') {
-                        isMigrated = true;
-                        return { title: item, count: 1 };
-                    }
-                    return item;
-                });
-                if(isMigrated) {
-                    try { localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes)); } catch(e) {}
-                }
-            } else { 
-                userMistakes = []; 
-            }
-        } catch(e) { userMistakes = []; }
-    }
-    updatePointUI();
-    updateReviewMenu();
-}
-
-function addPoints(pts) {
-    userPoints += pts; 
-    try { localStorage.setItem('gokuChemiPoints', userPoints); } catch(e) { console.warn("Save failed"); }
-    updatePointUI();
-}
-
-function updatePointUI() {
-    let ptText = `${userPoints} Pt`;
-    let currentRank = ranks[0].title;
-    for (let i = 0; i < ranks.length; i++) {
-        if (userPoints >= ranks[i].pt) currentRank = ranks[i].title;
-    }
-    
-    document.getElementById('point-display').innerHTML = `${userPoints} <span class="pt-unit">Pt</span>`;
-    document.getElementById('rank-title').innerText = currentRank;
-    
-    document.getElementById('home-point-display').innerText = ptText;
-    document.getElementById('home-rank-title').innerText = currentRank;
-}
-
-function recordMistake(title) {
-    userMistakes = userMistakes.map(m => typeof m === 'string' ? {title: m, count: 1} : m);
-    let existing = userMistakes.find(m => m.title === title);
-    if (existing) {
-        existing.count = (existing.count || 1) + 1;
-    } else {
-        userMistakes.push({ title: title, count: 1 });
-    }
-    try { localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes)); } catch(e) { console.warn("Save failed"); }
-    updateReviewMenu();
-}
-
-function clearMistake(title) {
-    userMistakes = userMistakes.filter(m => m.title !== title);
-    try { localStorage.setItem('gokuChemiMistakes', JSON.stringify(userMistakes)); } catch(e) { console.warn("Save failed"); }
-    updateReviewMenu();
-}
-
-function updateReviewMenu() {
-    const reviewBtn = document.getElementById('review-btn');
-    const noteBtn = document.getElementById('note-btn');
-    
-    if (userMistakes.length > 0) {
-        reviewBtn.style.display = 'block';
-        reviewBtn.innerText = `📖 弱点克服モード (${userMistakes.length}問)`;
-        noteBtn.innerText = `📓 苦手ノートを確認 (${userMistakes.length}問)`;
-    } else {
-        reviewBtn.style.display = 'none';
-        noteBtn.innerText = `📓 苦手ノートを確認 (0問)`;
-    }
-}
-
-function showHome() {
-    appMode = "home";
-    closeMenu();
-    stopTimer();
-    document.getElementById('home-screen').style.display = 'flex';
-    
-    document.getElementById('reaction-header').style.display = 'none';
-    document.getElementById('workspace-wrapper').style.display = 'none';
-    document.getElementById('action-area').style.display = 'none';
-    document.getElementById('timer-container').style.display = 'none';
-    
-    updateKen('normal');
-    document.getElementById('ken-speech').innerText = '今日はどの実験を極める？';
-    
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-}
-
-function hideHome() {
-    document.getElementById('home-screen').style.display = 'none';
-    
-    document.getElementById('reaction-header').style.display = 'flex';
-    document.getElementById('workspace-wrapper').style.display = 'flex';
-    document.getElementById('action-area').style.display = 'flex';
-}
-
-function openDifficultyModal() {
-    document.getElementById('difficulty-modal').style.display = 'flex';
-    document.body.classList.add('modal-open');
-}
-
-function closeDifficultyModal() {
-    document.getElementById('difficulty-modal').style.display = 'none';
-    document.body.classList.remove('modal-open');
-}
-
-function openNoteModal() {
-    const listDiv = document.getElementById('note-list');
-    listDiv.innerHTML = '';
-    
-    if (userMistakes.length === 0) {
-        listDiv.innerHTML = "<p style='text-align:center; color:var(--accent-gold); font-weight:bold; font-size:1.2rem; margin-top:20px;'>🎉 苦手な問題はないよ！すごい！</p>";
-    } else {
-        let sortedMistakes = [...userMistakes].sort((a, b) => b.count - a.count);
-        sortedMistakes.forEach(m => {
-            const div = document.createElement('div');
-            div.className = 'note-item';
-            div.innerHTML = `
-                <div style="flex:1; padding-right:10px;">
-                    <div style="font-size:0.95rem; line-height:1.3;">${m.title}</div>
-                    <div style="font-size:0.75rem; color:var(--accent-red); margin-top:4px; font-weight:bold;">⚠️ ミス: ${m.count}回</div>
+            <!-- 電源＆スイッチのペア行 -->
+            <div id="powerSwitchRow" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              
+              <!-- 乾電池ボックス（常に左が－極、右が＋極） -->
+              <div id="boxBattery" class="bg-slate-50 border-2 border-slate-200 rounded-xl p-3 flex flex-col items-center justify-between shadow-sm transition-all">
+                <div class="flex items-center justify-between w-full mb-1">
+                  <span class="font-bold text-xs text-slate-700">🔋 乾電池（電源）</span>
+                  <span class="text-[10px] font-bold text-slate-500">左が－ / 右が＋</span>
                 </div>
-                <button class="delete-btn" onclick="deleteNoteItem('${m.title}')">✕ 削除</button>
-            `;
-            listDiv.appendChild(div);
-        });
-    }
-    
-    document.getElementById('note-modal').style.display = 'flex';
-    document.body.classList.add('modal-open');
-    closeMenu(); 
-}
+                <div class="flex items-center justify-between w-full px-1 my-1">
+                  <div class="flex flex-col items-center">
+                    <div id="t_b_minus" class="circuit-node node-minus" onclick="handleTerminalClick('t_b_minus')">
+                      <span>－</span>
+                      <div class="conn-anchor"></div>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-700 mt-0.5">－極</span>
+                  </div>
+                  <div class="flex items-center mx-1">
+                    <div class="battery-body w-20 sm:w-24 h-11 flex items-center justify-between px-2 text-white font-bold shadow-md">
+                      <span class="text-sm z-10">－</span>
+                      <div class="battery-label flex items-center justify-end pr-1">
+                        <span class="text-sm text-white">＋</span>
+                      </div>
+                    </div>
+                    <div class="battery-cap" style="height: 18px;"></div>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div id="t_b_plus" class="circuit-node node-plus" onclick="handleTerminalClick('t_b_plus')">
+                      <span>＋</span>
+                      <div class="conn-anchor"></div>
+                    </div>
+                    <span class="text-[10px] font-bold text-[#FF4B00] mt-0.5">＋極</span>
+                  </div>
+                </div>
+              </div>
 
-function closeNoteModal() {
-    document.getElementById('note-modal').style.display = 'none';
-    document.body.classList.remove('modal-open');
-}
+              <!-- スイッチボックス -->
+              <div id="boxSwitch" class="bg-slate-50 border-2 border-slate-200 rounded-xl p-3 flex flex-col items-center justify-between shadow-sm transition-all">
+                <div class="flex items-center justify-between w-full mb-1">
+                  <span class="font-bold text-xs text-slate-700">🔘 スイッチ</span>
+                  <span id="swStateBadge" class="bg-slate-300 text-slate-700 text-[10px] font-bold px-1.5 py-0.5 rounded">切</span>
+                </div>
+                <div class="flex items-center justify-between w-full px-1 my-1">
+                  <div class="flex flex-col items-center">
+                    <div id="t_sw1" class="circuit-node node-minus" onclick="handleTerminalClick('t_sw1')">
+                      <span>●</span>
+                      <div class="conn-anchor"></div>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-600 mt-0.5">端子A</span>
+                  </div>
+                  <button id="switchBtn" onclick="toggleSwitch()" class="px-3 py-1.5 rounded-lg font-bold text-xs bg-slate-200 hover:bg-slate-300 text-slate-800 border-2 border-slate-400 shadow transition-all">
+                    スイッチON
+                  </button>
+                  <div class="flex flex-col items-center">
+                    <div id="t_sw2" class="circuit-node node-minus" onclick="handleTerminalClick('t_sw2')">
+                      <span>●</span>
+                      <div class="conn-anchor"></div>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-600 mt-0.5">端子B</span>
+                  </div>
+                </div>
+                <button id="chonBtn" class="mt-1 w-full bg-[#F6AA00] hover:bg-amber-500 active:translate-y-0.5 text-slate-900 font-bold py-1.5 px-2 rounded-lg shadow text-[11px] border border-amber-600">
+                  👆 チョン押し確認（押している間だけON）
+                </button>
+              </div>
 
-function deleteNoteItem(title) {
-    clearMistake(title);
-    openNoteModal(); 
-}
+            </div>
 
-function formatDictEquation(eqStr) {
-    let parts = eqStr.split(' ');
-    let html = '';
-    parts.forEach(part => {
-        if (part === '→') {
-            html += ` <span style="color:var(--accent-cyan); margin: 0 10px;">→</span> `;
-        } else if (part === '+') {
-            html += ` <span style="color:#5a5e7a; margin: 0 10px;">+</span> `;
-        } else {
-            let match = part.match(/^(\d*)(.+)$/);
-            if (match) {
-                let coeff = match[1];
-                let formula = match[2];
-                if (coeff) {
-                    html += `<span style="font-size:1.2em; color:var(--accent-gold); margin-right:2px;">${coeff}</span>`;
-                }
-                html += `<span>${toSubscript(formula)}</span>`;
-            }
-        }
-    });
-    return html;
-}
+            <!-- 測定対象の豆電球ボックス -->
+            <div id="boxBulb" class="bg-blue-50/70 border-2 border-blue-300 rounded-xl p-4 flex flex-col items-center relative shadow-sm transition-all">
+              <div class="flex flex-wrap items-center justify-center gap-2 mb-1">
+                <span id="bulbMainLabel" class="bg-[#005AFF] text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">
+                  🎯 測定対象：豆電球
+                </span>
+                <span id="bulbRoleBadge" class="text-[11px] font-bold text-blue-900 bg-blue-100 px-2 py-0.5 rounded">
+                  左の電流計へまっすぐつなごう
+                </span>
+              </div>
+              <p id="bulbHintText" class="text-xs font-bold text-slate-600 mb-3 text-center">
+                左端子を「電流計の＋端子」へつなぐと、線が交差せずスッキリつながります！
+              </p>
 
-function generateDictItem(r, isHard) {
-    let eqFormatted = formatDictEquation(r.eq);
-    return `
-    <div class="dict-item ${isHard ? 'hard' : ''}">
-        <div class="dict-title">${isHard ? '🔥' : '🟢'} ${r.title}</div>
-        <div class="dict-eq">${eqFormatted}</div>
-        <div class="dict-exp">${r.exp}</div>
+              <div class="flex items-center justify-around sm:justify-center sm:gap-16 w-full px-2">
+                <div class="flex flex-col items-center">
+                  <div id="t_bulb1" class="circuit-node node-minus" onclick="handleTerminalClick('t_bulb1')">
+                    <span>●</span>
+                    <div class="conn-anchor"></div>
+                  </div>
+                  <span id="lbl_bulb1" class="text-xs font-bold text-slate-700 mt-1">左端子（計器＋へ）</span>
+                </div>
+
+                <div class="flex flex-col items-center">
+                  <div id="bulbGlass" class="w-14 h-14 rounded-full border-4 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 relative shadow-inner">
+                    <svg width="30" height="30" viewBox="0 0 40 40">
+                      <path id="bulbFilament" d="M 12 34 L 16 14 L 20 22 L 24 14 L 28 34" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="w-8 h-4 bg-slate-400 border-2 border-slate-500 rounded-b-lg -mt-1"></div>
+                </div>
+
+                <div class="flex flex-col items-center">
+                  <div id="t_bulb2" class="circuit-node node-minus" onclick="handleTerminalClick('t_bulb2')">
+                    <span>●</span>
+                    <div class="conn-anchor"></div>
+                  </div>
+                  <span id="lbl_bulb2" class="text-xs font-bold text-slate-700 mt-1">右端子（スイッチへ）</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 発展①専用：2つ目の豆電球（豆電球B）ボックス -->
+            <div id="boxBulbB" class="hidden bg-purple-50/80 border-2 border-purple-300 rounded-xl p-4 flex-col items-center relative shadow-sm transition-all">
+              <div class="flex flex-wrap items-center justify-center gap-2 mb-1">
+                <span id="bulbBMainLabel" class="bg-purple-700 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">
+                  💡 豆電球 B
+                </span>
+                <span id="bulbBRoleBadge" class="text-[11px] font-bold text-purple-900 bg-purple-100 px-2 py-0.5 rounded">
+                  2つ目の負荷
+                </span>
+              </div>
+
+              <div class="flex items-center justify-around sm:justify-center sm:gap-16 w-full px-2 mt-2">
+                <div class="flex flex-col items-center">
+                  <div id="t_bulbB1" class="circuit-node node-minus" onclick="handleTerminalClick('t_bulbB1')">
+                    <span>●</span>
+                    <div class="conn-anchor"></div>
+                  </div>
+                  <span id="lbl_bulbB1" class="text-xs font-bold text-slate-700 mt-1">豆電球B 左端子</span>
+                </div>
+
+                <div class="flex flex-col items-center">
+                  <div id="bulbBGlass" class="w-14 h-14 rounded-full border-4 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 relative shadow-inner">
+                    <svg width="30" height="30" viewBox="0 0 40 40">
+                      <path id="bulbBFilament" d="M 12 34 L 16 14 L 20 22 L 24 14 L 28 34" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="w-8 h-4 bg-slate-400 border-2 border-slate-500 rounded-b-lg -mt-1"></div>
+                </div>
+
+                <div class="flex flex-col items-center">
+                  <div id="t_bulbB2" class="circuit-node node-minus" onclick="handleTerminalClick('t_bulbB2')">
+                    <span>●</span>
+                    <div class="conn-anchor"></div>
+                  </div>
+                  <span id="lbl_bulbB2" class="text-xs font-bold text-slate-700 mt-1">豆電球B 右端子</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- お手本ヒントボタン -->
+          <div class="flex flex-wrap justify-between items-center pt-1 gap-2">
+            <span class="text-[11px] text-slate-500 font-bold">💡 線を直接タップすると削除できます。</span>
+            <button id="sampleWireBtn" onclick="autoWireSample()" disabled class="text-xs bg-slate-100 text-slate-400 font-bold px-3 py-1.5 rounded-lg border border-slate-200 cursor-not-allowed transition-all">
+              🔒 お手本配線（あと2回ミスで解放）
+            </button>
+          </div>
+
+        </div>
+
+        <!-- B. 読み取りフェーズ用テンキーパネル -->
+        <div id="readingPhaseUI" class="hidden bg-white rounded-2xl border-4 border-[#03AF7A] p-5 shadow-xl flex-col items-center justify-between">
+          <div class="w-full text-center border-b-2 border-slate-100 pb-3 mb-3">
+            <span class="bg-[#03AF7A] text-white text-xs font-bold px-3 py-1 rounded-full">ステップ 2：目盛りの読み取り</span>
+            <h2 class="text-lg sm:text-xl font-bold text-slate-800 mt-2">針が指している値を読んで入力しよう</h2>
+            <p class="text-xs sm:text-sm font-bold text-slate-600 mt-1">
+              つないだ端子：<span id="connectedTermBadge" class="text-[#FF4B00] font-bold underline">500mA</span> ／ 
+              <span class="text-red-600">最小目盛りの 1/10 まで目分量で読む！</span>
+            </p>
+          </div>
+
+          <div class="flex items-center justify-center gap-3 my-3">
+            <input id="answerInput" type="text" readonly placeholder="0.00" class="w-44 text-center text-3xl font-bold py-2 px-3 bg-slate-100 border-2 border-slate-400 rounded-xl text-slate-900 shadow-inner">
+            <span id="answerUnit" class="text-2xl font-bold text-slate-800">mA</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2.5 w-full max-w-[300px] my-2">
+            <button onclick="typeNum('7')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">7</button>
+            <button onclick="typeNum('8')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">8</button>
+            <button onclick="typeNum('9')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">9</button>
+            <button onclick="typeNum('4')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">4</button>
+            <button onclick="typeNum('5')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">5</button>
+            <button onclick="typeNum('6')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">6</button>
+            <button onclick="typeNum('1')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">1</button>
+            <button onclick="typeNum('2')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">2</button>
+            <button onclick="typeNum('3')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">3</button>
+            <button onclick="typeNum('C')" class="bg-red-100 hover:bg-red-200 text-red-700 py-3 rounded-xl text-lg font-bold border border-red-300 shadow-sm">クリア</button>
+            <button onclick="typeNum('0')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-xl font-bold border border-slate-300 shadow-sm">0</button>
+            <button onclick="typeNum('.')" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 py-3 rounded-xl text-2xl font-bold border border-slate-300 shadow-sm">.</button>
+          </div>
+
+          <div class="flex gap-3 w-full max-w-[340px] mt-4">
+            <button onclick="backToWiring()" class="flex-1 bg-slate-500 hover:bg-slate-600 text-white font-bold py-3 rounded-xl shadow text-sm">
+              ◀ 配線に戻る
+            </button>
+            <button onclick="checkAnswer()" class="flex-1 bg-[#005AFF] hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow text-sm">
+              判定する ✔
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
-    `;
-}
+  </main>
 
-function openDictionaryModal() {
-    const listDiv = document.getElementById('dictionary-list');
-    
-    if (listDiv.children.length === 0) {
-        let html = `<h3 style="color:var(--accent-cyan); margin-top:0;">🟢 中2レベル (化学変化・燃焼)</h3>`;
-        grade2Reactions.forEach(r => html += generateDictItem(r, false));
-        html += `<h3 style="color:var(--accent-gold); margin-top:20px;">🔥 中3・発展レベル (イオン・中和・発展)</h3>`;
-        grade3Reactions.forEach(r => html += generateDictItem(r, true));
-        listDiv.innerHTML = html;
-    }
-    
-    listDiv.scrollTop = 0; 
-    document.getElementById('dictionary-modal').style.display = 'flex';
-    document.body.classList.add('modal-open');
-    closeMenu();
-}
+  <!-- チュートリアルモーダル -->
+  <div id="tutorialModal" class="fixed inset-0 bg-black/75 z-[100] flex justify-center items-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto border-t-8 border-[#03AF7A]">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-3">🔰 電流計・電圧計 免許センターへようこそ</h2>
+      <p class="text-sm font-bold text-slate-600 mb-4">
+        教科書のルール通りに正しく配線を行い、安全に計測免許を取得しましょう！
+      </p>
 
-function closeDictionaryModal() {
-    document.getElementById('dictionary-modal').style.display = 'none';
-    document.body.classList.remove('modal-open');
-}
+      <div class="space-y-3 text-xs sm:text-sm">
+        <div class="bg-emerald-50 border-l-4 border-[#03AF7A] p-3 rounded">
+          <h3 class="font-bold text-emerald-900 mb-1">✅ モードごとの接続のコツ</h3>
+          <ul class="list-disc pl-5 space-y-1 text-slate-700 font-bold">
+            <li><span class="text-[#005AFF]">電流計モード：</span>回路の途中に割り込ませます（直列つなぎ）。</li>
+            <li><span class="text-[#005AFF]">電圧計モード：</span>豆電球の両端をまたぐようにつなぎます（並列つなぎ）。</li>
+            <li><span class="text-[#FF4B00]">最初の手順：</span>必ず一番大きい端子（5A または 300V）からつなぎます。</li>
+          </ul>
+        </div>
+      </div>
 
-function generateTransferCode() { return "GK" + ((userPoints * 7) + 1234).toString(36).toUpperCase(); }
-function executeTransfer() {
-    let input = document.getElementById('transfer-input').value.trim().toUpperCase();
-    if (input === "") return; 
-    if (!input.startsWith("GK") || input.length < 3) { alert("パスワードが正しくありません！"); return; }
-    let num = parseInt(input.substring(2), 36);
-    let rawPt = (num - 1234) / 7;
-    if (!Number.isInteger(rawPt) || rawPt < 0 || isNaN(rawPt)) { alert("パスワードが正しくありません！"); return; }
-    userPoints = rawPt; 
-    try { localStorage.setItem('gokuChemiPoints', userPoints); } catch(e) { console.warn("Save failed"); }
-    updatePointUI(); alert(`復元成功！ ${userPoints} Pt から再開します！`); closeTransferModal();
-}
-function openTransferModal() { document.getElementById('my-transfer-code').innerText = generateTransferCode(); document.getElementById('transfer-input').value = ""; document.getElementById('transfer-modal').style.display = 'flex'; document.body.classList.add('modal-open'); closeMenu(); }
-function closeTransferModal() { document.getElementById('transfer-modal').style.display = 'none'; document.body.classList.remove('modal-open'); }
-function checkTutorial() { if (!localStorage.getItem('gokuChemiTutorialDone')) { document.getElementById('tutorial-modal').style.display = 'flex'; document.body.classList.add('modal-open'); } }
-function closeTutorial() { document.getElementById('tutorial-modal').style.display = 'none'; document.body.classList.remove('modal-open'); try { localStorage.setItem('gokuChemiTutorialDone', 'true'); } catch(e) {} }
-function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
-function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
+      <div class="mt-6 text-center">
+        <button onclick="closeTutorial()" class="bg-[#03AF7A] hover:bg-emerald-600 text-white font-bold py-3 px-10 rounded-full shadow-lg text-base">
+          実技試験をはじめる
+        </button>
+      </div>
+    </div>
+  </div>
 
-// --- 人体模型ケン SVG ---
-const kenBaseOpen = `
-<svg viewBox="0 0 100 120" style="width:100%; height:100%; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.3));" xmlns="http://www.w3.org/2000/svg">
-    <path d="M 50 65 C 20 65 20 115 50 115 Z" fill="#b71c1c" />
-    <path d="M 50 65 C 80 65 80 115 50 115 Z" fill="#ffe0b2" />
-    <path d="M 50 15 C 10 15 15 65 50 65 Z" fill="#e8f5e9" /> 
-    <path d="M 50 15 C 90 15 85 65 50 65 Z" fill="#ffe0b2" /> 
-    <path d="M 49 70 C 35 70 25 75 28 88 C 35 92 45 88 49 85 Z" fill="#a0522d" />
-    <path d="M 46 82 C 40 82 40 88 46 90 C 49 88 50 85 50 82 Z" fill="#ef5350" />
-    <path d="M 49 86 C 35 86 28 92 32 96 C 40 99 48 97 49 95 Z" fill="#3e2723" />
-    <path d="M 49 93 C 45 93 35 96 38 99 C 43 101 48 99 49 97 Z" fill="#f1f8e9" />
-    <path d="M 48 98 C 30 98 28 110 48 110" fill="none" stroke="#ffccbc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M 33 104 C 40 107 45 104 48 106" fill="none" stroke="#ffab91" stroke-width="3" stroke-linecap="round"/>
-    <path d="M 27 75 Q 38 72 48 74" stroke="#f5f5f5" stroke-width="1.5" fill="none" />
-    <path d="M 26 80 Q 38 77 48 79" stroke="#f5f5f5" stroke-width="1.5" fill="none" />
-    <path d="M 26 85 Q 38 82 48 84" stroke="#f5f5f5" stroke-width="1.5" fill="none" />
-    <circle cx="26" cy="75" r="1.5" fill="#cddc39" />
-    <circle cx="25" cy="80" r="1.5" fill="#cddc39" />
-    <circle cx="25" cy="85" r="1.5" fill="#cddc39" />
-    <circle cx="26" cy="90" r="1.5" fill="#cddc39" />
-    <line x1="50" y1="15" x2="50" y2="115" stroke="#424242" stroke-width="1" />
-`;
-const kenBaseClose = `</svg>`;
+  <!-- 結果・免停モーダル -->
+  <div id="resultModal" class="fixed inset-0 bg-black/80 z-[100] hidden justify-center items-center p-4">
+    <div id="resultCard" class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl text-center border-t-8 max-h-[92vh] overflow-y-auto">
+      <div id="resultIcon" class="text-5xl mb-2"></div>
+      <h2 id="resultTitle" class="text-2xl font-bold mb-2"></h2>
+      <div id="resultLicenseBox" class="hidden my-4 text-left rounded-xl p-4 border-2 shadow-inner"></div>
+      <p id="resultMessage" class="text-sm sm:text-base font-bold text-slate-700 mb-5 leading-relaxed whitespace-pre-line"></p>
+      <button id="resultActionBtn" onclick="resetApp()" class="w-full bg-[#03AF7A] hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg text-base transition-all">
+        次の問題に挑戦する ▶
+      </button>
+    </div>
+  </div>
 
-const faceNormal = `
-    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
-    <circle cx="32" cy="40" r="2.5" fill="#000" />
-    <circle cx="68" cy="40" r="5" fill="#4e342e" />
-    <circle cx="69" cy="38" r="1.5" fill="#fff" />
-    <path d="M 44 52 Q 50 56 56 52" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-`;
-const faceThink = `
-    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
-    <path d="M 29 40 Q 32 36 35 40" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="68" cy="40" r="5" fill="#4e342e" />
-    <path d="M 65 40 Q 68 36 71 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <path d="M 44 54 Q 48 51 50 54 T 56 54" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <text x="75" y="25" font-size="22" fill="#fff" font-weight="bold" stroke="#000" stroke-width="1.5" paint-order="stroke">?</text>
-`;
-const faceError = `
-    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
-    <path d="M 28 37 L 36 43 M 36 37 L 28 43" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <path d="M 72 37 L 64 43 L 72 47" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <ellipse cx="50" cy="54" rx="4" ry="5" fill="#4e342e" />
-    <text x="75" y="25" font-size="22" fill="#ff3d00" font-weight="bold" stroke="#fff" stroke-width="1.5" paint-order="stroke">!</text>
-`;
-const faceHint = `
-    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
-    <circle cx="32" cy="40" r="3" fill="#ffeb3b" />
-    <circle cx="68" cy="40" r="5" fill="#4e342e" />
-    <circle cx="68" cy="40" r="2.5" fill="#ffeb3b" />
-    <path d="M 44 52 Q 50 55 56 52" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <text x="75" y="25" font-size="18">💡</text>
-`;
-const faceSuccess = `
-    <ellipse cx="32" cy="40" rx="6" ry="7" fill="#bcaaa4" />
-    <path d="M 28 42 Q 32 36 36 42" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M 64 42 Q 68 36 72 42" stroke="#4e342e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M 44 50 Q 50 62 56 50 Z" fill="#ff8a80" stroke="#4e342e" stroke-width="2" stroke-linejoin="round"/>
-    <circle cx="68" cy="48" r="4" fill="#ff8a80" opacity="0.6" />
-    <circle cx="32" cy="48" r="4" fill="#ff8a80" opacity="0.6" />
-    <text x="8" y="25" font-size="16">✨</text>
-    <text x="78" y="45" font-size="16">✨</text>
-`;
+  <script>
+    const ZERO_ANGLE = -40;
+    const MAX_ANGLE = 50;
+    const SPAN_ANGLE = MAX_ANGLE - ZERO_ANGLE;
 
-const kenEmotions = {
-    normal:  { emoji: kenBaseOpen + faceNormal + kenBaseClose,   text: 'さあ、実験を始めようか！' },
-    think:   { emoji: kenBaseOpen + faceThink + kenBaseClose,    text: '化学式を正しく選べるかな…？' },
-    error:   { emoji: kenBaseOpen + faceError + kenBaseClose,    text: 'おや？どこか計算が合わないようだぞ。' },
-    hint:    { emoji: kenBaseOpen + faceHint + kenBaseClose,     text: '左右の原子の数をよく見比べてみよう！' },
-    stage1:  { emoji: kenBaseOpen + faceSuccess + kenBaseClose,  text: 'よし！化学式は完璧だ。次は係数合わせだ！' },
-    success: { emoji: kenBaseOpen + faceSuccess + kenBaseClose,  text: 'GOKU-CLEAR！君は本物の天才か！？' }
-};
+    let state = {
+      appMode: 'A',     // 'A' | 'V' | 'ADV_TARGET' | 'ADV_DEBUG'
+      mode: 'A',        // 計器盤の物理モード ('A' または 'V')
+      phase: 'wiring',
+      zeroOffset: 0,
+      wires: [],
+      activeTerminal: null,
+      switchOn: false,
+      needleAngle: ZERO_ANGLE,
+      targetAngle: ZERO_ANGLE,
+      needleVel: 0,
+      currentTerminalUsed: null,
+      testedMaxTerminal: false,
+      testedMidTerminal: false,
+      circuitValidForReading: false,
+      gameOverTimer: null,
+      isGameOver: false,
+      failCount: 0,
+      lastAttemptSuccess: false,
+      trueValue: 0.25,
+      advMission: null,
+      debugScenario: null
+    };
 
-function updateKen(emotion) {
-    const data = kenEmotions[emotion];
-    document.getElementById('ken-speech').innerText = data.text;
-    document.getElementById('ken-image-container').innerHTML = data.emoji;
-    const kenChar = document.getElementById('ken-character');
-    kenChar.classList.remove('ken-bounce');
-    void kenChar.offsetWidth;
-    kenChar.classList.add('ken-bounce');
-}
+    const allTerminals = [
+      't_m3', 't_m2', 't_m1', 't_p',
+      't_sw1', 't_sw2', 't_b_minus', 't_b_plus',
+      't_bulb1', 't_bulb2', 't_bulbB1', 't_bulbB2'
+    ];
 
-// --- 原子カラー定義 ---
-const atomStyles = {
-    H: { color: '#ffffff', text: '#000', border: '2px solid #bdbdbd' }, 
-    O: { color: '#d32f2f', text: '#fff', border: '2px solid #b71c1c' }, 
-    C: { color: '#212121', text: '#fff', border: '2px solid #000000' }, 
-    N: { color: '#1976d2', text: '#fff', border: '2px solid #0d47a1' }, 
-    Cl:{ color: '#1de9b6', text: '#000', border: '2px solid #00bfa5' }, 
-    S: { color: '#ffeb3b', text: '#000', border: '2px solid #fbc02d' }, 
-    Na:{ color: '#9c27b0', text: '#fff', border: '2px solid #6a1b9a' }, 
-    Mg:{ color: '#2e7d32', text: '#fff', border: '2px solid #1b5e20' }, 
-    Al:{ color: '#b0bec5', text: '#000', border: '2px solid #78909c' }, 
-    Fe:{ color: '#795548', text: '#fff', border: '2px solid #4e342e' }, 
-    Cu:{ color: '#ffb74d', text: '#000', border: '2px solid #f57c00' }, 
-    Ag:{ color: '#e0e0e0', text: '#000', border: '2px solid #9e9e9e' }, 
-    Ba:{ color: '#cddc39', text: '#000', border: '2px solid #afb42b' }, 
-    Ca:{ color: '#757575', text: '#fff', border: '2px solid #424242' }  
-};
-const metals = ['Na', 'Mg', 'Al', 'Fe', 'Cu', 'Ag', 'Ba', 'Ca'];
+    // 発展①：2つの豆電球・ターゲット指定ミッション定義
+    const ADV_TARGET_MISSIONS = [
+      {
+        id: 'PAR_A_ONLY',
+        meterMode: 'A',
+        title: '【並列回路】豆電球Aに流れる電流だけを測れ！',
+        desc: '豆電球Aと豆電球Bが並列になるように回路をつなぎ、「豆電球Aの枝だけに」電流計を直列に入れなさい（豆電球Bには電流計を通さず光らせること）。',
+        targetBulb: 'A',
+        sampleWires: [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_bulb1', id2: 't_p' },
+          { id1: 't_m1', id2: 't_b_minus' },
+          { id1: 't_sw2', id2: 't_bulbB2' },
+          { id1: 't_bulbB1', id2: 't_b_minus' }
+        ]
+      },
+      {
+        id: 'PAR_TOTAL_A',
+        meterMode: 'A',
+        title: '【並列回路】枝分かれする前の「回路全体の電流」を測れ！',
+        desc: '豆電球Aと豆電球Bの並列回路をつくり、2つが合流する「回路全体（電源のすぐとなり）」に流れる電流を測りなさい。',
+        targetBulb: 'ALL',
+        sampleWires: [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_sw2', id2: 't_bulbB2' },
+          { id1: 't_bulb1', id2: 't_p' },
+          { id1: 't_bulbB1', id2: 't_p' },
+          { id1: 't_m1', id2: 't_b_minus' }
+        ]
+      },
+      {
+        id: 'SER_V_A',
+        meterMode: 'V',
+        title: '【直列回路】2つ直列につないだうちの「豆電球Aの電圧」だけを測れ！',
+        desc: '豆電球Aと豆電球Bを1本の輪（直列）につなぎ、「豆電球Aの両端だけ」をまたぐように電圧計を並列につなぎなさい。',
+        targetBulb: 'A',
+        sampleWires: [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_bulb1', id2: 't_bulbB2' },
+          { id1: 't_bulbB1', id2: 't_b_minus' },
+          { id1: 't_bulb2', id2: 't_p' },
+          { id1: 't_bulb1', id2: 't_m1' }
+        ]
+      },
+      {
+        id: 'SER_V_B',
+        meterMode: 'V',
+        title: '【直列回路】2つ直列につないだうちの「豆電球Bの電圧」だけを測れ！',
+        desc: '豆電球Aと豆電球Bを1本の輪（直列）につなぎ、「豆電球Bの両端だけ」をまたぐように電圧計を並列につなぎなさい。',
+        targetBulb: 'B',
+        sampleWires: [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_bulb1', id2: 't_bulbB2' },
+          { id1: 't_bulbB1', id2: 't_b_minus' },
+          { id1: 't_bulbB2', id2: 't_p' },
+          { id1: 't_bulbB1', id2: 't_m1' }
+        ]
+      }
+    ];
 
-const grade2Reactions = [
-    { title: "炭酸水素ナトリウムの熱分解", eq: "2NaHCO3 → Na2CO3 + H2O + CO2", left: [{n:"炭酸水素ナトリウム", f:"NaHCO3"}], right: [{n:"炭酸ナトリウム", f:"Na2CO3"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "炭酸水素ナトリウム（ベーキングパウダーの主成分）を加熱すると、炭酸ナトリウム、水、二酸化炭素に分解されます。カルメ焼きがふくらむ理由です。" },
-    { title: "酸化銀の熱分解", eq: "2Ag2O → 4Ag + O2", left: [{n:"酸化銀", f:"Ag2O"}], right: [{n:"銀", f:"Ag"}, {n:"酸素", f:"O2"}], exp: "黒色の酸化銀を加熱すると、還元されて白色の銀と酸素に分かれます。銀は磨くと特有の光沢が出ます。" },
-    { title: "水の電気分解", eq: "2H2O → 2H2 + O2", left: [{n:"水", f:"H2O"}], right: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], exp: "水に少量の水酸化ナトリウムなどを溶かして電圧をかけると、陽極（＋）から酸素、陰極（－）から水素が発生します。" },
-    { title: "過酸化水素の分解", eq: "2H2O2 → 2H2O + O2", left: [{n:"過酸化水素", f:"H2O2"}], right: [{n:"水", f:"H2O"}, {n:"酸素", f:"O2"}], exp: "オキシドール（過酸化水素水）に二酸化マンガン（触媒）を加えると、分解されて酸素が発生します。二酸化マンガン自身は変化しません。" },
-    { title: "鉄と硫黄の化合", eq: "Fe + S → FeS", left: [{n:"鉄", f:"Fe"}, {n:"硫黄", f:"S"}], right: [{n:"硫化鉄", f:"FeS"}], exp: "鉄と硫黄の粉末を混ぜて加熱すると、黒色の硫化鉄になります。反応する時に熱を出すため途中で加熱を止めても反応が進みます。" },
-    { title: "銅と硫黄の化合", eq: "Cu + S → CuS", left: [{n:"銅", f:"Cu"}, {n:"硫黄", f:"S"}], right: [{n:"硫化銅", f:"CuS"}], exp: "銅と硫黄を混ぜて加熱すると、激しく熱と光を出して反応し、黒色の硫化銅ができます。" },
-    { title: "水素と酸素の化合", eq: "2H2 + O2 → 2H2O", left: [{n:"水素", f:"H2"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}], exp: "水素と酸素の混合気体に点火すると、音を立てて爆発的に反応し水ができます。この仕組みを利用したのが燃料電池です。" },
-    { title: "銅の酸化", eq: "2Cu + O2 → 2CuO", left: [{n:"銅", f:"Cu"}, {n:"酸素", f:"O2"}], right: [{n:"酸化銅", f:"CuO"}], exp: "赤色の銅を空気中で加熱すると、酸素と結びついて黒色の酸化銅になります。" },
-    { title: "マグネシウムの燃焼", eq: "2Mg + O2 → 2MgO", left: [{n:"マグネシウム", f:"Mg"}, {n:"酸素", f:"O2"}], right: [{n:"酸化マグネシウム", f:"MgO"}], exp: "マグネシウムは強い光と熱を出して激しく燃え、白色の酸化マグネシウムになります。昔のカメラのフラッシュにも使われました。" },
-    { title: "炭素の燃焼", eq: "C + O2 → CO2", left: [{n:"炭素", f:"C"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}], exp: "炭素（木炭など）が完全燃焼すると、二酸化炭素が発生します。" },
-    { title: "鉄の燃焼", eq: "2Fe + O2 → 2FeO", left: [{n:"鉄", f:"Fe"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄", f:"FeO"}], exp: "スチールウール（鉄）を空気中で燃やすと、黒っぽい酸化鉄になります。質量は結びついた酸素の分だけ増えます。" },
-    { title: "酸化銅の炭素による還元", eq: "2CuO + C → 2Cu + CO2", left: [{n:"酸化銅", f:"CuO"}, {n:"炭素", f:"C"}], right: [{n:"銅", f:"Cu"}, {n:"二酸化炭素", f:"CO2"}], exp: "酸化銅と炭素の粉末を混ぜて加熱すると、酸素と結びつきやすい炭素が酸素を奪い（還元）、赤色の銅ができます。" },
-    { title: "酸化銅の水素による還元", eq: "CuO + H2 → Cu + H2O", left: [{n:"酸化銅", f:"CuO"}, {n:"水素", f:"H2"}], right: [{n:"銅", f:"Cu"}, {n:"水", f:"H2O"}], exp: "加熱した黒色の酸化銅に水素ガスを触れさせると、水素が酸素を奪って水になり、赤色の銅が現れます。" },
-    { title: "二酸化炭素のマグネシウムによる還元", eq: "2Mg + CO2 → 2MgO + C", left: [{n:"マグネシウム", f:"Mg"}, {n:"二酸化炭素", f:"CO2"}], right: [{n:"酸化マグネシウム", f:"MgO"}, {n:"炭素", f:"C"}], exp: "ドライアイス（二酸化炭素）の中でマグネシウムを燃やすと、マグネシウムが二酸化炭素から酸素を奪い（還元）、酸化マグネシウムと黒い炭素ができます。" },
-    { title: "メタンの燃焼", eq: "CH4 + 2O2 → CO2 + 2H2O", left: [{n:"メタン", f:"CH4"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタン（都市ガスの主成分）などの有機物が燃焼すると、必ず二酸化炭素と水が発生します。" },
-    { title: "エタノールの燃焼", eq: "C2H5OH + 3O2 → 2CO2 + 3H2O", left: [{n:"エタノール", f:"C2H5OH"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "エタノールが燃焼すると、二酸化炭素と水が発生します。エタノール分子の中に酸素(O)が含まれているため、係数合わせに注意が必要です。" },
-    { title: "メタノールの燃焼", eq: "2CH4O + 3O2 → 2CO2 + 4H2O", left: [{n:"メタノール", f:"CH4O"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "メタノール（アルコールの一種）の燃焼です。エタノールと同様に二酸化炭素と水ができます。" },
-    { title: "アンモニア生成反応", eq: "2NH4Cl + Ca(OH)2 → CaCl2 + 2H2O + 2NH3", left: [{n:"塩化アンモニウム", f:"NH4Cl"}, {n:"水酸化カルシウム", f:"Ca(OH)2"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"アンモニア", f:"NH3"}], exp: "塩化アンモニウムと水酸化カルシウムを混ぜて加熱すると、刺激臭のあるアンモニアが発生します。水に溶けやすいため上方置換法で集めます。" },
-    { title: "吸熱反応", eq: "Ba(OH)2 + 2NH4Cl → BaCl2 + 2NH3 + 2H2O", left: [{n:"水酸化バリウム", f:"Ba(OH)2"}, {n:"塩化アンモニウム", f:"NH4Cl"}], right: [{n:"塩化バリウム", f:"BaCl2"}, {n:"アンモニア", f:"NH3"}, {n:"水", f:"H2O"}], exp: "水酸化バリウムと塩化アンモニウムを混ぜると、周囲の熱を奪いながら反応（吸熱反応）し、温度が急激に下がります。" }
-];
+    // 発展②：危険な配線の間違い探し（デバッグ）シナリオ定義
+    const ADV_DEBUG_SCENARIOS = [
+      {
+        id: 'DBG_REV_A',
+        meterMode: 'A',
+        title: '【危険配線①】スイッチを入れる前に誤配線を直せ！（電流計）',
+        desc: '前の実験者が作った回路には重大な配線ミス（＋と－の逆接続など）があります。誤った導線をタップして外し、正しく安全に直してから測定しなさい！',
+        badWires: [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_bulb1', id2: 't_m1' }, // 逆接続（＋極側から－端子に入っている）
+          { id1: 't_p', id2: 't_b_minus' }
+        ]
+      },
+      {
+        id: 'DBG_SERIES_V',
+        meterMode: 'V',
+        title: '【危険配線②】豆電球が光らない電圧計の誤配線を直せ！',
+        desc: '電圧計が誤って回路に「直列」につながれているうえ、最小の3V端子にいきなりつながっています。正しい並列つなぎ（最初は300V端子）に直してから測定しなさい！',
+        badWires: [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_bulb1', id2: 't_p' },
+          { id1: 't_m3', id2: 't_b_minus' } // 直列かついきなり3V端子
+        ]
+      },
+      {
+        id: 'DBG_PARALLEL_A',
+        meterMode: 'A',
+        title: '【危険配線③】計器が壊れる「電流計の並列つなぎ」を直せ！',
+        desc: '電流計が豆電球をまたぐ「並列」につながれており、このままスイッチを入れると過電流で電流計が壊れます！正しい直列つなぎに直してから測定しなさい。',
+        badWires: [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_bulb1', id2: 't_b_minus' },
+          { id1: 't_bulb2', id2: 't_p' },
+          { id1: 't_bulb1', id2: 't_m1' }
+        ]
+      },
+      {
+        id: 'DBG_SMALL_TERM_A',
+        meterMode: 'A',
+        title: '【危険配線④】いきなり50mA端子につながれた危険回路を直せ！',
+        desc: '電流の大きさが分からないのに、いきなり最小の「50mA端子」につながれています。まずは最大の「5A端子」につなぎ直して安全確認してから測定しなさい！',
+        badWires: [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_bulb1', id2: 't_p' },
+          { id1: 't_m3', id2: 't_b_minus' }
+        ]
+      }
+    ];
 
-const grade3Reactions = [
-    { title: "塩化銅の電気分解", eq: "CuCl2 → Cu + Cl2", left: [{n:"塩化銅", f:"CuCl2"}], right: [{n:"銅", f:"Cu"}, {n:"塩素", f:"Cl2"}], exp: "青色の塩化銅水溶液を電気分解すると、陰極（－）に赤い銅が付着し、陽極（＋）からプールの消毒液のにおいがする塩素が発生します。" },
-    { title: "塩化マグネシウムの電気分解", eq: "MgCl2 → Mg + Cl2", left: [{n:"塩化マグネシウム", f:"MgCl2"}], right: [{n:"マグネシウム", f:"Mg"}, {n:"塩素", f:"Cl2"}], exp: "塩化マグネシウム水溶液を電気分解すると、陰極から金属マグネシウム、陽極から塩素ガスが発生します。" },
-    { title: "硫化鉄と塩酸", eq: "FeS + 2HCl → FeCl2 + H2S", left: [{n:"硫化鉄", f:"FeS"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化鉄", f:"FeCl2"}, {n:"硫化水素", f:"H2S"}], exp: "鉄と硫黄が化合した硫化鉄に塩酸を加えると、腐卵臭（温泉のにおい）のする有毒な硫化水素が発生します。" },
-    { title: "塩酸と水酸化ナトリウム", eq: "HCl + NaOH → NaCl + H2O", left: [{n:"塩酸", f:"HCl"}, {n:"水酸化ナトリウム", f:"NaOH"}], right: [{n:"塩化ナトリウム", f:"NaCl"}, {n:"水", f:"H2O"}], exp: "塩酸（酸）と水酸化ナトリウム水溶液（アルカリ）の中和反応です。塩化ナトリウム（食塩）と水ができます。" },
-    { title: "硫酸と水酸化バリウム", eq: "H2SO4 + Ba(OH)2 → BaSO4 + 2H2O", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化バリウム", f:"Ba(OH)2"}], right: [{n:"硫酸バリウム", f:"BaSO4"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化バリウムの中和反応です。白い沈殿物である硫酸バリウムと水ができます。" },
-    { title: "アルミニウムと塩酸", eq: "2Al + 6HCl → 2AlCl3 + 3H2", left: [{n:"アルミニウム", f:"Al"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水素", f:"H2"}], exp: "アルミニウムなどの金属に塩酸を加えると、水素が発生して溶け、塩化アルミニウムになります。" },
-    { title: "酸化アルミニウムと塩酸", eq: "Al2O3 + 6HCl → 2AlCl3 + 3H2O", left: [{n:"酸化アルミニウム", f:"Al2O3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化アルミニウム", f:"AlCl3"}, {n:"水", f:"H2O"}], exp: "酸化アルミニウムは、酸（塩酸）とも反応して塩化アルミニウムと水を作ります。" },
-    { title: "炭酸カルシウムと塩酸", eq: "CaCO3 + 2HCl → CaCl2 + H2O + CO2", left: [{n:"炭酸カルシウム", f:"CaCO3"}, {n:"塩酸", f:"HCl"}], right: [{n:"塩化カルシウム", f:"CaCl2"}, {n:"水", f:"H2O"}, {n:"二酸化炭素", f:"CO2"}], exp: "石灰石やチョークに塩酸をかけると、二酸化炭素が発生します。実験室で二酸化炭素を作る定番の方法です。" },
-    { title: "硫酸と水酸化アルミニウム", eq: "3H2SO4 + 2Al(OH)3 → Al2(SO4)3 + 6H2O", left: [{n:"硫酸", f:"H2SO4"}, {n:"水酸化アルミニウム", f:"Al(OH)3"}], right: [{n:"硫酸アルミニウム", f:"Al2(SO4)3"}, {n:"水", f:"H2O"}], exp: "硫酸と水酸化アルミニウムの中和反応です。イオンの価数が違うため、係数合わせが複雑になります。" },
-    { title: "銅と濃硝酸", eq: "Cu + 4HNO3 → Cu(NO3)2 + 2H2O + 2NO2", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"二酸化窒素", f:"NO2"}], exp: "銅に濃硝酸を加えると、激しく反応して赤褐色の有毒ガス（二酸化窒素）が発生します。" },
-    { title: "銅と希硝酸", eq: "3Cu + 8HNO3 → 3Cu(NO3)2 + 4H2O + 2NO", left: [{n:"銅", f:"Cu"}, {n:"硝酸", f:"HNO3"}], right: [{n:"硝酸銅", f:"Cu(NO3)2"}, {n:"水", f:"H2O"}, {n:"一酸化窒素", f:"NO"}], exp: "銅に薄い硝酸を加えると、無色の一酸化窒素が発生します。空気に触れるとすぐに赤褐色の二酸化窒素に変わります。" },
-    { title: "アンモニアの酸化", eq: "4NH3 + 5O2 → 4NO + 6H2O", left: [{n:"アンモニア", f:"NH3"}, {n:"酸素", f:"O2"}], right: [{n:"一酸化窒素", f:"NO"}, {n:"水", f:"H2O"}], exp: "アンモニアを白金触媒を使って酸化させる反応です。一酸化窒素と水ができます。" },
-    { title: "黄鉄鉱の燃焼", eq: "4FeS2 + 11O2 → 2Fe2O3 + 8SO2", left: [{n:"二硫化鉄", f:"FeS2"}, {n:"酸素", f:"O2"}], right: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"二酸化硫黄", f:"SO2"}], exp: "黄鉄鉱（二硫化鉄）を燃焼させる反応です。有害な二酸化硫黄が発生します。" },
-    { title: "硫化水素の燃焼", eq: "2H2S + 3O2 → 2H2O + 2SO2", left: [{n:"硫化水素", f:"H2S"}, {n:"酸素", f:"O2"}], right: [{n:"水", f:"H2O"}, {n:"二酸化硫黄", f:"SO2"}], exp: "温泉のにおいの元である有毒な硫化水素を燃やすと、水と二酸化硫黄になります。" },
-    { title: "テルミット反応", eq: "Fe2O3 + 2Al → 2Fe + Al2O3", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"アルミニウム", f:"Al"}], right: [{n:"鉄", f:"Fe"}, {n:"酸化アルミニウム", f:"Al2O3"}], exp: "酸化鉄とアルミニウムの粉末に点火すると、激しい熱を出してアルミニウムが酸素を奪い、液状の鉄が得られます。" },
-    { title: "酸化鉄(III)の一酸化炭素による還元", eq: "Fe2O3 + 3CO → 2Fe + 3CO2", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"一酸化炭素", f:"CO"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}], exp: "製鉄所で鉄鉱石（酸化鉄）から鉄を取り出す（還元する）際に起きる重要な反応です。" },
-    { title: "酸化鉄(III)の炭素による還元", eq: "2Fe2O3 + 3C → 4Fe + 3CO2", left: [{n:"酸化鉄(III)", f:"Fe2O3"}, {n:"炭素", f:"C"}], right: [{n:"鉄", f:"Fe"}, {n:"二酸化炭素", f:"CO2"}], exp: "酸化鉄を炭素の粉末と一緒に加熱して還元する反応です。銅の還元と同じ原理です。" },
-    { title: "プロパンの燃焼", eq: "C3H8 + 5O2 → 3CO2 + 4H2O", left: [{n:"プロパン", f:"C3H8"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "プロパン（LPガスの主成分）の燃焼です。炭素と水素の数が多いので、必要な酸素分子の数も多くなります。" },
-    { title: "ブタンの燃焼", eq: "2C4H10 + 13O2 → 8CO2 + 10H2O", left: [{n:"ブタン", f:"C4H10"}, {n:"酸素", f:"O2"}], right: [{n:"二酸化炭素", f:"CO2"}, {n:"水", f:"H2O"}], exp: "ブタン（カセットコンロのガスの主成分）の燃焼です。係数がすべて大きくなる高校入試の難問です。" },
-    { title: "酸化銅のエタノールによる還元", eq: "CuO + C2H5OH → Cu + CH3CHO + H2O", left: [{n:"酸化銅", f:"CuO"}, {n:"エタノール", f:"C2H5OH"}], right: [{n:"銅", f:"Cu"}, {n:"アセトアルデヒド", f:"CH3CHO"}, {n:"水", f:"H2O"}], exp: "加熱した酸化銅をエタノールに入れると、酸化銅は還元されて赤色の銅になり、エタノールは酸化されて特有のにおいがするアセトアルデヒドに変化します。" }
-];
+    window.addEventListener('DOMContentLoaded', () => {
+      initApp();
+      requestAnimationFrame(animateNeedle);
 
-const allStandardFormulas = [...new Set(grade2Reactions.flatMap(r => [...r.left, ...r.right].map(i => i.f)))];
-const allHardFormulas = [...new Set(grade3Reactions.flatMap(r => [...r.left, ...r.right].map(i => i.f)))];
+      const redraw = () => requestAnimationFrame(renderWires);
+      window.addEventListener('resize', redraw);
+      window.addEventListener('orientationchange', () => setTimeout(redraw, 150));
+      document.getElementById('workspace').addEventListener('scroll', redraw);
 
-const allReactions = [...grade2Reactions, ...grade3Reactions];
-const allFormulasPool = [...allStandardFormulas, ...allHardFormulas];
-
-// --- セッション管理 ---
-let appMode = "home";
-let practiceQuestions = [];
-let currentQIndex = 0;
-let substances = []; 
-let stage = 1;
-let currentReactionData = null;
-let isCleared = false; 
-
-let sessionMistakes = []; 
-let isSuddenDeath = false;
-let suddenDeathScore = 0;
-let timerInterval = null;
-let timeLeft = 0;
-let timerEndTime = 0; 
-const TIME_LIMIT = 30;
-
-function getGCD(a, b) { return b === 0 ? a : getGCD(b, a % b); }
-function toSubscript(str) {
-    if (str === '?') return '?';
-    const subMap = { '0':'₀', '1':'₁', '2':'₂', '3':'₃', '4':'₄', '5':'₅', '6':'₆', '7':'₇', '8':'₈', '9':'₉' };
-    return str.replace(/\d/g, m => subMap[m]);
-}
-function expandFormula(formula) {
-    let f = formula.replace(/\((.*?)\)(\d+)/g, (match, p1, p2) => p1.repeat(parseInt(p2)));
-    let atoms = [];
-    let re = /([A-Z][a-z]*)(\d*)/g;
-    let match;
-    while ((match = re.exec(f)) !== null) {
-        let elem = match[1];
-        let count = match[2] ? parseInt(match[2]) : 1;
-        for(let i=0; i<count; i++) atoms.push(elem);
-    }
-    return atoms;
-}
-
-function getMoleculeHtml(formula) {
-    const atoms = expandFormula(formula);
-    const hasMetal = atoms.some(a => metals.includes(a));
-    const layoutType = hasMetal ? 'ionic' : 'covalent';
-    
-    let cols = atoms.length <= 3 ? atoms.length : Math.ceil(Math.sqrt(atoms.length));
-    if(!hasMetal && atoms.length <= 4) cols = atoms.length; 
-    let maxWidth = cols * 32 + 15; 
-    
-    let html = `<div class="molecule-auto ${layoutType}" style="max-width:${maxWidth}px;">`;
-    atoms.forEach(type => {
-        const style = atomStyles[type] || { color: '#FFF', text: '#000', border: '2px solid #bdbdbd' };
-        const tShadow = style.text === '#000' 
-            ? '1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 0 2px 3px rgba(0,0,0,0.5)' 
-            : '1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 3px rgba(0,0,0,0.8)';
-        html += `<div class="atom" style="background-color:${style.color}; color:${style.text}; border:${style.border}; text-shadow:${tShadow};">${type}</div>`;
+      const chon = document.getElementById('chonBtn');
+      const startChon = (e) => {
+        e.preventDefault();
+        if (state.phase !== 'wiring' || state.isGameOver) return;
+        state.switchOn = true;
+        updateSwitchUI();
+        evaluateCircuit(true);
+      };
+      const endChon = (e) => {
+        e.preventDefault();
+        if (state.phase !== 'wiring' || state.isGameOver) return;
+        state.switchOn = false;
+        updateSwitchUI();
+        evaluateCircuit(false);
+      };
+      chon.addEventListener('mousedown', startChon);
+      chon.addEventListener('mouseup', endChon);
+      chon.addEventListener('mouseleave', endChon);
+      chon.addEventListener('touchstart', startChon, { passive: false });
+      chon.addEventListener('touchend', endChon, { passive: false });
+      chon.addEventListener('touchcancel', endChon, { passive: false });
     });
-    html += `</div>`;
-    return html;
-}
 
-function triggerCelebration() {
-    const emojis = ['✨', '🌟', '💎', '🔥', '🧪', '🎉'];
-    const colors = ['#00e5ff', '#ffc400', '#00e676', '#ff3d00', '#ffffff', '#e040fb'];
-    const container = document.getElementById('particle-container');
-    container.innerHTML = ''; 
-    
-    for (let i = 0; i < 80; i++) {
-        let particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = (Math.random() * 100) + '%';
-        
-        if (Math.random() > 0.3) {
-            particle.style.width = (Math.random() * 10 + 5) + 'px';
-            particle.style.height = (Math.random() * 10 + 5) + 'px';
-            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            if(Math.random() > 0.5) particle.style.borderRadius = '50%';
+    function clearPendingTimer() {
+      if (state.gameOverTimer) {
+        clearTimeout(state.gameOverTimer);
+        state.gameOverTimer = null;
+      }
+    }
+
+    function updateSampleButtonUI() {
+      const btn = document.getElementById('sampleWireBtn');
+      if (!btn) return;
+      const remain = Math.max(0, 2 - state.failCount);
+      if (remain === 0) {
+        btn.disabled = false;
+        btn.className = "text-xs bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold px-3 py-1.5 rounded-lg border border-amber-600 shadow cursor-pointer transition-all animate-pulse";
+        btn.textContent = "✨ 交差ゼロのお手本配線を見る";
+      } else {
+        btn.disabled = true;
+        btn.className = "text-xs bg-slate-100 text-slate-400 font-bold px-3 py-1.5 rounded-lg border border-slate-200 cursor-not-allowed transition-all";
+        btn.textContent = `🔒 お手本配線（あと${remain}回配線ミスで解放）`;
+      }
+    }
+
+    function recordWiringMistake(baseMessage) {
+      if (state.failCount < 2) {
+        state.failCount++;
+        updateSampleButtonUI();
+        if (state.failCount >= 2) {
+          updateGuide(`${baseMessage} ── 💡 2回つまずいたため、右下の「✨ 交差ゼロのお手本配線を見る」ボタンが解放されました！`);
         } else {
-            particle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-            particle.style.fontSize = (Math.random() * 15 + 15) + 'px';
+          updateGuide(`${baseMessage} （あと ${2 - state.failCount} 回ミスすると「お手本配線」が解放されます）`);
         }
-
-        let duration = (Math.random() * 2 + 1.5);
-        particle.style.animation = `fallRotate ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
-        
-        let tx = (Math.random() * 300 - 150) + 'px';
-        let rot = (Math.random() * 720 - 360) + 'deg';
-        particle.style.setProperty('--tx', tx);
-        particle.style.setProperty('--rot', rot);
-        
-        particle.style.animationDelay = (Math.random() * 0.5) + 's';
-        
-        container.appendChild(particle);
+      } else {
+        updateGuide(`${baseMessage} （右下の「✨ 交差ゼロのお手本配線を見る」ボタンでお手本を確認できます！）`);
+      }
     }
-    
-    setTimeout(() => {
-        container.innerHTML = '';
-    }, 4000);
-}
 
-let resizeTimer;
-function fitWorkspace() {
-    const wrapper = document.getElementById('workspace-wrapper');
-    const workspace = document.getElementById('workspace');
-    if(!wrapper || !workspace) return;
-    workspace.style.transform = 'scale(1)';
-    requestAnimationFrame(() => {
-        const marginX = window.innerWidth <= 600 ? 5 : (window.innerWidth <= 1024 ? 10 : 30);
-        const marginY = 10;
-        const wrapperWidth = wrapper.clientWidth - marginX;
-        const wrapperHeight = wrapper.clientHeight - marginY;
-        const workspaceWidth = workspace.scrollWidth;
-        const workspaceHeight = workspace.scrollHeight;
-        let scale = 1;
-        if (workspaceWidth > wrapperWidth && wrapperWidth > 0) scale = Math.min(scale, wrapperWidth / workspaceWidth);
-        if (workspaceHeight > wrapperHeight && wrapperHeight > 0) scale = Math.min(scale, wrapperHeight / workspaceHeight);
-        workspace.style.transform = `scale(${scale})`;
-    });
-}
-window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitWorkspace, 100); });
-window.addEventListener('orientationchange', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitWorkspace, 300); });
+    function initApp(keepQuestion = false) {
+      clearPendingTimer();
+      clearActiveTerminalSelection();
+      state.wires = [];
+      state.switchOn = false;
+      state.isGameOver = false;
+      state.lastAttemptSuccess = false;
+      state.testedMaxTerminal = false;
+      state.testedMidTerminal = false;
+      state.circuitValidForReading = false;
+      state.currentTerminalUsed = null;
 
-window.onload = () => {
-    initData();
-    checkTutorial();
-    buildMenu();
-    showHome(); 
-};
-
-function buildMenu() {
-    const list = document.getElementById('menu-list');
-    list.innerHTML = '';
-    allReactions.forEach((r, i) => {
-        const li = document.createElement('li');
-        li.className = 'menu-item free-item';
-        const icon = i < grade2Reactions.length ? "" : "🔥 ";
-        li.innerText = icon + r.title;
-        li.onclick = () => selectFreeReaction(i);
-        list.appendChild(li);
-    });
-    updateReviewMenu();
-}
-
-function selectFreeReaction(index) {
-    appMode = "free";
-    isSuddenDeath = false;
-    stopTimer();
-    hideHome();
-    closeMenu();
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.free-item')[index].classList.add('active');
-    document.getElementById('practice-status').innerText = "";
-    setupReaction(allReactions[index], allFormulasPool);
-}
-
-function startTimer() {
-    clearInterval(timerInterval);
-    document.getElementById('timer-container').style.display = 'block';
-    timeLeft = TIME_LIMIT;
-    timerEndTime = performance.now() + TIME_LIMIT * 1000;
-    updateTimerUI();
-    timerInterval = setInterval(() => {
-        timeLeft = (timerEndTime - performance.now()) / 1000;
-        if (timeLeft <= 0) {
-            timeLeft = 0;
-            clearInterval(timerInterval);
-            updateTimerUI();
-            
-            if (currentReactionData) {
-                recordSessionMistake(currentReactionData.title, stage);
-            }
-            showResult(true, "⌛ 時間切れ！爆発だ！");
+      if (!keepQuestion) {
+        const offsets = [-2.0, -1.5, 1.5, 2.0];
+        if (state.appMode === 'ADV_DEBUG') {
+          state.zeroOffset = 0;
         } else {
-            updateTimerUI();
+          state.zeroOffset = offsets[Math.floor(Math.random() * offsets.length)];
         }
-    }, 100);
-}
+        const slot = document.getElementById('screwSlot');
+        if (slot) slot.style.transform = `rotate(${state.zeroOffset * 35}deg)`;
 
-function updateTimerUI() {
-    let bar = document.getElementById('timer-bar');
-    let pct = Math.max(0, (timeLeft / TIME_LIMIT) * 100);
-    bar.style.width = pct + '%';
-    if (pct < 25) bar.style.backgroundColor = 'var(--accent-red)';
-    else if (pct < 50) bar.style.backgroundColor = 'var(--accent-gold)';
-    else bar.style.backgroundColor = 'var(--accent-green)';
-}
-
-function stopTimer() {
-    clearInterval(timerInterval);
-    document.getElementById('timer-container').style.display = 'none';
-}
-
-function startPractice(type) {
-    if (type === 'review' && userMistakes.length === 0) return;
-    appMode = `practice_${type}`;
-    closeDifficultyModal();
-    hideHome();
-    closeMenu();
-    stopTimer();
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-    
-    sessionMistakes = [];
-    isSuddenDeath = (type === 'sudden_death');
-    suddenDeathScore = 0;
-    
-    if (type === 'easy') {
-        practiceQuestions = [...grade2Reactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allStandardFormulas }));
-    } else if (type === 'normal') {
-        practiceQuestions = [...grade2Reactions].sort(() => 0.5 - Math.random()).slice(0, 10).map(r => ({ reaction: r, pool: allStandardFormulas }));
-    } else if (type === 'hard') {
-        practiceQuestions = [...grade3Reactions].sort(() => 0.5 - Math.random()).slice(0, 5).map(r => ({ reaction: r, pool: allFormulasPool }));
-    } else if (type === 'sudden_death') {
-        let firstReaction = allReactions[Math.floor(Math.random() * allReactions.length)];
-        practiceQuestions = [{ reaction: firstReaction, pool: allFormulasPool }];
-    } else if (type === 'review') {
-        let reviewReactions = allReactions.filter(r => userMistakes.some(m => m.title === r.title));
-        practiceQuestions = reviewReactions.sort(() => 0.5 - Math.random()).map(r => ({ reaction: r, pool: allFormulasPool }));
-    }
-    
-    currentQIndex = 0;
-    loadPracticeQuestion();
-}
-
-function loadPracticeQuestion() {
-    const q = practiceQuestions[currentQIndex];
-    let modeName = "";
-    if (appMode === 'practice_easy') modeName = '🌱 初級';
-    else if (appMode === 'practice_normal') modeName = '🌿 中級';
-    else if (appMode === 'practice_hard') modeName = '🔥 上級';
-    else if (appMode === 'practice_sudden_death') modeName = '💀 サドンデス';
-    else modeName = '📖 弱点克服';
-
-    let qText = isSuddenDeath ? `(連続: ${suddenDeathScore})` : `(${currentQIndex + 1} / ${practiceQuestions.length})`;
-    document.getElementById('practice-status').innerText = `${modeName} ${qText}`;
-    
-    setupReaction(q.reaction, q.pool);
-}
-
-function generateDistractors(correct, pool) {
-    let options = new Set([correct]);
-    const commonErrors = {
-        'CO2': ['CO', 'CO3', 'C2O', 'O2'], 'H2O': ['HO', 'H2O2', 'OH', 'O2'], 'O2': ['O', 'O3', 'O4'],
-        'H2': ['H', 'H3', 'OH'], 'Cu': ['Cu2', 'CuO', 'C'], 'CuO': ['Cu2O', 'Cu', 'CO2'],
-        'Ag2O': ['AgO', 'Ag', 'AgO2'], 'Na2CO3': ['NaCO3', 'Na3CO3', 'NaHCO3'], 'NaHCO3': ['Na2CO3', 'NaH2CO3', 'NaCO3'],
-        'FeS': ['Fe2S', 'FeS2', 'Fe'], 'CuCl2': ['CuCl', 'Cu2Cl', 'Cl2'], 'MgCl2': ['MgCl', 'Mg2Cl', 'Mg'],
-        'H2O2': ['HO', 'H2O', 'HO2', 'O2'], 'C2H5OH': ['C2H6O', 'C2H4O', 'CH3OH', 'CH3CHO'], 'CH3CHO': ['C2H6O', 'C2H5OH', 'CH3OH', 'C2H4'],
-        'NH4Cl': ['NH3Cl', 'NH4Cl2', 'NCl3'], 'Ca(OH)2': ['CaOH', 'Ca2(OH)', 'Ca(OH)3'], 'BaCl2': ['BaCl', 'Ba2Cl', 'Ba(Cl)2'],
-        'AlCl3': ['AlCl2', 'Al2Cl3', 'AlCl'], 'NH3': ['NH2', 'NH4', 'N2H3'],
-        'HNO3': ['HNO2', 'H2NO3', 'NO3'], 'Cu(NO3)2': ['CuNO3', 'Cu2(NO3)', 'Cu(NO2)2'], 'FeS2': ['FeS', 'Fe2S', 'Fe2S3'],
-        'SO2': ['SO', 'SO3', 'S2O'], 'H2S': ['HS', 'H2S2', 'S2'], 'CH4O': ['CH3O', 'C2H6O', 'CH4'],
-        'Al2O3': ['AlO', 'AlO2', 'Al3O2'], 'CaCO3': ['Ca2CO3', 'CaCO2', 'Ca(CO3)2'], 'CaCl2': ['CaCl', 'Ca2Cl', 'Ca'],
-        'HSO4': ['H2SO4', 'H2SO3', 'H3SO4'], 'Al(OH)3': ['AlOH', 'Al(OH)2', 'Al2(OH)3'], 'Al2(SO4)3': ['AlSO4', 'Al3(SO4)2', 'Al2SO4'],
-        'Fe2O3': ['FeO', 'FeO2', 'Fe3O4'], 'CO': ['C2O', 'CO2', 'C'], 'CH4': ['CH3', 'C2H4', 'CH5'],
-        'C3H8': ['C3H6', 'C4H8', 'C2H8'], 'C4H10': ['C4H8', 'C3H10', 'C5H10'], 'NO': ['N2O', 'NO2', 'N'],
-        'NO2': ['NO', 'N2O', 'NO3'], 'Ba(OH)2': ['BaOH', 'Ba2(OH)', 'Ba(OH)3'], 'BaSO4': ['Ba2SO4', 'BaSO3', 'Ba(SO4)2'],
-        'NaOH': ['Na2OH', 'Na(OH)2', 'NaO'], 'NaCl': ['Na2Cl', 'NaCl2', 'Na'], 'HCl': ['H2Cl', 'HCl2', 'Cl2'], 'FeCl2': ['FeCl', 'FeCl3', 'Fe2Cl'],
-        'Mg': ['Mg2', 'Mn', 'Mo'], 'Fe': ['Fe2', 'F', 'Fl'], 'C': ['C2', 'O', 'H'],
-        'Ag': ['Ag2', 'A', 'Ar'], 'Al': ['Al2', 'A', 'Am'], 'S': ['S2', 'Si', 'Se'],
-        'CuS': ['Cu2S', 'CuS2', 'Cu2S3', 'Cu']
-    };
-    if (commonErrors[correct]) commonErrors[correct].forEach(d => options.add(d));
-
-    if (options.size < 5) {
-        let fakeBase = correct.replace(/[\(\)]/g, ''); 
-        let re = /([A-Z][a-z]*)(\d*)/g;
-        let match; let parts = [];
-        while ((match = re.exec(fakeBase)) !== null) parts.push({ elem: match[1], num: match[2] ? parseInt(match[2]) : 1 });
-        if (parts.length > 0) {
-            for (let i = 0; i < 15 && options.size < 5; i++) {
-                let fake = "";
-                parts.forEach(p => {
-                    let n = p.num; let r = Math.random();
-                    if (r < 0.3) n += 1; else if (r < 0.6 && n > 1) n -= 1; else if (r < 0.8) n += 2;
-                    fake += p.elem + (n > 1 ? n : "");
-                });
-                if (fake !== correct && fake !== "") options.add(fake);
-            }
-        }
-    }
-    
-    if (options.size < 5) {
-        let shuffledPool = [...pool].sort(() => 0.5 - Math.random());
-        for (let f of shuffledPool) {
-            if (options.size >= 5) break;
-            options.add(f);
-        }
-    }
-
-    let arr = Array.from(options).filter(o => o !== correct);
-    arr = arr.sort(() => 0.5 - Math.random()).slice(0, 4);
-    arr.push(correct);
-    return ['?', ...arr.sort(() => 0.5 - Math.random())];
-}
-
-function setupReaction(reaction, pool) {
-    stage = 1; substances = []; let idCounter = 0;
-    currentReactionData = reaction;
-    isCleared = false; 
-
-    const addSub = (item, side) => {
-        substances.push({ id: `sub-${idCounter++}`, side: side, name: item.n, correct: item.f, selected: '?', coeff: 1, options: generateDistractors(item.f, pool) });
-    };
-    reaction.left.forEach(item => addSub(item, 'left'));
-    reaction.right.forEach(item => addSub(item, 'right'));
-
-    document.getElementById('reaction-title').innerText = reaction.title;
-    document.getElementById('instruction-text').innerText = "STEP1: 物質名から正しい化学式を選ぼう。";
-    document.getElementById('feedback').innerHTML = '';
-    document.getElementById('explanation-box').style.display = 'none';
-    document.getElementById('workspace-wrapper').classList.remove('glow-effect');
-    document.getElementById('workspace-wrapper').className = ''; 
-    
-    const checkBtn = document.getElementById('check-btn');
-    checkBtn.innerText = "これで確認！";
-    checkBtn.className = "primary-btn";
-    checkBtn.style.display = 'block';
-    checkBtn.onclick = checkAnswer; 
-    
-    checkBtn.disabled = true;
-    setTimeout(() => { checkBtn.disabled = false; }, 500);
-    
-    updateKen('think');
-    renderWorkspace();
-
-    if (isSuddenDeath) startTimer();
-}
-
-function handleFormulaSelect(id, value) {
-    const sub = substances.find(s => s.id === id);
-    if(sub) sub.selected = value;
-    document.querySelectorAll('.ws-col').forEach(el => el.classList.remove('error'));
-    document.getElementById('feedback').innerHTML = '';
-}
-
-function changeCoeff(id, delta) {
-    const sub = substances.find(s => s.id === id);
-    if(sub) {
-        sub.coeff += delta;
-        if(sub.coeff < 1) sub.coeff = 1;
-        if(sub.coeff > 15) sub.coeff = 15;
-        
-        const checkBtn = document.getElementById('check-btn');
-        if (checkBtn.style.display === 'none' || checkBtn.innerText !== 'これで確認！') {
-            checkBtn.style.display = 'block';
-            checkBtn.innerText = "これで確認！";
-            checkBtn.className = "primary-btn";
-            checkBtn.onclick = checkAnswer;
-            updateKen('hint');
-            document.getElementById('explanation-box').style.display = 'none';
+        if (state.appMode === 'ADV_TARGET') {
+          state.advMission = ADV_TARGET_MISSIONS[Math.floor(Math.random() * ADV_TARGET_MISSIONS.length)];
+          state.mode = state.advMission.meterMode;
+        } else if (state.appMode === 'ADV_DEBUG') {
+          state.debugScenario = ADV_DEBUG_SCENARIOS[Math.floor(Math.random() * ADV_DEBUG_SCENARIOS.length)];
+          state.mode = state.debugScenario.meterMode;
+        } else {
+          state.mode = state.appMode;
         }
 
-        document.getElementById('feedback').innerHTML = '';
-        renderWorkspace();
+        // 目盛りでピタッと読み取りやすい乱数生成（最小目盛りの1/2または整数目盛り中心）
+        if (state.mode === 'A') {
+          const candidatesA = [
+            0.015, 0.020, 0.025, 0.030, 0.035, 0.040, 0.045, // 50mA端子用 (15.0〜45.0mA)
+            0.12, 0.15, 0.18, 0.22, 0.25, 0.30, 0.35, 0.40, 0.45, // 500mA端子用 (120〜450mA)
+            1.20, 1.50, 1.80, 2.20, 2.50, 3.00, 3.50 // 5A端子用 (1.20〜3.50A)
+          ];
+          state.trueValue = candidatesA[Math.floor(Math.random() * candidatesA.length)];
+        } else {
+          const candidatesV = [
+            0.80, 1.20, 1.50, 1.80, 2.20, 2.50, 2.80, // 3V端子用 (0.80〜2.80V)
+            4.50, 6.00, 7.50, 9.00, 10.50, 12.00, 13.50 // 15V端子用 (4.50〜13.50V)
+          ];
+          state.trueValue = candidatesV[Math.floor(Math.random() * candidatesV.length)];
+        }
+      }
+
+      // 発展②ではリトライ時も含めて初期の誤配線をセットし、ゼロ点は常に0に固定する
+      if (state.appMode === 'ADV_DEBUG' && state.debugScenario) {
+        state.zeroOffset = 0;
+        const slot = document.getElementById('screwSlot');
+        if (slot) slot.style.transform = `rotate(0deg)`;
+        state.wires = state.debugScenario.badWires.map(w => ({ id1: w.id1, id2: w.id2 }));
+      }
+
+      const btnA = document.getElementById('btnModeA');
+      const btnV = document.getElementById('btnModeV');
+      const btnT = document.getElementById('btnModeTarget');
+      const btnD = document.getElementById('btnModeDebug');
+
+      if (state.appMode === 'A') {
+        btnA.className = "px-2.5 py-1 rounded font-bold text-xs bg-white text-[#005AFF] shadow";
+        btnV.className = "px-2.5 py-1 rounded font-bold text-xs text-white hover:bg-white/20";
+        btnT.className = "px-2.5 py-1 rounded font-bold text-xs text-amber-200 hover:bg-white/20 border border-amber-300/40";
+        btnD.className = "px-2.5 py-1 rounded font-bold text-xs text-amber-200 hover:bg-white/20 border border-amber-300/40";
+      } else if (state.appMode === 'V') {
+        btnA.className = "px-2.5 py-1 rounded font-bold text-xs text-white hover:bg-white/20";
+        btnV.className = "px-2.5 py-1 rounded font-bold text-xs bg-white text-[#005AFF] shadow";
+        btnT.className = "px-2.5 py-1 rounded font-bold text-xs text-amber-200 hover:bg-white/20 border border-amber-300/40";
+        btnD.className = "px-2.5 py-1 rounded font-bold text-xs text-amber-200 hover:bg-white/20 border border-amber-300/40";
+      } else if (state.appMode === 'ADV_TARGET') {
+        btnA.className = "px-2.5 py-1 rounded font-bold text-xs text-white hover:bg-white/20";
+        btnV.className = "px-2.5 py-1 rounded font-bold text-xs text-white hover:bg-white/20";
+        btnT.className = "px-2.5 py-1 rounded font-bold text-xs bg-white text-indigo-900 shadow border border-indigo-400";
+        btnD.className = "px-2.5 py-1 rounded font-bold text-xs text-amber-200 hover:bg-white/20 border border-amber-300/40";
+      } else if (state.appMode === 'ADV_DEBUG') {
+        btnA.className = "px-2.5 py-1 rounded font-bold text-xs text-white hover:bg-white/20";
+        btnV.className = "px-2.5 py-1 rounded font-bold text-xs text-white hover:bg-white/20";
+        btnT.className = "px-2.5 py-1 rounded font-bold text-xs text-amber-200 hover:bg-white/20 border border-amber-300/40";
+        btnD.className = "px-2.5 py-1 rounded font-bold text-xs bg-white text-indigo-900 shadow border border-indigo-400";
+      }
+
+      document.getElementById('meterSymbol').textContent = (state.mode === 'A') ? 'A' : 'V';
+      document.getElementById('lbl_m1').textContent = (state.mode === 'A') ? '5A' : '300V';
+      document.getElementById('lbl_m2').textContent = (state.mode === 'A') ? '500mA' : '15V';
+      document.getElementById('lbl_m3').textContent = (state.mode === 'A') ? '50mA' : '3V';
+
+      updateZeroStatusUI();
+      updateSwitchUI();
+      updateBulbUI(false, false);
+      setReadingButton(false);
+      updateSampleButtonUI();
+      applyModeLayout(state.mode);
+      drawScalePlate(state.mode);
+      evaluateCircuit(false);
+
+      if (state.appMode === 'ADV_DEBUG') {
+        updateGuide("🕵️ 間違い探しモード：ゼロ点はすでにピッタリ合っています！誤った導線をタップして外し、正しい回路に直しましょう。");
+      } else if (Math.abs(state.zeroOffset) < 0.01) {
+        updateGuide("手順2：一番大きい－端子（5A / 300V）を使って回路をつなぎましょう。");
+      } else {
+        updateGuide("手順1：まずは「0点調整ねじ」で針をピッタリ「0」に合わせてください。");
+      }
+      requestAnimationFrame(renderWires);
     }
-}
 
-function renderWorkspace() {
-    const workspace = document.getElementById('workspace');
-    workspace.innerHTML = '';
-    const opClass = stage === 1 ? 'operator-st1' : 'operator-st2';
-
-    const renderSide = (side) => {
-        const subs = substances.filter(s => s.side === side);
-        subs.forEach((sub, i) => {
-            // ★ メモリ対策のついでに、+を1つに統合
-            if(i > 0) workspace.innerHTML += `
-            <div class="ws-op">
-                <div class="ws-formula-op">+</div>
-            </div>`;
-            workspace.innerHTML += generateSubstanceHTML(sub);
-        });
-    };
-
-    renderSide('left');
-    workspace.innerHTML += `
-    <div class="ws-op arrow">
-        <div class="ws-divider"></div>
-        <div class="ws-formula-op">→</div>
-    </div>`;
-    renderSide('right');
-}
-
-function generateSubstanceHTML(sub) {
-    let html = `<div class="ws-col" id="group-${sub.id}">`;
-    html += `<div style="margin-bottom:8px;"><div class="substance-name">${sub.name}</div></div>`;
-    
-    html += `<div class="ws-formula">`;
-    if (stage === 1) {
-        html += `<select class="formula-select" onchange="handleFormulaSelect('${sub.id}', this.value)">`;
-        sub.options.forEach(opt => {
-            const selected = sub.selected === opt ? 'selected' : '';
-            html += `<option value="${opt}" ${selected}>${toSubscript(opt)}</option>`;
-        });
-        html += `</select>`;
-    } else {
-        html += `
-        <div class="stage2-ui">
-            <div class="coeff-controls">
-                <button class="coeff-btn" onclick="changeCoeff('${sub.id}', -1)" aria-label="減らす">-</button>
-                <button class="coeff-btn" onclick="changeCoeff('${sub.id}', 1)" aria-label="増やす">+</button>
-            </div>
-            <div class="formula-display">
-                <span class="big-coeff ${sub.coeff === 1 ? 'hidden-coeff' : ''}">${sub.coeff}</span>
-                <span class="chem-formula">${toSubscript(sub.correct)}</span>
-            </div>
-        </div>`;
+    function nextAdvChallenge() {
+      if (state.phase === 'reading') backToWiring();
+      state.failCount = 0;
+      initApp(false);
     }
-    html += `</div>`;
 
-    html += `<div class="ws-model">`;
-    if (stage === 2) {
-        for(let i=0; i<sub.coeff; i++) html += getMoleculeHtml(sub.correct);
+    function clearActiveTerminalSelection() {
+      if (state.activeTerminal) {
+        const el = document.getElementById(state.activeTerminal);
+        if (el) el.classList.remove('selected-terminal');
+        state.activeTerminal = null;
+      }
     }
-    html += `</div>`;
 
-    html += `</div>`;
-    return html;
-}
+    function applyModeLayout(mode) {
+      const board = document.getElementById('circuitBoardContainer');
+      const powerRow = document.getElementById('powerSwitchRow');
+      const boxBulb = document.getElementById('boxBulb');
+      const boxBulbB = document.getElementById('boxBulbB');
+      const advBanner = document.getElementById('advMissionBanner');
 
-function recordSessionMistake(title, step) {
-    recordMistake(title); 
-    let existing = sessionMistakes.find(m => m.title === title);
-    if (!existing) {
-        sessionMistakes.push({ title: title, step: step });
+      const headerTitle = document.getElementById('wiringHeaderTitle');
+      const badge = document.getElementById('circuitTypeBadge');
+      const flowText = document.getElementById('layoutFlowText');
+      const bulbMainLabel = document.getElementById('bulbMainLabel');
+      const bulbRole = document.getElementById('bulbRoleBadge');
+      const bulbHint = document.getElementById('bulbHintText');
+      const lblBulb1 = document.getElementById('lbl_bulb1');
+      const lblBulb2 = document.getElementById('lbl_bulb2');
+
+      if (state.appMode === 'ADV_TARGET' && state.advMission) {
+        advBanner.classList.remove('hidden');
+        document.getElementById('advMissionTag').textContent = `🌟 プラチナ免許試験（使う計器：${state.mode === 'A' ? '電流計' : '電圧計'}）`;
+        document.getElementById('advMissionTitle').textContent = state.advMission.title;
+        document.getElementById('advMissionDesc').textContent = state.advMission.desc;
+
+        boxBulbB.classList.remove('hidden');
+        boxBulbB.classList.add('flex');
+        bulbMainLabel.textContent = (state.advMission.targetBulb === 'A') ? "🎯 測定対象：豆電球 A" : "💡 豆電球 A";
+        document.getElementById('bulbBMainLabel').textContent = (state.advMission.targetBulb === 'B') ? "🎯 測定対象：豆電球 B" : "💡 豆電球 B";
+      } else if (state.appMode === 'ADV_DEBUG' && state.debugScenario) {
+        advBanner.classList.remove('hidden');
+        document.getElementById('advMissionTag').textContent = `🕵️ 間違い探し（計器：${state.mode === 'A' ? '電流計' : '電圧計'}）`;
+        document.getElementById('advMissionTitle').textContent = state.debugScenario.title;
+        document.getElementById('advMissionDesc').textContent = state.debugScenario.desc;
+
+        boxBulbB.classList.add('hidden');
+        boxBulbB.classList.remove('flex');
+        bulbMainLabel.textContent = "🎯 測定対象：豆電球";
+      } else {
+        advBanner.classList.add('hidden');
+        boxBulbB.classList.add('hidden');
+        boxBulbB.classList.remove('flex');
+        bulbMainLabel.textContent = "🎯 測定対象：豆電球";
+      }
+
+      if (mode === 'A') {
+        board.appendChild(powerRow);
+        board.appendChild(boxBulb);
+        if (state.appMode === 'ADV_TARGET') board.appendChild(boxBulbB);
+
+        headerTitle.textContent = state.appMode === 'ADV_TARGET' ? "🌟 2球回路・電流計モード" : "🔄 直列・輪っか配置（電流計モード）";
+        badge.textContent = "電流計＝測りたい場所に直列で割り込ませる";
+        flowText.textContent = "💡 時計回りに「電池＋ ➔ スイッチ ➔ 豆電球 ➔ 電流計＋ ➔ 電流計－ ➔ 電池－」とつなごう！";
+        bulbRole.textContent = "回路の通り道";
+        bulbHint.textContent = "右端子を「スイッチ側」へ、左端子を「電流計の＋端子（または次の豆電球）」へつなごう！";
+        lblBulb1.textContent = "豆電球A 左端子";
+        lblBulb2.textContent = "豆電球A 右端子";
+      } else {
+        board.appendChild(boxBulb);
+        if (state.appMode === 'ADV_TARGET') board.appendChild(boxBulbB);
+        board.appendChild(powerRow);
+
+        headerTitle.textContent = state.appMode === 'ADV_TARGET' ? "🌟 2球回路・電圧計モード" : "🌉 並列・またぎ配置（電圧計モード）";
+        badge.textContent = "電圧計＝測りたい区間を上からまたぐ";
+        flowText.textContent = "💡 ①まず豆電球と電池・スイッチで回路を作る ➔ ②測りたい豆電球の両端から左の電圧計へ2本またがせよう！";
+        bulbRole.textContent = "左の電圧計と並列つなぎ！";
+        bulbHint.textContent = "測りたい豆電球の右端子（＋側）から「電圧計＋」へ、左端子（－側）から「電圧計－」へ2本伸ばそう！";
+        lblBulb1.textContent = "豆電球A 左端子";
+        lblBulb2.textContent = "豆電球A 右端子";
+      }
     }
-}
 
-function checkAnswer() {
-    if (stage === 1) checkStage1();
-    else checkStage2();
-}
+    function changeMode(appMode) {
+      if (state.phase === 'reading') backToWiring();
+      state.appMode = appMode;
+      state.failCount = 0;
+      initApp(false);
+    }
 
-function checkStage1() {
-    let hasError = false, anyUnanswered = false;
-    substances.forEach(sub => {
-        const el = document.getElementById(`group-${sub.id}`);
-        if (sub.selected === '?') { anyUnanswered = true; el.classList.add('error'); }
-        else if (sub.selected !== sub.correct) { hasError = true; el.classList.add('error'); }
-        else el.classList.remove('error');
-    });
+    function drawScalePlate(mode) {
+      const g = document.getElementById('scaleMarks');
+      g.innerHTML = '';
+      const cx = 170, cy = 202;
 
-    const feedback = document.getElementById('feedback');
-    if (hasError || anyUnanswered) {
-        recordSessionMistake(currentReactionData.title, 1);
-        
-        if (isSuddenDeath) {
-            showResult(true, "💀 化学式の選択を間違えたぞ！即終了だ！");
+      const rTickOuter = 148;
+      const rTickMajor = 132;
+      const rTickMid   = 137;
+      const rTickMinor = 141;
+
+      const rTopNum = 162;
+      const rMidNum = 117;
+      const rBotNum = 97;
+
+      for (let step = -10; step <= 50; step++) {
+        const deg = ZERO_ANGLE + (step * 1.8);
+        const rad = deg * (Math.PI / 180);
+        const isMajor = (step % 10 === 0);
+        const isMid = (step % 5 === 0 && !isMajor);
+
+        const rInner = isMajor ? rTickMajor : (isMid ? rTickMid : rTickMinor);
+
+        const x1 = cx + rTickOuter * Math.sin(rad);
+        const y1 = cy - rTickOuter * Math.cos(rad);
+        const x2 = cx + rInner * Math.sin(rad);
+        const y2 = cy - rInner * Math.cos(rad);
+
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        tick.setAttribute('x1', x1);
+        tick.setAttribute('y1', y1);
+        tick.setAttribute('x2', x2);
+        tick.setAttribute('y2', y2);
+        tick.setAttribute('stroke', step === 0 ? '#005AFF' : '#1e293b');
+        tick.setAttribute('stroke-width', step === 0 ? '2.6' : (isMajor ? '2.2' : (isMid ? '1.5' : '0.9')));
+        g.appendChild(tick);
+
+        if (isMajor && step >= 0) {
+          const ratio = step / 50;
+          const topStr = (mode === 'A') ? (5 * ratio).toFixed(0) : (300 * ratio).toFixed(0);
+          const midStr = (mode === 'A') ? (50 * ratio).toFixed(0) : (15 * ratio).toFixed(0);
+          const botStr = (mode === 'A') ? (500 * ratio).toFixed(0) : (3 * ratio).toFixed(0);
+
+          appendScaleText(g, cx, cy, rad, deg, rTopNum, topStr, 11.5, '#0f172a');
+          appendScaleText(g, cx, cy, rad, deg, rMidNum, midStr, 10, '#1e293b');
+          appendScaleText(g, cx, cy, rad, deg, rBotNum, botStr, 9.5, '#334155');
+        }
+
+        if (step === -10) {
+          if (mode === 'A') {
+            appendScaleText(g, cx, cy, rad, deg, rTopNum, '1', 10, '#475569');
+            appendScaleText(g, cx, cy, rad, deg, rMidNum, '10', 9.5, '#475569');
+            appendScaleText(g, cx, cy, rad, deg, rBotNum, '100', 9, '#475569');
+          } else {
+            appendScaleText(g, cx, cy, rad, deg, rTopNum, '60', 10, '#475569');
+            appendScaleText(g, cx, cy, rad, deg, rMidNum, '3', 9.5, '#475569');
+            appendScaleText(g, cx, cy, rad, deg, rBotNum, '0.6', 9, '#475569');
+          }
+        }
+      }
+
+      const minusDeg = ZERO_ANGLE - 24;
+      const minusRad = minusDeg * (Math.PI / 180);
+      appendScaleText(g, cx, cy, minusRad, minusDeg, rTickOuter - 6, '－', 13, '#1e293b');
+
+      const plusDeg = MAX_ANGLE + 4.5;
+      const plusRad = plusDeg * (Math.PI / 180);
+      appendScaleText(g, cx, cy, plusRad, plusDeg, rTickOuter - 6, '＋', 12, '#1e293b');
+
+      const unitDeg = MAX_ANGLE + 11.5;
+      const unitRad = unitDeg * (Math.PI / 180);
+      if (mode === 'A') {
+        appendScaleText(g, cx, cy, unitRad, unitDeg, rTopNum, '5A', 9.5, '#005AFF');
+        appendScaleText(g, cx, cy, unitRad, unitDeg, rMidNum, '50mA', 8.5, '#0f172a');
+        appendScaleText(g, cx, cy, unitRad, unitDeg, rBotNum - 2, '500mA', 8.5, '#0f172a');
+      } else {
+        appendScaleText(g, cx, cy, unitRad, unitDeg, rTopNum, '300V', 9.5, '#005AFF');
+        appendScaleText(g, cx, cy, unitRad, unitDeg, rMidNum, '15V', 8.5, '#0f172a');
+        appendScaleText(g, cx, cy, unitRad, unitDeg, rBotNum, '3V', 8.5, '#0f172a');
+      }
+    }
+
+    function appendScaleText(g, cx, cy, rad, deg, radius, text, fontSize, color) {
+      const x = cx + radius * Math.sin(rad);
+      const y = cy - radius * Math.cos(rad);
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      el.setAttribute('x', x);
+      el.setAttribute('y', y + (fontSize * 0.35));
+      el.setAttribute('font-size', fontSize);
+      el.setAttribute('font-weight', 'bold');
+      el.setAttribute('fill', color);
+      el.setAttribute('text-anchor', 'middle');
+      el.setAttribute('transform', `rotate(${deg}, ${x}, ${y})`);
+      el.textContent = text;
+      g.appendChild(el);
+    }
+
+    function adjustZero(delta) {
+      if (state.phase === 'reading') return;
+      if (state.switchOn) {
+        updateGuide("⚠️ ゼロ点調整は、スイッチを切って電流が流れていない状態で行ってください！");
+        return;
+      }
+      state.zeroOffset = Math.round((state.zeroOffset + delta) * 10) / 10;
+      if (state.zeroOffset > 5) state.zeroOffset = 5;
+      if (state.zeroOffset < -5) state.zeroOffset = -5;
+
+      const slot = document.getElementById('screwSlot');
+      slot.style.transform = `rotate(${state.zeroOffset * 35}deg)`;
+
+      updateZeroStatusUI();
+      evaluateCircuit(false);
+    }
+
+    function updateZeroStatusUI() {
+      const txt = document.getElementById('zeroStatusText');
+      if (state.appMode === 'ADV_DEBUG') {
+        txt.textContent = "✨ 間違い探しモードではゼロ点調整は不要です";
+        txt.className = "text-xs text-emerald-300 font-bold";
+        return;
+      }
+
+      if (Math.abs(state.zeroOffset) < 0.01) {
+        txt.textContent = "✅ 現在：0 にピッタリ合っています！";
+        txt.className = "text-xs text-[#03AF7A] font-bold";
+        updateGuide("手順2：一番大きい－端子（5A / 300V）を使って回路をつなぎましょう。");
+      } else {
+        const dir = state.zeroOffset > 0 ? "右" : "左";
+        txt.textContent = `⚠️ 現在：0 から少し${dir}にズレています`;
+        txt.className = "text-xs text-amber-300 font-bold";
+      }
+    }
+
+    function handleTerminalClick(id) {
+      if (state.phase !== 'wiring' || state.isGameOver) return;
+      if (state.switchOn) {
+        updateGuide("⚠️ 危険！通電中に配線をさわってはいけません。先にスイッチを切ってください！");
+        return;
+      }
+
+      const el = document.getElementById(id);
+      if (!state.activeTerminal) {
+        state.activeTerminal = id;
+        el.classList.add('selected-terminal');
+        updateGuide("つなぎたい相手側の端子をタップしてください。");
+      } else {
+        const prevId = state.activeTerminal;
+        document.getElementById(prevId).classList.remove('selected-terminal');
+        state.activeTerminal = null;
+
+        if (prevId === id) {
+          updateGuide("選択をキャンセルしました。");
+          return;
+        }
+
+        const idx = state.wires.findIndex(w =>
+          (w.id1 === prevId && w.id2 === id) || (w.id1 === id && w.id2 === prevId)
+        );
+
+        if (idx >= 0) {
+          state.wires.splice(idx, 1);
+          updateGuide("導線を1本取り外しました。");
+        } else {
+          const minusTerms = ['t_m1', 't_m2', 't_m3'];
+          if (minusTerms.includes(id) && minusTerms.includes(prevId)) {
+            updateGuide("⚠️ マイナス端子同士をつなぐことはできません。");
             return;
+          }
+          if (minusTerms.includes(id) || minusTerms.includes(prevId)) {
+            const targetM = minusTerms.includes(id) ? id : prevId;
+            state.wires = state.wires.filter(w => {
+              const usesOtherMinus = minusTerms.some(m => m !== targetM && (w.id1 === m || w.id2 === m));
+              return !usesOtherMinus;
+            });
+          }
+          state.wires.push({ id1: prevId, id2: id });
+          updateGuide("導線をつなぎました。");
         }
-        
-        if (anyUnanswered) {
-            feedback.innerHTML = `<span class="feedback-error">⚠️ 「?」のままの化学式があるよ！</span>`;
-        } else {
-            feedback.innerHTML = `<span class="feedback-error">⚠️ 赤くなっている化学式が間違っているよ。選び直そう！</span>`;
-        }
-        updateKen('error');
-    } else {
-        stage = 2;
-        
-        const checkBtn = document.getElementById('check-btn');
-        checkBtn.disabled = true;
-        setTimeout(() => { checkBtn.disabled = false; }, 500);
-        
-        updateKen('stage1');
-        document.getElementById('instruction-text').innerText = "STEP2: ＋/－ボタンで係数を調整し、左右の原子数を合わせよう！";
-        feedback.innerHTML = `<div style="color:var(--accent-cyan); font-size:1.2rem; text-shadow:0 2px 4px #000;">✨化学式クリア！次は原子の数を合わせよう！</div>`;
-        setTimeout(() => { if(stage===2) document.getElementById('feedback').innerHTML = ''; }, 3000);
-        renderWorkspace();
 
-        if (isSuddenDeath) {
-            startTimer();
-        }
-    }
-}
-
-function checkStage2() {
-    const countAtoms = (side) => {
-        const counts = {};
-        substances.filter(s => s.side === side).forEach(sub => {
-            const atoms = expandFormula(sub.correct);
-            atoms.forEach(atom => { counts[atom] = (counts[atom] || 0) + sub.coeff; });
-        });
-        return counts;
-    };
-
-    const leftCounts = countAtoms('left');
-    const rightCounts = countAtoms('right');
-    const allAtoms = new Set([...Object.keys(leftCounts), ...Object.keys(rightCounts)]);
-    
-    let isCorrect = true;
-    let errorMessages = [];
-
-    allAtoms.forEach(atom => {
-        const l = leftCounts[atom] || 0;
-        const r = rightCounts[atom] || 0;
-        if (l < r) { isCorrect = false; errorMessages.push(`左辺の ${atom} が ${r - l} 個足りないよ。`); }
-        else if (l > r) { isCorrect = false; errorMessages.push(`右辺の ${atom} が ${l - r} 個足りないよ。`); }
-    });
-
-    if (isCorrect) {
-        const coeffs = substances.map(s => s.coeff);
-        let gcd = coeffs[0];
-        for (let i = 1; i < coeffs.length; i++) { gcd = getGCD(gcd, coeffs[i]); }
-        if (gcd > 1) {
-            isCorrect = false;
-            errorMessages.push(`最も簡単な整数比にできるよ！（すべて${gcd}で割れる）`);
-        }
+        renderWires();
+        evaluateCircuit(false);
+      }
     }
 
-    const feedback = document.getElementById('feedback');
-    const wrapper = document.getElementById('workspace-wrapper');
-    const checkBtn = document.getElementById('check-btn');
-    const expBox = document.getElementById('explanation-box');
-    
-    if (isCorrect) {
-        document.querySelectorAll('.coeff-btn').forEach(btn => {
-            btn.disabled = true;
-            btn.style.opacity = '0.3';
-            btn.style.pointerEvents = 'none';
-        });
+    function clearAllWires() {
+      if (state.phase !== 'wiring') return;
+      if (state.switchOn) {
+        updateGuide("⚠️ 先にスイッチを切ってから配線を消去してください！");
+        return;
+      }
+      const hadWires = state.wires.length > 0;
+      clearPendingTimer();
+      clearActiveTerminalSelection();
+      state.wires = [];
+      state.switchOn = false;
+      state.testedMaxTerminal = false;
+      state.testedMidTerminal = false;
+      state.circuitValidForReading = false;
+      updateSwitchUI();
+      renderWires();
+      evaluateCircuit(false);
+      if (hadWires) {
+        recordWiringMistake("すべての配線を消去しました。");
+      } else {
+        updateGuide("すべての配線を消去しました。");
+      }
+    }
 
-        if (!isCleared) {
-            addPoints(10);
-            isCleared = true; 
-            
-            let madeMistakeThisTime = sessionMistakes.some(m => m.title === currentReactionData.title);
-            if (appMode === 'practice_review' && !madeMistakeThisTime) {
-                clearMistake(currentReactionData.title);
-            }
-            
-            if (isSuddenDeath) {
-                suddenDeathScore++;
-                stopTimer(); 
-            }
-        }
+    function autoWireSample() {
+      if (state.phase !== 'wiring' || state.isGameOver) return;
+      if (state.failCount < 2) {
+        updateGuide(`🔒 お手本配線は、2回間違えたときに使えるようになります（現在 ${state.failCount} 回ミス）。まずは自分で挑戦してみよう！`);
+        return;
+      }
+      if (state.switchOn) {
+        updateGuide("⚠️ 先にスイッチを切ってからお手本配線を実行してください！");
+        return;
+      }
+      clearPendingTimer();
+      clearActiveTerminalSelection();
+      state.switchOn = false;
+      updateSwitchUI();
 
-        triggerCelebration(); 
-        updateKen('success');
-        wrapper.classList.remove('glow-effect');
-        void wrapper.offsetWidth; 
-        wrapper.classList.add('glow-effect');
-        
-        feedback.innerHTML = `<div class="goku-clear-text">🔥 GOKU-CLEAR! 完璧だ！ 🔥</div>`;
-        
-        if(currentReactionData && currentReactionData.exp) {
-            expBox.innerHTML = `<div class="exp-title">📖 反応の解説</div><div>${currentReactionData.exp}</div>`;
-            expBox.style.display = 'block';
-            setTimeout(() => expBox.scrollIntoView({behavior: "smooth", block: "center"}), 100);
-        }
+      if (state.appMode !== 'ADV_DEBUG') {
+        state.zeroOffset = 0;
+        const slot = document.getElementById('screwSlot');
+        if (slot) slot.style.transform = `rotate(0deg)`;
+        updateZeroStatusUI();
+      }
 
-        if (appMode.startsWith('practice')) {
-            checkBtn.innerText = "次のクエストへ →";
-            checkBtn.className = "primary-btn next-btn";
-            checkBtn.onclick = nextPracticeQuestion;
-            checkBtn.disabled = true;
-            setTimeout(() => { checkBtn.disabled = false; }, 500);
+      if (state.appMode === 'ADV_TARGET' && state.advMission) {
+        state.wires = state.advMission.sampleWires.map(w => ({ id1: w.id1, id2: w.id2 }));
+        updateGuide(`✨ 発展課題「${state.advMission.title}」のお手本配線をセットしました！スイッチを入れて確認しましょう！`);
+      } else if (state.appMode === 'ADV_DEBUG' && state.debugScenario) {
+        if (state.debugScenario.meterMode === 'A') {
+          state.wires = [
+            { id1: 't_b_plus', id2: 't_sw1' },
+            { id1: 't_sw2', id2: 't_bulb2' },
+            { id1: 't_bulb1', id2: 't_p' },
+            { id1: 't_m1', id2: 't_b_minus' }
+          ];
         } else {
-            checkBtn.style.display = 'none'; 
+          state.wires = [
+            { id1: 't_b_plus', id2: 't_sw1' },
+            { id1: 't_sw2', id2: 't_bulb2' },
+            { id1: 't_bulb1', id2: 't_b_minus' },
+            { id1: 't_bulb2', id2: 't_p' },
+            { id1: 't_bulb1', id2: 't_m1' }
+          ];
         }
-    } else {
-        recordSessionMistake(currentReactionData.title, 2);
-        
-        if (isSuddenDeath) {
-            showResult(true, "💀 係数（原子の数）が合っていないぞ！即終了だ！");
+        updateGuide("✨ 間違い探しの正しいお手本配線をセットしました！スイッチを入れて確認しましょう！");
+      } else if (state.mode === 'A') {
+        state.wires = [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_bulb1', id2: 't_p' },
+          { id1: 't_m1', id2: 't_b_minus' }
+        ];
+        updateGuide("✨ 電流計を「一筆書き（直列）」でお手本配線しました！スイッチを入れて確認しましょう！");
+      } else {
+        state.wires = [
+          { id1: 't_b_plus', id2: 't_sw1' },
+          { id1: 't_sw2', id2: 't_bulb2' },
+          { id1: 't_bulb1', id2: 't_b_minus' },
+          { id1: 't_bulb2', id2: 't_p' },
+          { id1: 't_bulb1', id2: 't_m1' }
+        ];
+        updateGuide("✨ 電圧計を「豆電球をまたぐ並列つなぎ」でお手本配線しました！スイッチを入れて確認しましょう！");
+      }
+      renderWires();
+      evaluateCircuit(false);
+    }
+
+    function renderWires() {
+      const svg = document.getElementById('wireSvg');
+      const ws = document.getElementById('workspace');
+      svg.innerHTML = '';
+
+      if (state.phase !== 'wiring') return;
+
+      const wsRect = ws.getBoundingClientRect();
+      svg.setAttribute('width', ws.scrollWidth);
+      svg.setAttribute('height', ws.scrollHeight);
+
+      state.wires.forEach((w, idx) => {
+        const a1 = document.querySelector(`#${w.id1} .conn-anchor`);
+        const a2 = document.querySelector(`#${w.id2} .conn-anchor`);
+        if (!a1 || !a2) return;
+
+        const r1 = a1.getBoundingClientRect();
+        const r2 = a2.getBoundingClientRect();
+
+        const x1 = r1.left - wsRect.left + ws.scrollLeft;
+        const y1 = r1.top - wsRect.top + ws.scrollTop;
+        const x2 = r2.left - wsRect.left + ws.scrollLeft;
+        const y2 = r2.top - wsRect.top + ws.scrollTop;
+
+        const midX = (x1 + x2) / 2;
+        const pair = [w.id1, w.id2];
+        const hasMeter = pair.some(id => ['t_p', 't_m1', 't_m2', 't_m3'].includes(id));
+        const hasBulb  = pair.some(id => ['t_bulb1', 't_bulb2', 't_bulbB1', 't_bulbB2'].includes(id));
+
+        let midY;
+        if (hasMeter && !hasBulb) {
+          midY = Math.min(y1, y2) - 28 - (idx % 2) * 12;
+        } else if (state.mode === 'V' && hasMeter && hasBulb) {
+          midY = Math.min(y1, y2) - 22 - (idx % 2) * 14;
+        } else {
+          const sag = 22 + (idx % 3) * 10;
+          midY = Math.max(y1, y2) + sag;
+        }
+
+        const d = `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`;
+        const isPlusWire = [w.id1, w.id2].some(id => id === 't_b_plus' || id === 't_p');
+        const wireColor = isPlusWire ? '#FF4B00' : '#1e293b';
+
+        const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        shadow.setAttribute('d', d);
+        shadow.setAttribute('stroke', 'rgba(0,0,0,0.22)');
+        shadow.setAttribute('stroke-width', '8');
+        shadow.setAttribute('fill', 'none');
+        shadow.setAttribute('stroke-linecap', 'round');
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        line.setAttribute('d', d);
+        line.setAttribute('stroke', wireColor);
+        line.setAttribute('stroke-width', '5');
+        line.setAttribute('fill', 'none');
+        line.setAttribute('stroke-linecap', 'round');
+
+        const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        hit.setAttribute('d', d);
+        hit.setAttribute('stroke', 'transparent');
+        hit.setAttribute('stroke-width', '14');
+        hit.setAttribute('fill', 'none');
+        hit.style.cursor = 'pointer';
+        hit.style.pointerEvents = 'stroke';
+        hit.onclick = () => removeWire(idx);
+
+        svg.appendChild(shadow);
+        svg.appendChild(line);
+        svg.appendChild(hit);
+      });
+    }
+
+    function removeWire(index) {
+      if (state.phase !== 'wiring' || state.isGameOver) return;
+      if (state.switchOn) {
+        updateGuide("⚠️ 危険！通電中に配線を外してはいけません。先にスイッチを切ってください！");
+        return;
+      }
+      clearActiveTerminalSelection();
+      state.wires.splice(index, 1);
+      renderWires();
+      evaluateCircuit(false);
+      updateGuide("導線を取り外しました。");
+    }
+
+    function traversesComponent(path, n1, n2) {
+      for (let i = 0; i < path.length - 1; i++) {
+        if ((path[i] === n1 && path[i + 1] === n2) || (path[i] === n2 && path[i + 1] === n1)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function evaluateCircuit(isSwitchTurnedOnAttempt = false) {
+      if (state.isGameOver) return;
+      clearPendingTimer();
+      state.circuitValidForReading = false;
+      const baseZeroDeg = ZERO_ANGLE + (state.zeroOffset * 1.8);
+
+      const adj = {};
+      allTerminals.forEach(t => adj[t] = []);
+      state.wires.forEach(w => {
+        adj[w.id1].push(w.id2);
+        adj[w.id2].push(w.id1);
+      });
+
+      if (state.switchOn) {
+        adj['t_sw1'].push('t_sw2');
+        adj['t_sw2'].push('t_sw1');
+      }
+
+      const usedMinus = ['t_m1', 't_m2', 't_m3'].find(m => adj[m].length > 0) || null;
+      state.currentTerminalUsed = usedMinus;
+
+      const fullAdj = JSON.parse(JSON.stringify(adj));
+      fullAdj['t_bulb1'].push('t_bulb2');
+      fullAdj['t_bulb2'].push('t_bulb1');
+      fullAdj['t_bulbB1'].push('t_bulbB2');
+      fullAdj['t_bulbB2'].push('t_bulbB1');
+      if (usedMinus && fullAdj['t_p'].length > 0) {
+        fullAdj['t_p'].push(usedMinus);
+        fullAdj[usedMinus].push('t_p');
+      }
+
+      const paths = [];
+      const queue = [['t_b_plus']];
+      while (queue.length > 0) {
+        const p = queue.shift();
+        const curr = p[p.length - 1];
+        if (curr === 't_b_minus') {
+          paths.push(p);
+          continue;
+        }
+        for (const nxt of fullAdj[curr]) {
+          if (!p.includes(nxt)) queue.push([...p, nxt]);
+        }
+      }
+
+      // スイッチOFFなのに電池から電流が流れている場合（スイッチを迂回して直結している場合）は警告して停止
+      if (!state.switchOn) {
+        state.targetAngle = baseZeroDeg;
+        updateBulbUI(false, false);
+        setReadingButton(false);
+        if (paths.length > 0) {
+          updateGuide("⚠️ スイッチを通らずに電池と直接つながっています！安全のためスイッチを回路に組み込みましょう。");
+        }
+        return;
+      }
+
+      if (paths.length === 0) {
+        state.targetAngle = baseZeroDeg;
+        updateBulbUI(false, false);
+        setReadingButton(false);
+        if (isSwitchTurnedOnAttempt && state.switchOn) {
+          recordWiringMistake("⚠️ スイッチを入れましたが、回路が1つの輪につながっていないため電流が流れません！");
+        }
+        return;
+      }
+
+      const hasAnyBulb = (p) => traversesComponent(p, 't_bulb1', 't_bulb2') || traversesComponent(p, 't_bulbB1', 't_bulbB2');
+      const validMeterPaths = usedMinus ? paths.filter(p => traversesComponent(p, 't_p', usedMinus)) : [];
+      const validBulbPaths = paths.filter(p =>
+        hasAnyBulb(p) &&
+        !(usedMinus && traversesComponent(p, 't_p', usedMinus))
+      );
+
+      const batteryShort = paths.some(p =>
+        !hasAnyBulb(p) &&
+        !(usedMinus && traversesComponent(p, 't_p', usedMinus))
+      );
+      if (batteryShort) {
+        triggerGameOver("一発免停：乾電池のショート回路", "乾電池の＋極と－極が、豆電球などを通らず導線だけで直接つながっています！発熱して大変危険です。（教科書 p.215）", "🔥");
+        return;
+      }
+
+      if (validMeterPaths.length > 0) {
+        const isReversed = validMeterPaths.some(mp => mp.indexOf(usedMinus) < mp.indexOf('t_p'));
+        if (isReversed) {
+          state.targetAngle = ZERO_ANGLE - 14;
+          state.gameOverTimer = setTimeout(() => {
+            triggerGameOver("一発免停：＋と－の逆接続", "＋端子と－端子が逆につながっています！指針が逆向きに振れてストッパーに激突し、計器が壊れます。（教科書 p.215, 223）", "⚡");
+          }, 350);
+          return;
+        }
+      }
+
+      const hasSeriesPath = paths.some(p =>
+        hasAnyBulb(p) &&
+        usedMinus && traversesComponent(p, 't_p', usedMinus)
+      );
+      const hasBulbOnlyPath = validBulbPaths.length > 0;
+      const hasMeterOnlyPath = paths.some(p =>
+        !hasAnyBulb(p) &&
+        usedMinus && traversesComponent(p, 't_p', usedMinus)
+      );
+
+      const isBulbALit = paths.some(p => traversesComponent(p, 't_bulb1', 't_bulb2'));
+      const isBulbBLit = paths.some(p => traversesComponent(p, 't_bulbB1', 't_bulbB2'));
+
+      if (state.appMode === 'ADV_TARGET' && state.advMission) {
+        const mId = state.advMission.id;
+        const pathsA = paths.filter(p => traversesComponent(p, 't_bulb1', 't_bulb2'));
+        const pathsB = paths.filter(p => traversesComponent(p, 't_bulbB1', 't_bulbB2'));
+
+        if (mId === 'PAR_A_ONLY') {
+          if (hasMeterOnlyPath) {
+            state.targetAngle = MAX_ANGLE + 15;
+            state.gameOverTimer = setTimeout(() => {
+              triggerGameOver("一発免停：電流計の並列・直結", "電流計が豆電球を通らずに電源と直接つながっています！（教科書 p.215）", "💥");
+            }, 350);
             return;
+          }
+          const aHasMeter = pathsA.length > 0 && pathsA.every(p => usedMinus && traversesComponent(p, 't_p', usedMinus));
+          const bNoMeter  = pathsB.length > 0 && pathsB.every(p => !(usedMinus && traversesComponent(p, 't_p', usedMinus)));
+          const notSeriesAB = !paths.some(p => traversesComponent(p, 't_bulb1', 't_bulb2') && traversesComponent(p, 't_bulbB1', 't_bulbB2'));
+          if (!(aHasMeter && bNoMeter && notSeriesAB)) {
+            updateBulbUI(isBulbALit, isBulbBLit);
+            state.targetAngle = baseZeroDeg;
+            setReadingButton(false);
+            if (isSwitchTurnedOnAttempt && state.switchOn) {
+              recordWiringMistake("⚠️ 課題は「豆電球AとBを並列にし、豆電球Aの枝だけに電流計を入れる」です！");
+            }
+            return;
+          }
+        } else if (mId === 'PAR_TOTAL_A') {
+          if (hasMeterOnlyPath) {
+            state.targetAngle = MAX_ANGLE + 15;
+            state.gameOverTimer = setTimeout(() => {
+              triggerGameOver("一発免停：電流計の並列・直結", "電流計が豆電球を通らずに電源と直接つながっています！（教科書 p.215）", "💥");
+            }, 350);
+            return;
+          }
+          const bothLit = pathsA.length > 0 && pathsB.length > 0;
+          const allThroughMeter = paths.every(p => usedMinus && traversesComponent(p, 't_p', usedMinus));
+          const notSeriesAB = !paths.some(p => traversesComponent(p, 't_bulb1', 't_bulb2') && traversesComponent(p, 't_bulbB1', 't_bulbB2'));
+          if (!(bothLit && allThroughMeter && notSeriesAB)) {
+            updateBulbUI(isBulbALit, isBulbBLit);
+            state.targetAngle = baseZeroDeg;
+            setReadingButton(false);
+            if (isSwitchTurnedOnAttempt && state.switchOn) {
+              recordWiringMistake("⚠️ 課題は「豆電球AとBの並列回路で、回路全体の電流を測る」です！");
+            }
+            return;
+          }
+        } else if (mId === 'SER_V_A' || mId === 'SER_V_B') {
+          const nonMeterPaths = paths.filter(p => !(usedMinus && traversesComponent(p, 't_p', usedMinus)));
+          const meterPaths = paths.filter(p => usedMinus && traversesComponent(p, 't_p', usedMinus));
+
+          const mainLoopStrictlySeries = nonMeterPaths.length > 0 && nonMeterPaths.every(p =>
+            traversesComponent(p, 't_bulb1', 't_bulb2') && traversesComponent(p, 't_bulbB1', 't_bulbB2')
+          );
+
+          const spansOnlyA = meterPaths.length > 0 && meterPaths.every(p =>
+            !traversesComponent(p, 't_bulb1', 't_bulb2') && traversesComponent(p, 't_bulbB1', 't_bulbB2')
+          );
+          const spansOnlyB = meterPaths.length > 0 && meterPaths.every(p =>
+            traversesComponent(p, 't_bulb1', 't_bulb2') && !traversesComponent(p, 't_bulbB1', 't_bulbB2')
+          );
+          const targetOk = (mId === 'SER_V_A') ? spansOnlyA : spansOnlyB;
+
+          if (!(mainLoopStrictlySeries && targetOk)) {
+            updateBulbUI(mainLoopStrictlySeries, mainLoopStrictlySeries);
+            state.targetAngle = baseZeroDeg;
+            setReadingButton(false);
+            if (isSwitchTurnedOnAttempt && state.switchOn) {
+              const tName = (mId === 'SER_V_A') ? '豆電球A' : '豆電球B';
+              recordWiringMistake(`⚠️ 課題は「豆電球AとBを直列につなぎ、${tName}の両端だけに電圧計を並列につなぐ」です！`);
+            }
+            return;
+          }
+        }
+      }
+
+      if (state.mode === 'A') {
+        if (hasMeterOnlyPath) {
+          state.targetAngle = MAX_ANGLE + 15;
+          state.gameOverTimer = setTimeout(() => {
+            triggerGameOver("一発免停：電流計の直結・並列接続", "電流計がこわれるため、電流計だけを電源につないだり、回路に並列につないだりしてはいけません！（教科書 p.215）", "💥");
+          }, 350);
+          return;
         }
 
-        updateKen('error');
-        wrapper.classList.remove('glow-effect');
-        let html = `<div class="feedback-error">`;
-        errorMessages.forEach(msg => { html += `<div>⚠️ ${msg}</div>`; });
-        html += `</div>`;
-        feedback.innerHTML = html;
-        expBox.style.display = 'none';
-    }
-}
-
-function nextPracticeQuestion() {
-    const checkBtn = document.getElementById('check-btn');
-    if(checkBtn) {
-        checkBtn.disabled = true;
-        checkBtn.style.display = 'none';
-    }
-
-    if (isSuddenDeath) {
-        let sourcePool = [...allReactions];
-        let nextReaction = sourcePool[Math.floor(Math.random() * sourcePool.length)];
-        practiceQuestions.push({ reaction: nextReaction, pool: allFormulasPool });
-        
-        if (practiceQuestions.length > 5) {
-            practiceQuestions.shift();
-            currentQIndex--;
-        }
-    }
-
-    currentQIndex++;
-    if (currentQIndex < practiceQuestions.length) {
-        loadPracticeQuestion();
-    } else {
-        showResult(false, "");
-    }
-}
-
-function showResult(isGameOver, reason) {
-    stopTimer();
-    let bonus = 0;
-    let html = `<div class="result-container">`;
-    
-    if (isSuddenDeath) {
-        bonus = suddenDeathScore * 20;
-        html += `<h2 style="color:var(--accent-red); margin:0; font-size:2.5rem; text-shadow:0 2px 5px #000;">GAME OVER</h2>`;
-        html += `<p style="font-size:1.2rem; font-weight:bold;">${reason}</p>`;
-        
-        if (isGameOver && currentReactionData && currentReactionData.eq) {
-            html += `<div style="background: rgba(255, 61, 0, 0.15); border: 2px solid var(--accent-red); border-radius: 10px; padding: 15px; margin: 20px auto; max-width: 90%;">`;
-            html += `<div style="color: #ff8a80; font-size: 0.9rem; font-weight:bold; margin-bottom: 8px;">💡 今回の正解はコレだ！</div>`;
-            html += `<div style="font-size: 1.4rem; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; white-space: nowrap; overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch;">${formatDictEquation(currentReactionData.eq)}</div>`;
-            html += `</div>`;
+        if (state.appMode !== 'ADV_TARGET' && hasSeriesPath && hasBulbOnlyPath) {
+          updateBulbUI(isBulbALit, isBulbBLit);
+          state.targetAngle = baseZeroDeg;
+          setReadingButton(false);
+          if (isSwitchTurnedOnAttempt && state.switchOn) {
+            recordWiringMistake("⚠️ 電流計を回り道（バイパス）する余分な導線がつながっています！");
+          } else {
+            updateGuide("⚠️ 電流計を回り道（バイパス）する余分な導線がつながっています！すべての電流が電流計を通るように1本の輪にしましょう。");
+          }
+          return;
         }
 
-        html += `<h3 style="color:var(--text-main); font-size:1.5rem;">🔥 連続正解: ${suddenDeathScore} 問</h3>`;
-    } else {
-        if (appMode === 'practice_easy') bonus = 50;
-        else if (appMode === 'practice_normal') bonus = 120;
-        else if (appMode === 'practice_hard') bonus = 300;
-        else if (appMode === 'practice_review') bonus = 100;
-        
-        html += `<h2 style="color:var(--accent-gold); margin:0; font-size:2.5rem; text-shadow:0 2px 5px #000;">MISSION COMPLETE!</h2>`;
-        html += `<p style="font-size:1.2rem; font-weight:bold;">すべてのクエストを制覇した！</p>`;
+        if (hasSeriesPath && usedMinus) {
+          const usesSwitch = paths.every(p => traversesComponent(p, 't_sw1', 't_sw2'));
+          if (!usesSwitch) {
+            updateBulbUI(isBulbALit, isBulbBLit);
+            setReadingButton(false);
+            recordWiringMistake("⚠️ スイッチを通らずに直接つながっています！スイッチを回路の輪に組み込みましょう。");
+            return;
+          }
+
+          updateBulbUI(isBulbALit, isBulbBLit);
+          if (usedMinus === 't_m1') {
+            state.testedMaxTerminal = true;
+          } else if (usedMinus === 't_m2') {
+            if (!state.testedMaxTerminal) {
+              state.targetAngle = MAX_ANGLE + 12;
+              state.gameOverTimer = setTimeout(() => {
+                triggerGameOver("一発免停：いきなり小さい端子へ接続", "電流の大きさが予想できないときは、必ずいちばん大きい「5Aの－端子」からつなぐルールです！（教科書 p.215）", "⚠️");
+              }, 350);
+              return;
+            }
+            state.testedMidTerminal = true;
+          } else if (usedMinus === 't_m3') {
+            if (!state.testedMaxTerminal || !state.testedMidTerminal) {
+              state.targetAngle = MAX_ANGLE + 12;
+              state.gameOverTimer = setTimeout(() => {
+                triggerGameOver("一発免停：端子つなぎかえの順番飛ばし", "端子をつなぎかえるときは、必ず「5A → 500mA → 50mA」の順番で確認するルールです！（教科書 p.215）", "⚠️");
+              }, 350);
+              return;
+            }
+          }
+
+          const maxCap = (usedMinus === 't_m1') ? 5.0 : (usedMinus === 't_m2' ? 0.50 : 0.05);
+          const ratio = state.trueValue / maxCap;
+          const visualRatio = (state.phase === 'wiring' && usedMinus === 't_m1') ? Math.max(ratio, 0.025) : ratio;
+          state.targetAngle = baseZeroDeg + (visualRatio * SPAN_ANGLE);
+
+          if (ratio > 1.05) {
+            state.gameOverTimer = setTimeout(() => {
+              triggerGameOver("一発免停：振り切れ（過電流）", "選択した端子では電流が大きすぎて針が振り切れ、計器が故障します！1つ大きい端子で測定しましょう。", "💥");
+            }, 350);
+            return;
+          }
+
+          state.circuitValidForReading = true;
+          setReadingButton(true);
+          const bestTermA = getBestTerminal();
+          const termLabelA = { t_m1: '5A端子', t_m2: '500mA端子', t_m3: '50mA端子' };
+          if (usedMinus !== bestTermA) {
+            const nextTermA = (usedMinus === 't_m1') ? '500mA端子' : '50mA端子';
+            updateGuide(`✅ 安全確認OK！針の振れがまだ小さいため、スイッチを切って次は「${nextTermA}」につなぎかえましょう！`);
+          } else {
+            updateGuide(`✅ ${termLabelA[usedMinus]}で大きく振れました！「目盛りの読み取りへ進む ▶」を押しましょう。`);
+          }
+        } else {
+          updateBulbUI(hasBulbOnlyPath && isBulbALit, hasBulbOnlyPath && isBulbBLit);
+          state.targetAngle = baseZeroDeg;
+          setReadingButton(false);
+          if (isSwitchTurnedOnAttempt && state.switchOn) {
+            if (hasBulbOnlyPath) {
+              recordWiringMistake("⚠️ 豆電球は光りましたが、電流計が回路の輪に組み込まれていないため針が動きません！");
+            } else {
+              recordWiringMistake("⚠️ 電流計と豆電球が正しく直列（1本の輪）につながっていません！");
+            }
+          }
+        }
+      } else {
+        if (hasSeriesPath && !hasBulbOnlyPath) {
+          updateBulbUI(false, false);
+          const maxCap = (usedMinus === 't_m1') ? 300.0 : (usedMinus === 't_m2' ? 15.0 : 3.0);
+          state.targetAngle = baseZeroDeg + ((state.trueValue / maxCap) * SPAN_ANGLE);
+          setReadingButton(false);
+          if (isSwitchTurnedOnAttempt && state.switchOn) {
+            recordWiringMistake("⚠️ 電圧計が直列につながっているため豆電球が消えています！豆電球をまたぐ「並列つなぎ」に直しましょう。");
+          } else {
+            updateGuide("⚠️ 電圧計を回路に直列につなぐと、回路に電流が流れなくなり豆電球が消えてしまいます。並列につなぎ直してください。（教科書 p.223）");
+          }
+          return;
+        }
+
+        const vConnectedOk = (state.appMode === 'ADV_TARGET') ? (validMeterPaths.length > 0 && hasBulbOnlyPath && usedMinus) : (hasMeterOnlyPath && hasBulbOnlyPath && usedMinus);
+
+        if (vConnectedOk) {
+          const bulbPathUsesSwitch = validBulbPaths.every(p => traversesComponent(p, 't_sw1', 't_sw2'));
+          if (!bulbPathUsesSwitch) {
+            updateBulbUI(isBulbALit, isBulbBLit);
+            setReadingButton(false);
+            recordWiringMistake("⚠️ スイッチを通らずに豆電球が直接つながっています！スイッチを回路に組み込みましょう。");
+            return;
+          }
+
+          updateBulbUI(isBulbALit, isBulbBLit);
+          if (usedMinus === 't_m1') {
+            state.testedMaxTerminal = true;
+          } else if (usedMinus === 't_m2') {
+            if (!state.testedMaxTerminal) {
+              state.targetAngle = MAX_ANGLE + 12;
+              state.gameOverTimer = setTimeout(() => {
+                triggerGameOver("一発免停：いきなり小さい端子へ接続", "電圧の大きさが予想できないときは、必ずいちばん大きい「300Vの－端子」からつなぐルールです！（教科書 p.223）", "⚠️");
+              }, 350);
+              return;
+            }
+            state.testedMidTerminal = true;
+          } else if (usedMinus === 't_m3') {
+            if (!state.testedMaxTerminal || !state.testedMidTerminal) {
+              state.targetAngle = MAX_ANGLE + 12;
+              state.gameOverTimer = setTimeout(() => {
+                triggerGameOver("一発免停：端子つなぎかえの順番飛ばし", "端子をつなぎかえるときは、必ず「300V → 15V → 3V」の順番で確認するルールです！（教科書 p.223）", "⚠️");
+              }, 350);
+              return;
+            }
+          }
+
+          const maxCap = (usedMinus === 't_m1') ? 300.0 : (usedMinus === 't_m2' ? 15.0 : 3.0);
+          const ratio = state.trueValue / maxCap;
+          const visualRatio = (state.phase === 'wiring' && usedMinus === 't_m1') ? Math.max(ratio, 0.025) : ratio;
+          state.targetAngle = baseZeroDeg + (visualRatio * SPAN_ANGLE);
+
+          if (ratio > 1.05) {
+            state.gameOverTimer = setTimeout(() => {
+              triggerGameOver("一発免停：振り切れ（過電圧）", "選択した端子に対して電圧が大きすぎて針が振り切れます！1つ大きい端子で測定しましょう。", "💥");
+            }, 350);
+            return;
+          }
+
+          state.circuitValidForReading = true;
+          setReadingButton(true);
+          const bestTermV = getBestTerminal();
+          const termLabelV = { t_m1: '300V端子', t_m2: '15V端子', t_m3: '3V端子' };
+          if (usedMinus !== bestTermV) {
+            const nextTermV = (usedMinus === 't_m1') ? '15V端子' : '3V端子';
+            updateGuide(`✅ 安全確認OK！針が少し右に振れました。スイッチを切って次は「${nextTermV}」につなぎかえましょう！`);
+          } else {
+            updateGuide(`✅ ${termLabelV[usedMinus]}で大きく振れました！「目盛りの読み取りへ進む ▶」を押しましょう。`);
+          }
+        } else {
+          updateBulbUI(hasBulbOnlyPath && isBulbALit, hasBulbOnlyPath && isBulbBLit);
+          state.targetAngle = baseZeroDeg;
+          setReadingButton(false);
+          if (isSwitchTurnedOnAttempt && state.switchOn) {
+            if (hasBulbOnlyPath) {
+              recordWiringMistake("⚠️ 豆電球は光りましたが、電圧計が測定対象の両端に並列につながっていないため針が動きません！");
+            } else {
+              recordWiringMistake("⚠️ まずは電池・スイッチ・豆電球で回路を作り、測りたい豆電球をまたぐように電圧計をつなぎましょう！");
+            }
+          }
+        }
+      }
     }
-    
-    addPoints(bonus);
-    if (bonus > 0) html += `<div style="font-size:1.4rem; color:var(--accent-cyan); font-weight:900;">✨ ボーナス ${bonus} Pt 獲得！ ✨</div>`;
-    
-    html += `<div class="result-box">`;
-    html += `<h3 style="margin-top:0; color:var(--accent-green); border-bottom:1px solid #4a4e69; padding-bottom:5px;">📊 プレイレポート (メタ認知)</h3>`;
-    
-    if (sessionMistakes.length === 0 && !isGameOver) {
-        html += `<p style="color:var(--accent-gold); font-size:1.2rem; font-weight:bold; text-align:center; padding:10px 0;">👑 PERFECT!! 一度もミスなし！神レベルだ！</p>`;
-    } else if (sessionMistakes.length > 0) {
-        html += `<p style="font-size:0.9rem; color:var(--text-sub);">【間違えた問題と原因】復習モードで苦手を潰そう！</p>`;
-        html += `<ul class="result-list">`;
-        sessionMistakes.forEach(m => {
-            let tag = m.step === 1 ? `<span class="tag-f">化学式ミス</span>` : `<span class="tag-c">係数ミス</span>`;
-            html += `<li>${m.title} ${tag}</li>`;
-        });
-        html += `</ul>`;
+
+    function getBestTerminal() {
+      if (state.mode === 'A') {
+        if (state.trueValue <= 0.05) return 't_m3';
+        if (state.trueValue <= 0.50) return 't_m2';
+        return 't_m1';
+      } else {
+        if (state.trueValue <= 3.0) return 't_m3';
+        if (state.trueValue <= 15.0) return 't_m2';
+        return 't_m1';
+      }
     }
-    html += `</div>`;
-    
-    html += `<button class="primary-btn" style="margin-top: 20px; font-size: 1.1rem; padding: 12px 30px;" onclick="showHome()">🏠 ホームへ戻る</button>`;
-    html += `</div>`;
-    
-    document.getElementById('workspace').innerHTML = html;
-    document.getElementById('reaction-title').innerText = isSuddenDeath ? "挑戦終了！" : "🎉 クエスト完了！";
-    document.getElementById('instruction-text').innerText = "プレイレポートを確認しよう！";
-    document.getElementById('feedback').innerHTML = '';
-    document.getElementById('explanation-box').style.display = 'none';
-    document.getElementById('check-btn').style.display = 'none';
-    document.getElementById('workspace-wrapper').style.transform = 'none';
-    
-    if (isSuddenDeath && isGameOver) updateKen('error');
-    else { updateKen('success'); triggerCelebration(); }
-    
-    if (appMode === 'practice_review') updateReviewMenu(); 
-}
-</script>
+
+    function animateNeedle() {
+      const spring = 0.18;
+      const damping = 0.72;
+      const force = (state.targetAngle - state.needleAngle) * spring;
+      state.needleVel = (state.needleVel + force) * damping;
+      state.needleAngle += state.needleVel;
+
+      const needle = document.getElementById('needleGroup');
+      if (needle) {
+        needle.setAttribute('transform', `translate(170, 202) rotate(${state.needleAngle})`);
+      }
+      requestAnimationFrame(animateNeedle);
+    }
+
+    function goToReading() {
+      const btn = document.getElementById('goReadingBtn');
+      if (btn.classList.contains('cursor-not-allowed') || !state.circuitValidForReading) return;
+
+      clearActiveTerminalSelection();
+      state.phase = 'reading';
+      document.body.setAttribute('data-phase', 'reading');
+
+      state.switchOn = true;
+      updateSwitchUI();
+      evaluateCircuit(false);
+      renderWires();
+
+      document.getElementById('wiringArea').classList.add('hidden');
+      document.getElementById('readingPhaseUI').classList.remove('hidden');
+      document.getElementById('readingPhaseUI').classList.add('flex');
+      btn.classList.add('hidden');
+
+      const termNames = {
+        A: { t_m1: '5A端子', t_m2: '500mA端子', t_m3: '50mA端子' },
+        V: { t_m1: '300V端子', t_m2: '15V端子', t_m3: '3V端子' }
+      };
+      document.getElementById('connectedTermBadge').textContent = termNames[state.mode][state.currentTerminalUsed];
+      document.getElementById('answerUnit').textContent =
+        (state.mode === 'A') ? (state.currentTerminalUsed === 't_m1' ? 'A' : 'mA') : 'V';
+      document.getElementById('answerInput').value = '';
+      updateGuide("手順3：正面から目盛りを「最小目盛りの 1/10」まで読み取って入力しましょう。");
+    }
+
+    function backToWiring() {
+      state.phase = 'wiring';
+      document.body.setAttribute('data-phase', 'wiring');
+
+      document.getElementById('readingPhaseUI').classList.add('hidden');
+      document.getElementById('readingPhaseUI').classList.remove('flex');
+      document.getElementById('wiringArea').classList.remove('hidden');
+      document.getElementById('goReadingBtn').classList.remove('hidden');
+
+      evaluateCircuit(false);
+      requestAnimationFrame(renderWires);
+    }
+
+    function typeNum(ch) {
+      const inp = document.getElementById('answerInput');
+      if (ch === 'C') { inp.value = ''; return; }
+      if (ch === '.' && inp.value.includes('.')) return;
+      if (inp.value.length < 7) inp.value += ch;
+    }
+
+    function checkAnswer() {
+      const raw = document.getElementById('answerInput').value.trim();
+      if (!raw || raw === '.') {
+        updateGuide("⚠️ 数値をテンキーで入力してから「判定する」を押してください。");
+        return;
+      }
+
+      const userVal = parseFloat(raw);
+      if (isNaN(userVal)) return;
+      const u = state.currentTerminalUsed;
+
+      let maxScale = 5.0, minDiv = 0.1, reqDec = 2;
+      if (state.mode === 'A') {
+        if (u === 't_m1') { maxScale = 5.0; minDiv = 0.1; reqDec = 2; }
+        if (u === 't_m2') { maxScale = 500.0; minDiv = 10.0; reqDec = 0; }
+        if (u === 't_m3') { maxScale = 50.0; minDiv = 1.0; reqDec = 1; }
+      } else {
+        if (u === 't_m1') { maxScale = 300.0; minDiv = 10.0; reqDec = 0; }
+        if (u === 't_m2') { maxScale = 15.0; minDiv = 0.5; reqDec = 2; }
+        if (u === 't_m3') { maxScale = 3.0; minDiv = 0.1; reqDec = 2; }
+      }
+
+      let baseVal = state.trueValue;
+      if (state.mode === 'A' && u !== 't_m1') baseVal *= 1000;
+      const displayedVal = baseVal + (state.zeroOffset / 50) * maxScale;
+
+      if (state.appMode !== 'ADV_DEBUG' && Math.abs(state.zeroOffset) >= 0.5) {
+        triggerGameOver("不合格：ゼロ点調整忘れ", "測定前に指針を「0」に合わせていなかったため、正しい値からズレてしまいました。（教科書 p.215, 223）", "⚠️");
+        return;
+      }
+
+      const tol = minDiv * 0.25;
+      if (Math.abs(userVal - displayedVal) > tol) {
+        triggerGameOver("不合格：目盛りの読み取りミス", `選択した端子（${document.getElementById('connectedTermBadge').textContent}）の目盛りを読むと、正解は「${ baseVal.toFixed(reqDec) }」付近になります。違う段の数字を読んでいないか確認しましょう！`, "❌");
+        return;
+      }
+
+      const decPart = raw.includes('.') ? raw.split('.')[1] : '';
+      if (reqDec > 0 && decPart.length < reqDec) {
+        triggerGameOver("惜しい！最小目盛りの 1/10 まで書こう", `数値は合っていますが、最小目盛り（${minDiv}）の 1/10 まで目分量で読むルールです。「${ baseVal.toFixed(reqDec) }」のように小数第${reqDec}位まで書きましょう！（教科書 p.215, 223）`, "✍️");
+        return;
+      }
+
+      const bestTerm = getBestTerminal();
+      const termNames = {
+        A: { t_m1: '5A端子', t_m2: '500mA端子', t_m3: '50mA端子' },
+        V: { t_m1: '300V端子', t_m2: '15V端子', t_m3: '3V端子' }
+      };
+      const unitStr = document.getElementById('answerUnit').textContent;
+      const usedTermName = termNames[state.mode][u];
+      const bestTermName = termNames[state.mode][bestTerm];
+      const isAdv = state.appMode.startsWith('ADV_');
+
+      if (u === bestTerm) {
+        triggerGameOver(
+          isAdv ? "💎 大正解！プラチナ免許 交付！" : "🥇 大正解！ゴールド免許 交付！",
+          isAdv
+            ? `発展ミッションの回路構築と読み取りがすべて完璧です！`
+            : `すべての手順と読み取りが完璧です！次の問題にも挑戦してみましょう。`,
+          "🏆",
+          {
+            rank: isAdv ? 'PLATINUM' : 'GOLD',
+            valStr: `${raw} ${unitStr}`,
+            usedTerm: usedTermName,
+            bestTerm: bestTermName,
+            isBest: true
+          }
+        );
+      } else {
+        triggerGameOver(
+          "🚙 正解！普通免許（ブルー）交付！",
+          `目盛りの読み取りは正解です！\nただし今回の大きさなら、さらに小さい「${bestTermName}」につなぎかえて測るとさらに正確に測定できます！`,
+          "🎉",
+          {
+            rank: 'BLUE',
+            valStr: `${raw} ${unitStr}`,
+            usedTerm: usedTermName,
+            bestTerm: bestTermName,
+            isBest: false
+          }
+        );
+      }
+    }
+
+    function toggleSwitch() {
+      if (state.phase !== 'wiring' || state.isGameOver) return;
+      state.switchOn = !state.switchOn;
+      updateSwitchUI();
+      evaluateCircuit(state.switchOn);
+    }
+
+    function updateSwitchUI() {
+      const btn = document.getElementById('switchBtn');
+      const badge = document.getElementById('swStateBadge');
+      if (!btn || !badge) return;
+      if (state.switchOn) {
+        btn.textContent = "スイッチを切る (OFF)";
+        btn.className = "px-3 py-1.5 rounded-lg font-bold text-xs bg-[#FF4B00] hover:bg-red-700 text-white border-2 border-red-900 shadow-inner transition-all";
+        badge.textContent = "通電中 (ON)";
+        badge.className = "bg-[#FF4B00] text-white text-[10px] font-bold px-1.5 py-0.5 rounded animate-pulse";
+      } else {
+        btn.textContent = "スイッチON";
+        btn.className = "px-3 py-1.5 rounded-lg font-bold text-xs bg-slate-200 hover:bg-slate-300 text-slate-800 border-2 border-slate-400 shadow transition-all";
+        badge.textContent = "切";
+        badge.className = "bg-slate-300 text-slate-700 text-[10px] font-bold px-1.5 py-0.5 rounded";
+      }
+    }
+
+    function updateBulbUI(isLitA, isLitB = false) {
+      const glassA = document.getElementById('bulbGlass');
+      const filA = document.getElementById('bulbFilament');
+      if (glassA && filA) {
+        if (isLitA) {
+          glassA.className = "w-14 h-14 rounded-full border-4 border-amber-400 bg-yellow-200 flex items-center justify-center transition-all duration-300 relative shadow-[0_0_25px_#facc15]";
+          filA.setAttribute('stroke', '#ea580c');
+          filA.setAttribute('stroke-width', '3.2');
+        } else {
+          glassA.className = "w-14 h-14 rounded-full border-4 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 relative shadow-inner";
+          filA.setAttribute('stroke', '#64748b');
+          filA.setAttribute('stroke-width', '2.5');
+        }
+      }
+
+      const glassB = document.getElementById('bulbBGlass');
+      const filB = document.getElementById('bulbBFilament');
+      if (glassB && filB) {
+        if (isLitB) {
+          glassB.className = "w-14 h-14 rounded-full border-4 border-amber-400 bg-yellow-200 flex items-center justify-center transition-all duration-300 relative shadow-[0_0_25px_#facc15]";
+          filB.setAttribute('stroke', '#ea580c');
+          filB.setAttribute('stroke-width', '3.2');
+        } else {
+          glassB.className = "w-14 h-14 rounded-full border-4 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 relative shadow-inner";
+          filB.setAttribute('stroke', '#64748b');
+          filB.setAttribute('stroke-width', '2.5');
+        }
+      }
+    }
+
+    function setReadingButton(enabled) {
+      const btn = document.getElementById('goReadingBtn');
+      if (!btn) return;
+      if (enabled) {
+        btn.className = "bg-[#005AFF] hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg shadow-lg text-sm sm:text-base cursor-pointer transition-all animate-bounce";
+      } else {
+        btn.className = "bg-slate-400 text-white font-bold px-5 py-2 rounded-lg shadow text-sm sm:text-base opacity-60 cursor-not-allowed transition-all";
+      }
+    }
+
+    function updateGuide(msg) {
+      const el = document.getElementById('guideMessage');
+      if (!el) return;
+      el.innerHTML = `
+        <span class="inline-block w-3 h-3 rounded-full bg-[#005AFF] animate-ping shrink-0"></span>
+        <span>${msg}</span>
+      `;
+    }
+
+    function triggerGameOver(title, msg, icon, licenseData = null) {
+      clearPendingTimer();
+      state.isGameOver = true;
+      const modal = document.getElementById('resultModal');
+      const card = document.getElementById('resultCard');
+      const licenseBox = document.getElementById('resultLicenseBox');
+      const actionBtn = document.getElementById('resultActionBtn');
+
+      document.getElementById('resultIcon').textContent = icon;
+      document.getElementById('resultTitle').textContent = title;
+
+      if (licenseData) {
+        state.lastAttemptSuccess = true;
+        state.failCount = 0;
+        updateSampleButtonUI();
+        document.getElementById('resultMessage').innerText = msg;
+
+        const isPlatinum = licenseData.rank === 'PLATINUM';
+        const isGold = licenseData.rank === 'GOLD' || isPlatinum;
+        card.className = `bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl text-center border-t-8 ${isPlatinum ? 'border-purple-600' : (isGold ? 'border-amber-400' : 'border-[#005AFF]')} max-h-[92vh] overflow-y-auto`;
+        document.getElementById('resultTitle').className = `text-2xl font-bold mb-1 ${isPlatinum ? 'text-purple-700' : (isGold ? 'text-amber-600' : 'text-[#005AFF]')}`;
+
+        licenseBox.classList.remove('hidden');
+        licenseBox.className = `my-4 text-left rounded-xl p-4 border-2 shadow-sm ${isPlatinum ? 'bg-purple-50 border-purple-400' : (isGold ? 'bg-amber-50 border-amber-400' : 'bg-blue-50 border-blue-300')}`;
+        licenseBox.innerHTML = `
+          <div class="flex justify-between items-center border-b pb-2 mb-3 ${isPlatinum ? 'border-purple-300' : (isGold ? 'border-amber-300' : 'border-blue-200')}">
+            <span class="font-bold text-xs px-2.5 py-0.5 rounded text-white ${isPlatinum ? 'bg-purple-700' : (isGold ? 'bg-amber-500' : 'bg-[#005AFF]')}">
+              ${isPlatinum ? '特級計測運転者（プラチナ）' : (isGold ? '優良計測運転者（ゴールド）' : '一般計測運転者（ブルー）')}
+            </span>
+            <span class="text-xs font-bold text-slate-500">${state.mode === 'A' ? '直流電流計 (A)' : '直流電圧計 (V)'} 認定証</span>
+          </div>
+          <div class="bg-white rounded-lg p-3 mb-3 border border-slate-200 text-center">
+            <div class="text-xs font-bold text-slate-500">あなたの測定値</div>
+            <div class="text-3xl font-bold text-slate-900 mt-0.5">${licenseData.valStr}</div>
+          </div>
+          <div class="space-y-1.5 text-xs sm:text-sm font-bold">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">① ゼロ点調整：</span>
+              <span class="text-[#03AF7A]">${state.appMode === 'ADV_DEBUG' ? '✨ 免除（間違い探し）' : '⭕ 合格（0点一致）'}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">② 選択した－端子：</span>
+              <span class="${licenseData.isBest ? 'text-[#03AF7A]' : 'text-amber-600'}">
+                ${licenseData.isBest ? `⭕ 最適（${licenseData.usedTerm}）` : `🔺 ${licenseData.usedTerm}（最適は${licenseData.bestTerm}）`}
+              </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">③ 目盛りの読み取り：</span>
+              <span class="text-[#03AF7A]">⭕ 合格</span>
+            </div>
+          </div>
+        `;
+        actionBtn.textContent = "次の問題に挑戦する ▶";
+        actionBtn.className = "w-full bg-[#03AF7A] hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg text-base transition-all";
+      } else {
+        state.lastAttemptSuccess = false;
+        state.failCount++;
+        updateSampleButtonUI();
+
+        let extraHint = "";
+        if (state.failCount >= 2) {
+          extraHint = "\n\n💡 2回ミスしたため、画面右下の「✨ 交差ゼロのお手本配線を見る」ボタンが使えるようになりました！";
+        } else {
+          extraHint = `\n\n（あと ${2 - state.failCount} 回ミスすると「お手本配線」ボタンが解放されます）`;
+        }
+        document.getElementById('resultMessage').innerText = msg + extraHint;
+
+        card.className = "bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl text-center border-t-8 border-[#FF4B00] max-h-[92vh] overflow-y-auto";
+        document.getElementById('resultTitle').className = "text-2xl font-bold mb-2 text-[#FF4B00]";
+        licenseBox.classList.add('hidden');
+        actionBtn.textContent = "同じ問題でもう一度やり直す ↺";
+        actionBtn.className = "w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl shadow-lg text-base transition-all";
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function resetApp() {
+      document.getElementById('resultModal').classList.add('hidden');
+      document.getElementById('resultModal').classList.remove('flex');
+      if (state.phase === 'reading') backToWiring();
+      initApp(!state.lastAttemptSuccess);
+    }
+
+    function showTutorial() {
+      document.getElementById('tutorialModal').classList.remove('hidden');
+      document.getElementById('tutorialModal').classList.add('flex');
+    }
+
+    function closeTutorial() {
+      document.getElementById('tutorialModal').classList.add('hidden');
+      document.getElementById('tutorialModal').classList.remove('flex');
+      requestAnimationFrame(renderWires);
+    }
+  </script>
 </body>
 </html>
